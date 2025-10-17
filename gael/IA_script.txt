@@ -78,5 +78,5 @@ CREATE TABLE MESSAGE(
 
 INSERT INTO Role (nom_role) VALUES 
 ('Administrateur'),
-('Etudiant'),
+('Etudiant');
 
