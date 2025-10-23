@@ -1,0 +1,136 @@
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f9f9f9;
+    color: #222;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header {
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    padding: 32px 0 24px 0;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0 0 10px 0;
+    font-size: 2.2rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+header nav a {
+    color: #0078d7;
+    text-decoration: none;
+    margin: 0 12px;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+header nav a:hover {
+    color: #005fa3;
+}
+
+footer {
+    background: #fff;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
+    padding: 18px 0;
+    text-align: center;
+    font-size: 1rem;
+    color: #888;
+    margin-top: auto;
+}
+
+
+/* Style card pour le formulaire étudiant */
+.etudiant-form {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    padding: 32px 28px 24px 28px;
+    max-width: 420px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin: 0 auto;
+}
+
+.etudiant-form label {
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #222;
+}
+
+.etudiant-form input[type="text"],
+.etudiant-form input[type="email"],
+.etudiant-form input[type="password"],
+.etudiant-form input[type="date"],
+.etudiant-form select {
+    padding: 10px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: #fafbfc;
+    transition: border 0.2s;
+}
+
+.etudiant-form input[type="text"]:focus,
+.etudiant-form input[type="email"]:focus,
+.etudiant-form input[type="password"]:focus,
+.etudiant-form input[type="date"]:focus,
+.etudiant-form select:focus {
+    border: 1.5px solid #0078d7;
+    outline: none;
+}
+
+.etudiant-form input[type="file"] {
+    border: none;
+    background: none;
+    padding: 0;
+}
+
+.etudiant-form button[type="submit"] {
+    background: #0078d7;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.2s;
+}
+
+.etudiant-form button[type="submit"]:hover {
+    background: #005fa3;
+}
+
+.etudiant-form label[for="consentement_rgpd"] {
+    display: flex;
+    align-items: center;
+    font-weight: 400;
+    font-size: 0.98rem;
+    color: #444;
+    gap: 8px;
+}
+
+.main-content {
+    flex: 1 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
