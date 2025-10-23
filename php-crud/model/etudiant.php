@@ -73,11 +73,11 @@ class Etudiants
         return $stmt->execute();
     }
 
-    public function delete($id)
+    public function delete($id_etudiant)
     {
-        $sql = "DELETE FROM Etudiants WHERE id = :id";
+        $sql = "DELETE FROM Etudiants WHERE id_etudiant = :id_etudiant";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':id_etudiant', $id);
         return $stmt->execute();
     }
 }
