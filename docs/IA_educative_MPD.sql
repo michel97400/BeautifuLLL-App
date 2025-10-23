@@ -80,7 +80,7 @@ INSERT INTO Role (nom_role) VALUES
 ('Administrateur'),
 ('Etudiant');
 
-INSERT INTO Niveau (libelle_niveau) VALUES ('6_eme'), ('5_eme'), ('4_eme'), ('3_eme'), ('Second'), ('Premiere'), ('Terminale');
+INSERT INTO Niveau (libelle_niveau) VALUES ('6 eme'), ('5 eme'), ('4 eme'), ('3 eme'), ('Second'), ('Premiere'), ('Terminale');
 
 INSERT INTO Matieres (nom_matieres) VALUES ('Français'), ('Anglais'), ('Mathématique'), ('Histoire-géo'), ('Biologie'), ('Phisique'), ('Chimie');
 INSERT INTO Etudiants (nom, prenom, email, avatar, passwordhash, date_inscription, consentement_rgpd, id_role, id_niveau) VALUES ('Dupont', 'Jean', 'jean.dupont@test.com', 'avatar1.jpg', '$2y$10$hash1234567890', '2025-10-17 14:30:00', 1, 2, 1), ('Martin', 'Marie', 'marie.martin@test.com', 'avatar2.jpg', '$2y$10$hash0987654321', '2025-10-17 15:00:00', 1, 2, 2), ('Dubois', 'Pierre', 'pierre.dubois@test.com', 'avatar3.jpg', '$2y$10$hash1122334455', '2025-10-17 15:30:00', 1, 1, 1);
