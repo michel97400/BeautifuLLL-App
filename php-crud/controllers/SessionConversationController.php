@@ -2,53 +2,42 @@
 
 namespace Controllers;
 
-use Models\Agent;
+use Models\session_conversation;
 
-class AgentController
+class SessionConversationController
 {
-    public function createAgent($nom_agent, $type_agent, $avatar_agent, $est_actif, $description, $prompt_systeme, $id_matieres, $id_etudiant)
+    public function createSessionConversation($duree_session, $date_heure_fin, $id_agents, $id_etudiant)
     {
-        $Agent = new Agent();
-        return $Agent->create($nom_agent, 
-            $type_agent, 
-            $avatar_agent, 
-            $est_actif, 
-            $description, 
-            $prompt_systeme, 
-            $id_matieres, 
-            $id_etudiant
-        );
+        $SessionConversation = new SessionConversation();
+        return $SessionConversation->create($duree_session, $date_heure_fin, $id_agents, $id_etudiant);
     }
 
-    public function getAgents()
+    public function getSessionConversation()
     {
-        $Agent = new Agent();
-        return $Agent->read();
+        $SessionConversation = new SessionConversation();
+        return $SessionConversation->read();
     }
 
-    public function getSingleAgent($id_agents)
+    public function getSingleSessionConversation($id_session)
     {
-        $Agent = new Agent();
-        return $Agent->readSingle($id_agents);
+        $SessionConversation = new SessionConversation();
+        return $SessionConversation->readSingle($id_session);
     }
 
-    public function updateAgent($id_agents, $nom_agent, $type_agent, $avatar_agent, $est_actif, $description, $prompt_systeme, $id_matieres, $id_etudiant)
+    public function updateSessionConversation($id_session, $date_heure_debut, $duree_session, $date_heure_fin, $id_agents, $id_etudiant)
     {
-        $Agent = new Agent();
-        return $Agent->update($id_agents, 
-            $nom_agent, 
-            $type_agent, 
-            $avatar_agent, 
-            $est_actif, 
-            $description, 
-            $prompt_systeme, 
-            $id_matieres, 
+        $SessionConversation = new SessionConversation();
+        return $SessionConversation->update($id_session, 
+            $date_heure_debut, 
+            $duree_session, 
+            $date_heure_fin, 
+            $id_agents, 
             $id_etudiant);
     }
 
-    public function deleteAgent($id_agents)
+    public function deleteSessionConversation($id_Session)
     {
-        $Agent = new Agent();
-        return $Agent->delete($id_agents);
+        $SessionConversation = new SessionConversation();
+        return $SessionConversation->delete($id_Session);
     }
 }
