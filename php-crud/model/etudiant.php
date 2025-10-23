@@ -15,7 +15,7 @@ class Etudiants
 
     public function create($nom, $prenom, $email, $avatar, $passwordhash, $date_inscription, $consentement_rgpd, $id_role)
     {
-        $sql = "INSERT INTO etudiants (nom, prenom, email, avatar, passwordhash, date_inscription, consentement_rgpd, id_role) VALUES (:nom, :prenom, :email, :avatar, :passwordhash, :date_inscription, :consentement_rgpd, :id_role, :id_niveau)";
+        $sql = "INSERT INTO Etudiants (nom, prenom, email, avatar, passwordhash, date_inscription, consentement_rgpd, id_role) VALUES (:nom, :prenom, :email, :avatar, :passwordhash, :date_inscription, :consentement_rgpd, :id_role, :id_niveau)";
 
         
         $stmt = $this->conn->prepare($sql);
@@ -41,7 +41,7 @@ class Etudiants
 
     public function update($id, $name, $email)
     {
-        $sql = "UPDATE etudiants SET name = :name, email = :email WHERE id = :id";
+        $sql = "UPDATE Etudiants SET name = :name, email = :email WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':name', $name);
         $stmt->bindParam(':email', $email);
@@ -51,7 +51,7 @@ class Etudiants
 
     public function delete($id)
     {
-        $sql = "DELETE FROM etudiants WHERE id = :id";
+        $sql = "DELETE FROM Etudiants WHERE id = :id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':id', $id);
         return $stmt->execute();
