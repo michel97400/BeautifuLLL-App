@@ -9,11 +9,11 @@ use Config\Database;
 $db = new Database();
 $connection = $db->connect();
 
-use Models\Etudiants;
+use Models\agent;
 
 
-// Créer une instance de la classe User
-$etudiant = new Etudiants();
+// Créer une instance de la classe agent
+$agent = new agent();
 
 
 
@@ -24,7 +24,7 @@ $email = 'jean.dupont@example.com';
 $passwordhash = password_hash('motdepasse123', PASSWORD_DEFAULT);
 
 //Création de l'utilisateur
-$result = $etudiant->create(
+$result = $agent->create(
     $nom,
     $prenom,
     $email,
