@@ -68,7 +68,7 @@ CREATE TABLE Session_conversation(
 CREATE TABLE Message(
    id_message INT AUTO_INCREMENT,
    role ENUM('user', 'assistant') NOT NULL,
-   contenu TEXT VARCHAR(500) NOT NULL,
+   contenu TEXT NOT NULL,
    date_envoi DATETIME DEFAULT CURRENT_TIMESTAMP,
    id_session INT NOT NULL,
    PRIMARY KEY(id_message),
