@@ -1,8 +1,29 @@
 <?php
 // Formulaire de connexion (login)
+<?php
+session_start();
+require_once '../controllers/EtudiantController.php';
+
+$message = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = $_POST['email'] ?? '';
+    $password = $_POST['password'] ?? '';
+    $controller = new \Controllers\EtudiantController();
+    $user = $controller->loginEtudiant($email, $password);
+    if ($user) {
+        $_SESSION['user'] = $user;
+        header('Location: success_connect.php');
+        exit;
+    } else {
+        $message = "Identifiants invalides.";
+    }
+}
 ?>
-<form action="../controllers/UserController.php?action=login" method="POST" class="etudiant-form">
+<form action="" method="POST" class="etudiant-form">
     <h2>Connexion</h2>
+    <?php if ($message): ?>
+        <div style="color: red; text-align:center; margin-bottom:10px;"> <?= htmlspecialchars($message) ?> </div>
+    <?php endif; ?>
     <label for="email">Email :</label>
     <input type="email" id="email" name="email" required>
 

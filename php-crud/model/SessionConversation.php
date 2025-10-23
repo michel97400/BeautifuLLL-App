@@ -13,6 +13,15 @@ class session_conversation
         $this->conn = $database->connect();
     }
 
+    public function readSingle($id)
+    {
+        $sql = "SELECT * FROM SESSION_CONVERSATION WHERE id_session = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
     public function create($duree_session, $date_heure_fin, $id_agents, $id_etudiant)
     {
         $sql = "INSERT INTO session_conversation (duree_session, date_heure_fin, id_agents, id_etudiant) 
