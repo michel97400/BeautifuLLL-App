@@ -56,8 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <label for="id_role">Rôle :</label>
     <select id="id_role" name="id_role" required>
-        <option value="1">Étudiant</option>
-        <option value="2">Autre</option>
+        <option value="2">Étudiant</option>
     </select>
 
     <label for="id_niveau">Niveau :</label>
