@@ -1,7 +1,7 @@
 <?php
 // Formulaire de création d'un étudiant
 ?>
-<form action="../controllers/EtudiantController.php?action=create" method="POST" enctype="multipart/form-data" class="etudiant-form">
+<form action="../php-crud/controllers/EtudiantController.php?action=create" method="POST" enctype="multipart/form-data" class="etudiant-form">
     <label for="nom">Nom :</label>
     <input type="text" id="nom" name="nom" required>
 
