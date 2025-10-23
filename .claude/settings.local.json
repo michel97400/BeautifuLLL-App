@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(cat \"C:\\wamp64\\www\\BeautifuLLL-App\\php-crud\\controllers\\UserController.php\")"
+      "Bash(cat \"C:\\wamp64\\www\\BeautifuLLL-App\\php-crud\\controllers\\UserController.php\")",
+      "Bash(mv:*)"
     ],
     "deny": [],
     "ask": []
