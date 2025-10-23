@@ -16,10 +16,14 @@ class etudiants
 
     public function create($nom, $email, $password, $prenom, $avatar, $consentement_rgp): 
     {
-        $sql = "INSERT INTO etudiants (name, email, password, avatar, consentement_rgpd ) VALUES (:name, :email, :password, :avatar, )";
+        $sql = "INSERT INTO etudiants (name, email, password, avatar, consentement_rgpd) VALUES (:name, :email, :password, :avatar, :consentement_rgpd )";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':name', $name);
         $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':password', $password);
+        $stmt->bindParam(':prenom', $prenom);
+        $stmt->bindParam(':avatar', $avatar);
+        $stmt->bindParam(':consentement_rgpd', $consentement_rgpd);
         return $stmt->execute();
     }
 
