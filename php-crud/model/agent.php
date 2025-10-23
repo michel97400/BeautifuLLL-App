@@ -14,9 +14,9 @@ class Agent
         $this->conn = $database->connect();
     }
 
-    public function create($nom_agent, $type_agent, $avatar_agent, $est_actif, $description, $prompt_systeme, $id_matieres, $id_users)
+    public function create($nom_agent, $type_agent, $avatar_agent, $est_actif, $description, $prompt_systeme, $id_matieres, $id_etudiant)
     {
-        $sql = "INSERT INTO agent (nom_agent, type_agent, avatar_agent, est_actif, description, prompt_systeme, id_matieres, id_users) VALUES (:nom_agent, :type_agent, :avatar_agent, :est_actif, :description, :prompt_systeme, :id_matieres, :id_users)";
+        $sql = "INSERT INTO agent (nom_agent, type_agent, avatar_agent, est_actif, description, prompt_systeme, id_matieres, $id_etudiant) VALUES (:nom_agent, :type_agent, :avatar_agent, :est_actif, :description, :prompt_systeme, :id_matieres, $id_etudiant)";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':nom_agent', $nom_agent);
         $stmt->bindParam(':type_agent', $type_agent);
@@ -25,7 +25,7 @@ class Agent
         $stmt->bindParam(':description', $description);
         $stmt->bindParam(':prompt_systeme', $prompt_systeme);
         $stmt->bindParam(':id_matieres', $id_matieres, PDO::PARAM_INT);
-        $stmt->bindParam(':id_etudiants', $id_users, PDO::PARAM_INT);
+        $stmt->bindParam(':id_etudiants', $id_etudiant, PDO::PARAM_INT);
         
         return $stmt->execute();
     }
@@ -47,7 +47,7 @@ class Agent
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function update($id_agents, $nom_agent, $type_agent, $avatar_agent, $est_actif, $description, $prompt_systeme, $id_matieres, $id_users)
+    public function update($id_agents, $nom_agent, $type_agent, $avatar_agent, $est_actif, $description, $prompt_systeme, $id_matieres, $id_etudiant)
     {
         $sql = "UPDATE agent SET 
                     nom_agent = :nom_agent, 
@@ -57,7 +57,7 @@ class Agent
                     description = :description, 
                     prompt_systeme = :prompt_systeme, 
                     id_matieres = :id_matieres, 
-                    id_users = :id_users 
+                    id_etudiant = :id_etudiant
                 WHERE id_agents = :id_agents";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':id_agents', $id_agents, PDO::PARAM_INT);
@@ -68,7 +68,7 @@ class Agent
         $stmt->bindParam(':description', $description);
         $stmt->bindParam(':prompt_systeme', $prompt_systeme);
         $stmt->bindParam(':id_matieres', $id_matieres, PDO::PARAM_INT);
-        $stmt->bindParam(':id_users', $id_users, PDO::PARAM_INT);
+        $stmt->bindParam(':id_etudiant', $id_etudiant, PDO::PARAM_INT);
         return $stmt->execute();
     }
 
