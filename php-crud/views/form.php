@@ -1,7 +1,36 @@
 <?php
-// Formulaire de création d'un étudiant
+require_once __DIR__ . '/../controllers/EtudiantController.php';
+use Controllers\EtudiantController;
+$message = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nom = $_POST['nom'] ?? '';
+    $prenom = $_POST['prenom'] ?? '';
+    $email = $_POST['email'] ?? '';
+    $password = $_POST['password'] ?? '';
+    $date_inscription = $_POST['date_inscription'] ?? date('Y-m-d');
+    $consentement_rgpd = isset($_POST['consentement_rgpd']) ? 1 : 0;
+    $id_role = $_POST['id_role'] ?? 1;
+    $id_niveau = $_POST['id_niveau'] ?? 1;
+    // Gestion de l'avatar
+    $avatar = null;
+    if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+        $avatar = basename($_FILES['avatar']['name']);
+        move_uploaded_file($_FILES['avatar']['tmp_name'], __DIR__ . '/../../uploads/' . $avatar);
+    }
+    $controller = new EtudiantController();
+    $result = $controller->createEtudiant($nom, $prenom, $email, $avatar, $password, $date_inscription, $consentement_rgpd, $id_role, $id_niveau);
+    if ($result) {
+        header('Location: php-crud/views/success_create.php');
+        exit;
+    } else {
+        $message = "Erreur lors de la création de l'étudiant.";
+    }
+}
 ?>
-<form action="../php-crud/controllers/EtudiantController.php?action=create" method="POST" enctype="multipart/form-data" class="etudiant-form">
+<form action="" method="POST" enctype="multipart/form-data" class="etudiant-form">
+    <?php if ($message): ?>
+        <div style="color: <?= $message === 'Étudiant créé avec succès !' ? 'green' : 'red' ?>; text-align:center; margin-bottom:10px;"> <?= htmlspecialchars($message) ?> </div>
+    <?php endif; ?>
     <label for="nom">Nom :</label>
     <input type="text" id="nom" name="nom" required>
 
@@ -36,11 +65,10 @@
         <option value="1">6 ème</option>
         <option value="2">5 ème</option>
         <option value="3">4 ème</option>
-        <option value="3">3 ème</option>
-        <option value="3">Second</option>
-        <option value="3">Premiere</option>
-        <option value="3">Terminale</option>
-        ('6 eme'), ('5 eme'), ('4 eme'), ('3 eme'), ('Second'), ('Premiere'), ('Terminale')
+        <option value="4">3 ème</option>
+        <option value="5">Second</option>
+        <option value="6">Premiere</option>
+        <option value="7">Terminale</option>
     </select>
 
     <button type="submit">Créer l'étudiant</button>
