@@ -4,8 +4,10 @@ namespace Controllers;
 
 require_once __DIR__ . '/../model/etudiant.php';
 require_once __DIR__ . '/../model/role.php';
+require_once __DIR__ . '/../model/niveau.php';
 use Models\Etudiants;
 use Models\Role;
+use Models\Niveau;
 
 class EtudiantController
 {
@@ -41,15 +43,41 @@ class EtudiantController
         return $Etudiant->readSingle($id_etudiant);
     }
 
-    public function updateEtudiant($id_etudiant, $nom, $prenom, $email, $avatar, $passwordhash, $date_inscription, $consentement_rgpd, $id_role)
+    public function updateEtudiant($id_etudiant, $nom, $prenom, $email, $avatar, $passwordhash, $date_inscription, $consentement_rgpd, $id_role, $id_niveau)
     {
-        $Etudiant = new Etudiants(); 
-        return $Etudiant->update(id: $id_etudiant,nom: $nom, prenom: $prenom, email: $email, avatar: $avatar, passwordhash: $passwordhash);
+        $Etudiant = new Etudiants();
+        return $Etudiant->update($id_etudiant, $nom, $prenom, $email, $avatar, $passwordhash, $date_inscription, $consentement_rgpd, $id_role, $id_niveau);
     }
 
     public function deleteEtudiant($id_etudiant)
     {
         $Etudiant = new Etudiants();
         return $Etudiant->delete($id_etudiant);
+    }
+
+    public function getEtudiantsWithDetails(){
+        $etudiantModel = new Etudiants();
+        $roleModel = new Role();
+        $niveauModel = new Niveau();
+
+        // Récupérer tous les étudiants
+        $etudiants = $etudiantModel->read();
+
+        // Enrichir chaque étudiant avec les détails du rôle et du niveau
+        foreach ($etudiants as &$etudiant) {
+            // Récupérer le rôle
+            if (isset($etudiant['id_role'])) {
+                $role = $roleModel->readSingle($etudiant['id_role']);
+                $etudiant['role'] = $role ? $role['nom_role'] : null;
+            }
+
+            // Récupérer le niveau
+            if (isset($etudiant['id_niveau'])) {
+                $niveau = $niveauModel->readSingle($etudiant['id_niveau']);
+                $etudiant['niveau'] = $niveau ? $niveau['libelle_niveau'] : null;
+            }
+        }
+
+        return $etudiants;
     }
 }

@@ -13,19 +13,26 @@
             <nav>
                 <a href="index.php">Accueil</a>
                 <a href="?action=creer_etudiant">Créer un étudiant</a>
+                <a href="?action=etudiant_list">Liste des étudiants</a>
                 <a href="?action=connect">Connexion</a>
                 <a href="#">Contact</a>
-                
+
             </nav>
         </header>
         <div class="main-content">
             <?php
             if (isset($_GET['action']) && $_GET['action'] === 'creer_etudiant') {
-                include 'php-crud/views/form.php';
+                include 'php-crud/views/etudiant_form.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'modifier_etudiant'){
+                include 'php-crud/views/etudiant_form.php';
 
             } elseif (isset($_GET['action']) && $_GET['action'] === 'connect'){
                 include 'php-crud/views/form_connect.php';
-            
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'etudiant_list'){
+                include 'php-crud/views/etudiant_list.php';
+
             } else {
                 echo '<p>Bienvenue sur BeautifuLLL AI. Sélectionnez une action dans le menu.</p>';
             }
