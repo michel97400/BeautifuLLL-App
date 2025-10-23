@@ -1,8 +1,9 @@
+
+
 <?php
 // Formulaire de connexion (login)
-<?php
 session_start();
-require_once '../controllers/EtudiantController.php';
+require_once __DIR__ . '/../controllers/EtudiantController.php';
 
 $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -12,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $controller->loginEtudiant($email, $password);
     if ($user) {
         $_SESSION['user'] = $user;
-        header('Location: success_connect.php');
+        header('Location: php-crud/views/success_connect.php');
         exit;
     } else {
         $message = "Identifiants invalides.";

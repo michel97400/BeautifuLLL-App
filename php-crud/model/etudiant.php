@@ -1,6 +1,7 @@
 <?php
 namespace Models;
 
+require_once __DIR__ . '/../config/Database.php';
 use Config\Database;
 
 class Etudiants
@@ -22,11 +23,12 @@ class Etudiants
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
-    public function create($nom, $prenom, $email, $avatar, $passwordhash, $date_inscription, $consentement_rgpd, $id_role)
+    public function create($nom, $prenom, $email, $avatar, $password, $date_inscription, $consentement_rgpd, $id_role, $id_niveau)
     {
-        $sql = "INSERT INTO Etudiants (nom, prenom, email, avatar, passwordhash, date_inscription, consentement_rgpd, id_role) VALUES (:nom, :prenom, :email, :avatar, :passwordhash, :date_inscription, :consentement_rgpd, :id_role, :id_niveau)";
+        // Hash du mot de passe
+        $passwordhash = password_hash($password, PASSWORD_DEFAULT);
+        $sql = "INSERT INTO Etudiants (nom, prenom, email, avatar, passwordhash, date_inscription, consentement_rgpd, id_role, id_niveau) VALUES (:nom, :prenom, :email, :avatar, :passwordhash, :date_inscription, :consentement_rgpd, :id_role, :id_niveau)";
 
-        
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':nom', $nom);
         $stmt->bindParam(':prenom', $prenom);
