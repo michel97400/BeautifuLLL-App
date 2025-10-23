@@ -20,7 +20,7 @@ CREATE TABLE Niveau(
 );
 
 CREATE TABLE Etudiants(
-   id_users INT AUTO_INCREMENT,
+   id_etudiant INT AUTO_INCREMENT,
    nom VARCHAR(50) NOT NULL,
    prenom VARCHAR(50) NOT NULL,
    email VARCHAR(100) NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE Etudiants(
    consentement_rgpd BOOLEAN NOT NULL DEFAULT FALSE,
    id_niveau INT NOT NULL,
    id_role INT NOT NULL,
-   PRIMARY KEY(id_users),
+   PRIMARY KEY(id_etudiant),
    UNIQUE(email),
    FOREIGN KEY(id_niveau) REFERENCES Niveau(id_niveau),
    FOREIGN KEY(id_role) REFERENCES Role(id_role)
@@ -46,11 +46,11 @@ CREATE TABLE Agent(
    date_creation DATETIME DEFAULT CURRENT_TIMESTAMP,
    prompt_systeme TEXT,
    id_matieres INT,
-   id_users INT NOT NULL,
+   id_etudiant INT NOT NULL,
    PRIMARY KEY(id_agents),
    UNIQUE(nom_agent),
    FOREIGN KEY(id_matieres) REFERENCES Matieres(id_matieres),
-   FOREIGN KEY(id_Etudiant) REFERENCES Etudiants(id_users)
+   FOREIGN KEY(id_etudiant) REFERENCES Etudiants(id_etudiant)
 );
 
 CREATE TABLE Session_conversation(
@@ -59,10 +59,10 @@ CREATE TABLE Session_conversation(
    duree_session TIME,
    date_heure_fin DATETIME,
    id_agents INT NOT NULL,
-   id_users INT NOT NULL,
+   id_etudiant INT NOT NULL,
    PRIMARY KEY(id_session),
    FOREIGN KEY(id_agents) REFERENCES Agent(id_agents),
-   FOREIGN KEY(id_Etudiant) REFERENCES Etudiants(id_users)
+   FOREIGN KEY(id_etudiant) REFERENCES Etudiants(id_etudiant)
 );
 
 CREATE TABLE Message(
