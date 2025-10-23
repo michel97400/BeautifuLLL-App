@@ -9,7 +9,7 @@ use PDOException;
 class Database
 {
     private $host = '127.0.0.1';
-    private $dbName = 'ia_educative';
+    private $dbName = 'db_app_educia';
     private $username = 'root';
     private $password = '';
     private $connection;
