@@ -25,7 +25,7 @@ class Agent
         $stmt->bindParam(':description', $description);
         $stmt->bindParam(':prompt_systeme', $prompt_systeme);
         $stmt->bindParam(':id_matieres', $id_matieres, PDO::PARAM_INT);
-        $stmt->bindParam(':id_users', $id_users, PDO::PARAM_INT);
+        $stmt->bindParam(':id_etudiants', $id_users, PDO::PARAM_INT);
         
         return $stmt->execute();
     }
