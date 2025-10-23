@@ -32,7 +32,7 @@ CREATE TABLE Etudiants(
    id_role INT NOT NULL,
    PRIMARY KEY(id_users),
    UNIQUE(email),
-   FOREIGN KEY(id_niveau) REFERENCES niveau(id_niveau),
+   FOREIGN KEY(id_niveau) REFERENCES Niveau(id_niveau),
    FOREIGN KEY(id_role) REFERENCES Role(id_role)
 );
 
@@ -49,8 +49,8 @@ CREATE TABLE Agent(
    id_users INT NOT NULL,
    PRIMARY KEY(id_agents),
    UNIQUE(nom_agent),
-   FOREIGN KEY(id_matieres) REFERENCES matieres(id_matieres),
-   FOREIGN KEY(id_users) REFERENCES etudiants(id_users)
+   FOREIGN KEY(id_matieres) REFERENCES Matieres(id_matieres),
+   FOREIGN KEY(id_Etudiant) REFERENCES Etudiants(id_users)
 );
 
 CREATE TABLE Session_conversation(
@@ -61,18 +61,18 @@ CREATE TABLE Session_conversation(
    id_agents INT NOT NULL,
    id_users INT NOT NULL,
    PRIMARY KEY(id_session),
-   FOREIGN KEY(id_agents) REFERENCES agent(id_agents),
-   FOREIGN KEY(id_users) REFERENCES etudiants(id_users)
+   FOREIGN KEY(id_agents) REFERENCES Agent(id_agents),
+   FOREIGN KEY(id_Etudiant) REFERENCES Etudiants(id_users)
 );
 
 CREATE TABLE Message(
    id_message INT AUTO_INCREMENT,
    role ENUM('user', 'assistant') NOT NULL,
-   contenu TEXT NOT NULL,
+   contenu TEXT VARCHAR(500) NOT NULL,
    date_envoi DATETIME DEFAULT CURRENT_TIMESTAMP,
    id_session INT NOT NULL,
    PRIMARY KEY(id_message),
-   FOREIGN KEY(id_session) REFERENCES SESSION_CONVERSATION(id_session)
+   FOREIGN KEY(id_session) REFERENCES Session_conversation(id_session)
 );
 
 
