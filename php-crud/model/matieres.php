@@ -17,7 +17,7 @@ class Matiere{
 
     public function read(){
 
-        $sql = "SELECT * FROM matieres";
+        $sql = "SELECT * FROM matieres;";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
