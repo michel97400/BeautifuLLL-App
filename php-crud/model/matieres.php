@@ -1,7 +1,7 @@
 <?php
 
 namespace Models;
-
+require "php-crud/config/Database.php";
 use Config\Database;
 
 class Matiere{
@@ -20,7 +20,7 @@ class Matiere{
         $sql = "SELECT * FROM matieres";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
-
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
 
