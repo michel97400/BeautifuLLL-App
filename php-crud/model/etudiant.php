@@ -44,16 +44,23 @@ class Etudiants
     {
         $sql = "SELECT * FROM etudiants WHERE id_etudiant = :id_etudiant LIMIT 1";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':id_etudiant', $id_etudiant, PDO::PARAM_INT);
+        $stmt->bindParam(':id_etudiant', $id_etudiant, \PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
-    public function update($id_etudiant, $name, $email)
+    public function update($id_etudiant, $nom, $prenom, $email, $avatar, $passwordhash, $date_inscription, $consentement_rgpd, $id_role, $id_niveau)
     {
-        $sql = "UPDATE Etudiants SET name = :name, email = :email WHERE id_etudiant = :id_etudiant";
+        $sql = "UPDATE Etudiants SET nom = :nom, prenom = :prenom, email = :email, avatar = :avatar, passwordhash = :passwordhash, date_inscription = :date_inscription, consentement_rgpd = :consentement_rgpd, id_role = :id_role, id_niveau = :id_niveau WHERE id_etudiant = :id_etudiant";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':name', $name);
+        $stmt->bindParam(':nom', $nom);
+        $stmt->bindParam(':prenom', $prenom);
         $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':avatar', $avatar);
+        $stmt->bindParam(':passwordhash', $passwordhash);
+        $stmt->bindParam(':date_inscription', $date_inscription);
+        $stmt->bindParam(':consentement_rgpd', $consentement_rgpd);
+        $stmt->bindParam(':id_role', $id_role);
+        $stmt->bindParam(':id_niveau', $id_niveau);
         $stmt->bindParam(':id_etudiant', $id_etudiant);
         return $stmt->execute();
     }
@@ -62,7 +69,7 @@ class Etudiants
     {
         $sql = "DELETE FROM Etudiants WHERE id_etudiant = :id_etudiant";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':id_etudiant', $id);
+        $stmt->bindParam(':id_etudiant', $id_etudiant);
         return $stmt->execute();
     }
 }
