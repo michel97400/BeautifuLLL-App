@@ -1,7 +1,7 @@
 <?php
 // Formulaire de connexion (login)
 ?>
-<form action="../controllers/UserController.php?action=login" method="POST" class="etudiant-form">
+<form action="../controllers/EtudiantController.php?action=login" method="POST" class="etudiant-form">
     <h2>Connexion</h2>
     <label for="email">Email :</label>
     <input type="email" id="email" name="email" required>
