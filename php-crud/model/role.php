@@ -13,15 +13,14 @@ class Role
         $this->conn = $database->connect();
     }
 
-    public function create($nomRole)
+    public function read_role()
     {
-        $sql = "INSERT INTO role (nom_role) VALUES (:nomRole)";
+        $sql = "SELECT * FROM role";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':nomRole', $nomRole);
-        return $stmt->execute();
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
 }
-
 
 ?>
