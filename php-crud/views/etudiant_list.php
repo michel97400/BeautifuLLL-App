@@ -1,11 +1,20 @@
 <?php
 // Vue pour afficher la liste des Étudiants.
+require_once __DIR__ . '/../includes/check_admin.php';
 require_once __DIR__ . '/../controllers/EtudiantController.php';
 
 $etudiantController = new \Controllers\EtudiantController();
-$etudiants = $etudiantController->getEtudiantsWithDetails(); 
+$etudiants = $etudiantController->getEtudiantsWithDetails();
 
 echo "<h1>Liste des Étudiants</h1>";
+
+// Afficher message de succès si suppression
+if (isset($_GET['message']) && $_GET['message'] === 'supprime') {
+    echo '<div style="color: green; text-align:center; margin-bottom:20px; padding:15px; border-radius:5px; background-color: #d4edda;">';
+    echo '<strong>Étudiant supprimé avec succès !</strong>';
+    echo '</div>';
+}
+
 echo "<table>";
 echo "<tr><th>ID</th><th>Nom</th><th>Prénom</th><th>Email</th><th>Niveau</th><th>Rôle</th><th>RGPD</th><th>Actions</th></tr>";
 
@@ -19,7 +28,7 @@ foreach ($etudiants as $etudiant) {
     echo "<td>" . htmlspecialchars($etudiant['niveau'] ?? $etudiant['id_niveau']) . "</td>";
     echo "<td>" . htmlspecialchars($etudiant['role'] ?? $etudiant['id_role']) . "</td>";
     echo "<td>" . ($etudiant['consentement_rgpd'] ? 'Oui' : 'Non') . "</td>";
-    echo "<td><a href='../../index.php?action=modifier_etudiant&id=" . htmlspecialchars($etudiant['id_etudiant']) . "'>Modifier</a> | <a href='etudiant_delete.php?id=" . htmlspecialchars($etudiant['id_etudiant']) . "'>Supprimer</a></td>";
+    echo "<td><a href='../../index.php?action=modifier_etudiant&id=" . htmlspecialchars($etudiant['id_etudiant']) . "'>Modifier</a> | <a href='../../index.php?action=supprimer_etudiant&id=" . htmlspecialchars($etudiant['id_etudiant']) . "' style='color: #dc3545;'>Supprimer</a></td>";
     echo "</tr>";
 }
 echo "</table>";
