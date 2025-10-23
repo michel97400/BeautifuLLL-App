@@ -3,6 +3,10 @@
     use Models\Matiere;
     $matiere = new Matiere();
     $matiere->read();
-    echo($matiere);
+
+    foreach ($matiere as $key => $value) {
+        # code...
+        echo($value);
+    }
 
 ?>
