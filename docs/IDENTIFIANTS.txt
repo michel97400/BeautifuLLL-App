@@ -1,0 +1,43 @@
+========================================
+IDENTIFIANTS DE CONNEXION
+========================================
+
+ADMINISTRATEUR (Accès complet au CRUD)
+--------------------------------------
+Email    : pierre.dubois@test.com
+Password : admin123
+Rôle     : Administrateur
+
+
+ÉTUDIANTS (Accès refusé au CRUD)
+--------------------------------------
+Email    : jean.dupont@test.com
+Password : etudiant123
+Rôle     : Etudiant
+
+Email    : marie.martin@test.com
+Password : etudiant123
+Rôle     : Etudiant
+
+
+========================================
+INSTRUCTIONS
+========================================
+
+1. Si votre base de données existe déjà :
+   - Ouvrez phpMyAdmin
+   - Sélectionnez votre base de données "ia_educative"
+   - Allez dans l'onglet "SQL"
+   - Copiez-collez le contenu du fichier "UPDATE_passwords.sql"
+   - Exécutez le script
+
+2. Si vous créez une nouvelle base de données :
+   - Les hashs corrects sont déjà dans le fichier "IA_educative_MPD.sql"
+   - Exécutez simplement ce fichier
+
+3. Testez la connexion :
+   - Allez sur votre site
+   - Cliquez sur "Connexion"
+   - Utilisez les identifiants ci-dessus
+
+========================================
