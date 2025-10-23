@@ -1,6 +1,7 @@
 <?php
 namespace Models;
 
+require_once "../config/Database.php";
 use Config\Database;
 
 class Etudiants
