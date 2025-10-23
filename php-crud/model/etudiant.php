@@ -40,21 +40,29 @@ class Etudiants
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function update($id, $name, $email)
+    public function readSingle($id_etudiant)
     {
-        $sql = "UPDATE Etudiants SET name = :name, email = :email WHERE id = :id";
+        $sql = "SELECT * FROM etudiants WHERE id_etudiant = :id_etudiant LIMIT 1";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id_etudiant', $id_etudiant, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    public function update($id_etudiant, $name, $email)
+    {
+        $sql = "UPDATE Etudiants SET name = :name, email = :email WHERE id_etudiant = :id_etudiant";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':name', $name);
         $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':id_etudiant', $id_etudiant);
         return $stmt->execute();
     }
 
-    public function delete($id)
+    public function delete($id_etudiant)
     {
-        $sql = "DELETE FROM Etudiants WHERE id = :id";
+        $sql = "DELETE FROM Etudiants WHERE id_etudiant = :id_etudiant";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':id_etudiant', $id);
         return $stmt->execute();
     }
 }
