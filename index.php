@@ -37,7 +37,7 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
                     <a href="?action=etudiant_list">Liste des étudiants</a>
                 <?php endif; ?>
                 <?php if ($user): ?>
-                    <a href="" style="color: #dc3545;">Déconnexion</a>
+                    <a href="?action=deconnexion" style="color: #dc3545;">Déconnexion</a>
                 <?php else: ?>
                     <a href="?action=connect">Connexion</a>
                 <?php endif; ?>
