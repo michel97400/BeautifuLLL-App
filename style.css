@@ -45,6 +45,7 @@ header nav a {
     margin: 0 12px;
     font-weight: 500;
     transition: color 0.2s;
+    display: inline-block;
 }
 
 header nav a:hover {
@@ -56,7 +57,16 @@ header nav a:hover {
     position: relative;
     display: inline-block;
     margin: 0 12px;
-    padding-bottom: 15px; /* Étend la zone de hover vers le bas */
+}
+
+.dropdown::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 8px; /* Zone invisible pour maintenir le hover */
+    background: transparent;
 }
 
 .dropdown-toggle {
@@ -64,7 +74,6 @@ header nav a:hover {
     text-decoration: none;
     font-weight: 500;
     cursor: pointer;
-    padding: 8px 12px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -91,7 +100,7 @@ header nav a:hover {
 .dropdown-content {
     display: none;
     position: absolute;
-    top: calc(100% - 10px); /* Réduit l'espace entre le bouton et le menu */
+    top: calc(100% + 8px); /* Espace entre le bouton et le menu déroulant */
     left: 0;
     background-color: #fff;
     min-width: 200px;
