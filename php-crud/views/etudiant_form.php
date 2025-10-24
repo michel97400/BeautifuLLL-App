@@ -9,6 +9,7 @@ use Controllers\RoleController;
 use Controllers\NiveauController;
 
 $message = '';
+$errors = []; // Tableau pour stocker les erreurs de validation
 $etudiant = null;
 $isEditMode = false;
 
@@ -26,15 +27,18 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 
 // Traitement du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nom = $_POST['nom'] ?? '';
-    $prenom = $_POST['prenom'] ?? '';
-    $email = $_POST['email'] ?? '';
+    // Récupération des données avec nettoyage
+    $nom = trim($_POST['nom'] ?? '');
+    $prenom = trim($_POST['prenom'] ?? '');
+    $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
-    // Date d'inscription : automatique en création, conservée en édition
     $date_inscription = $isEditMode ? ($etudiant['date_inscription'] ?? date('Y-m-d')) : date('Y-m-d');
     $consentement_rgpd = isset($_POST['consentement_rgpd']) ? 1 : 0;
     $id_role = $_POST['id_role'] ?? 1;
     $id_niveau = $_POST['id_niveau'] ?? 1;
+
+    // VALIDATION DES CHAMPS
+    // (Les validations seront ajoutées ici dans les prochains commits)
 
     // Gestion de l'avatar
     $avatar = $isEditMode ? ($etudiant['avatar'] ?? null) : null;
@@ -43,34 +47,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         move_uploaded_file($_FILES['avatar']['tmp_name'], __DIR__ . '/../../uploads/' . $avatar);
     }
 
-    $controller = new EtudiantController();
+    // Si aucune erreur, procéder à l'enregistrement
+    if (empty($errors)) {
+        $controller = new EtudiantController();
 
-    if ($isEditMode) {
-        // Mode modification
-        $id_etudiant = $_POST['id_etudiant'];
-        // Si pas de nouveau mot de passe, garder l'ancien
-        $passwordhash = !empty($password) ? password_hash($password, PASSWORD_DEFAULT) : $etudiant['passwordhash'];
+        if ($isEditMode) {
+            // Mode modification
+            $id_etudiant = $_POST['id_etudiant'];
+            // Si pas de nouveau mot de passe, garder l'ancien
+            $passwordhash = !empty($password) ? password_hash($password, PASSWORD_DEFAULT) : $etudiant['passwordhash'];
 
-        $result = $controller->updateEtudiant($id_etudiant, $nom, $prenom, $email, $avatar, $passwordhash, $date_inscription, $consentement_rgpd, $id_role, $id_niveau);
+            $result = $controller->updateEtudiant($id_etudiant, $nom, $prenom, $email, $avatar, $passwordhash, $date_inscription, $consentement_rgpd, $id_role, $id_niveau);
 
-        if ($result) {
-            $message = "Étudiant modifié avec succès !";
-            // Recharger les données mises à jour
-            $etudiant = $controller->getSingleEtudiant($id_etudiant);
+            if ($result) {
+                $message = "Étudiant modifié avec succès !";
+                // Recharger les données mises à jour
+                $etudiant = $controller->getSingleEtudiant($id_etudiant);
+            } else {
+                $errors[] = "Erreur lors de la modification de l'étudiant en base de données.";
+            }
         } else {
-            $message = "Erreur lors de la modification de l'étudiant.";
-        }
-    } else {
-        // Mode création
-        $result = $controller->createEtudiant($nom, $prenom, $email, $avatar, $password, $date_inscription, $consentement_rgpd, $id_role, $id_niveau);
+            // Mode création
+            $result = $controller->createEtudiant($nom, $prenom, $email, $avatar, $password, $date_inscription, $consentement_rgpd, $id_role, $id_niveau);
 
-        if ($result) {
-            $message = "Étudiant créé avec succès !";
-            // Optionnel : rediriger vers la liste
-            // header('Location: etudiant_list.php');
-            // exit;
-        } else {
-            $message = "Erreur lors de la création de l'étudiant.";
+            if ($result) {
+                $message = "Étudiant créé avec succès !";
+                // Optionnel : rediriger vers la liste
+                // header('Location: etudiant_list.php');
+                // exit;
+            } else {
+                $errors[] = "Erreur lors de la création de l'étudiant en base de données.";
+            }
         }
     }
 }
