@@ -29,11 +29,8 @@ $current_action = $_GET['action'] ?? '';
         Niveaux
     </a>
 
-    <!-- Prêt pour extension : autres entités CRUD -->
-    <!--
-    <a href="index.php?action=role_list" class="crud-nav-item <?= $current_action === 'role_list' ? 'active' : '' ?>">
+    <a href="index.php?action=role_list" class="crud-nav-item <?= $current_action === 'role_list' || $current_action === 'creer_role' || $current_action === 'modifier_role' ? 'active' : '' ?>">
         <span class="nav-icon">👥</span>
         Rôles
     </a>
-    -->
 </nav>
