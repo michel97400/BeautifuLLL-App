@@ -49,7 +49,7 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
                 <?php else: ?>
                     <a href="?action=connect">Connexion</a>
                 <?php endif; ?>
-                <a href="#">Contact</a>
+                <a href="?action=contact">Contact</a>
 
             </nav>
         </header>
@@ -80,7 +80,17 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
             } elseif (isset($_GET['action']) && $_GET['action'] === 'acces_refuse'){
                 include 'php-crud/views/acces_refuse.php';
 
-            } else {
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'contact'){
+                echo '<div style="text-align: center; margin: 50px auto; padding: 20px; border: 1px solid #ccc; max-width: 400px; border-radius: 8px;">';
+                echo '<h2>Contact - Simplon</h2>';
+                echo '<p><strong>Adresse :</strong></p>';
+                echo '<p>Résidence Compostelle 11, rue Saint-Jacques<br>97400 Saint Denis</p>';
+                echo '<p><strong>Téléphone :</strong> 262725182</p>';
+                echo '</div>';
+
+            }
+
+             else {
                 echo '<p>Bienvenue sur BeautifuLLL AI. Sélectionnez une action dans le menu.</p>';
             }
             ?>
