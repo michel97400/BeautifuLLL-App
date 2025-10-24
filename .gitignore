@@ -1,0 +1,26 @@
+# Ignorer les environnements Python
+venv/
+.venv
+.env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Ignorer le modèle Llama
+model_llama/*.gguf
+
+# Fichiers temporaires et de log
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+
+# VSCode
+.vscode/
+
+# Fichiers secrets
+.env
+*.env
+settings.local.json
