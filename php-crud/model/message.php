@@ -40,7 +40,7 @@ class Message
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
     public function readBySessionId($id_session) {
-    $query = "SELECT * FROM " . $this->table_name . " WHERE id_session = ? ORDER BY date_envoi ASC";
+    $query = "SELECT * FROM Message WHERE id_session = ? ORDER BY date_envoi ASC";
     $stmt = $this->conn->prepare($query);
     $stmt->execute([$id_session]);
     return $stmt->fetchAll(\PDO::FETCH_ASSOC);
