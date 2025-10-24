@@ -1,38 +1,65 @@
 <?php
 // Vue pour afficher la liste des Messages.
+require_once __DIR__ . '/../includes/check_admin.php';
 require_once __DIR__ . '/../controllers/MessageController.php';
 
-
-// Récupération de l'ID de session depuis l'URL
-$sessionId = $_GET['id'] ?? null;
-
-if (!$sessionId) {
-    echo "<p>ID de session manquant.</p>";
-    exit;
-}
-
 $messageController = new \Controllers\MessageController();
-// Cette méthode DOIT filtrer par id_session.
-$messages = $messageController->getMessagesBySessionId($sessionId); 
-
-echo "<h1>Messages de la Session # " . htmlspecialchars($sessionId) . "</h1>";
-echo "<a href='sessions_list.php'>Retour aux Sessions</a>";
-echo "<table>";
-echo "<tr><th>Rôle</th><th>Contenu</th><th>Date d'Envoi</th><th>Actions</th></tr>";
-
-foreach ($messages as $message) {
-    // Utiliser une classe CSS pour différencier les rôles (user/assistant)
-    $rowClass = $message['role'] === 'user' ? 'message-user' : 'message-assistant';
-    
-    echo "<tr class='" . $rowClass . "'>";
-    echo "<td>" . htmlspecialchars($message['role']) . "</td>";
-    echo "<td>" . nl2br(htmlspecialchars($message['contenu'])) . "</td>"; // nl2br pour les sauts de ligne
-    echo "<td>" . htmlspecialchars(date('H:i:s', strtotime($message['date_envoi']))) . "</td>";
-    echo "<td><a href='message_delete.php?id=" . htmlspecialchars($message['id_message']) . "'>Supprimer</a></td>";
-    echo "</tr>";
-}
-echo "</table>";
+$messages = $messageController->getMessages();
 ?>
+
+<?php include __DIR__ . '/../includes/crud_nav.php'; ?>
+
+<div class="crud-container">
+    <div class="crud-header">
+        <h1 class="page-title">Liste des Messages</h1>
+        <a href="index.php?action=creer_message" class="btn btn-primary">+ Ajouter un message</a>
+    </div>
+
+    <?php if (isset($_GET['message']) && $_GET['message'] === 'supprime'): ?>
+        <div class="alert alert-success">
+            <strong>✓ Message supprimé avec succès !</strong>
+        </div>
+    <?php endif; ?>
+
+    <table class="crud-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Session</th>
+                <th>Rôle</th>
+                <th>Contenu</th>
+                <th>Date Envoi</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($messages as $message): ?>
+                <?php
+                // Utiliser une classe CSS pour différencier les rôles (user/assistant)
+                $rowClass = $message['role_message'] === 'user' ? 'message-user' : 'message-assistant';
+                ?>
+                <tr class="<?= $rowClass ?>">
+                    <td><?= htmlspecialchars($message['id_message']) ?></td>
+                    <td><?= htmlspecialchars($message['id_session']) ?></td>
+                    <td>
+                        <?php if ($message['role_message'] === 'user'): ?>
+                            <span class="badge badge-primary">User</span>
+                        <?php else: ?>
+                            <span class="badge badge-success">Assistant</span>
+                        <?php endif; ?>
+                    </td>
+                    <td><?= nl2br(htmlspecialchars(substr($message['contenu'], 0, 100))) ?><?= strlen($message['contenu']) > 100 ? '...' : '' ?></td>
+                    <td><?= htmlspecialchars(date('Y-m-d H:i:s', strtotime($message['date_envoi']))) ?></td>
+                    <td>
+                        <a href="index.php?action=modifier_message&id=<?= htmlspecialchars($message['id_message']) ?>" class="btn btn-primary btn-sm">Modifier</a>
+                        <a href="index.php?action=supprimer_message&id=<?= htmlspecialchars($message['id_message']) ?>" class="btn btn-danger btn-sm">Supprimer</a>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+
 <style>
 .message-user { background-color: #e0f7fa; }
 .message-assistant { background-color: #fff3e0; }
