@@ -2,7 +2,6 @@
 
 <?php
 // Formulaire de connexion (login)
-session_start();
 require_once __DIR__ . '/../controllers/EtudiantController.php';
 
 $message = '';
