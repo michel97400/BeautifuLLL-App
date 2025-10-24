@@ -10,11 +10,19 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Beautiful AI</title> <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <main>
+        <?php
+        // Déplacé ici pour apparaître au-dessus de l'en-tête de la page
+        if (isset($_GET['message']) && $_GET['message'] === 'deconnecte') {
+            echo '<div style="color: green; text-align:center; margin-bottom:20px; padding:15px; border-radius:5px; background-color: #d4edda;">';
+            echo '<strong>Vous avez été déconnecté avec succès.</strong>';
+            echo '</div>';
+        }
+        ?>
+
         <header>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h1>Bienvenue sur BeautifuLLL AI</h1>
@@ -45,14 +53,11 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
 
             </nav>
         </header>
+
         <div class="main-content">
             <?php
-            // Afficher message de déconnexion réussie
-            if (isset($_GET['message']) && $_GET['message'] === 'deconnecte') {
-                echo '<div style="color: green; text-align:center; margin-bottom:20px; padding:15px; border-radius:5px; background-color: #d4edda;">';
-                echo '<strong>Vous avez été déconnecté avec succès.</strong>';
-                echo '</div>';
-            }
+            // L'ancienne section d'affichage du message de déconnexion est supprimée ici.
+            // ... (reste du code inchangé) ...
 
             if (isset($_GET['action']) && $_GET['action'] === 'creer_etudiant') {
                 include 'php-crud/views/etudiant_form.php';

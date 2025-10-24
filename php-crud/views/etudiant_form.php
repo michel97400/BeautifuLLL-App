@@ -101,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $roleController = new RoleController();
     $niveauController = new NiveauController();
     $roles = $roleController->getRoles();
-    $niveaux = $niveauController->getNiveaus();
+    $niveaux = $niveauController->getNiveaux();
 
     $roleExists = false;
     foreach ($roles as $role) {
@@ -211,7 +211,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $roleController = new RoleController();
 $niveauController = new NiveauController();
 $roles = $roleController->getRoles();
-$niveaux = $niveauController->getNiveaus();
+$niveaux = $niveauController->getNiveaux();
 ?>
 
 <h2><?= $isEditMode ? 'Modifier' : 'Ajouter' ?> un étudiant</h2>
