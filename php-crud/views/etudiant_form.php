@@ -38,7 +38,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_niveau = $_POST['id_niveau'] ?? 1;
 
     // VALIDATION DES CHAMPS
-    // (Les validations seront ajoutées ici dans les prochains commits)
+
+    // Validation du nom
+    if (empty($nom)) {
+        $errors[] = "Le nom est requis.";
+    } elseif (strlen($nom) > 50) {
+        $errors[] = "Le nom ne doit pas dépasser 50 caractères.";
+    } elseif (!preg_match("/^[a-zA-ZÀ-ÿ\s'-]+$/u", $nom)) {
+        $errors[] = "Le nom contient des caractères non autorisés.";
+    }
+
+    // Validation du prénom
+    if (empty($prenom)) {
+        $errors[] = "Le prénom est requis.";
+    } elseif (strlen($prenom) > 50) {
+        $errors[] = "Le prénom ne doit pas dépasser 50 caractères.";
+    } elseif (!preg_match("/^[a-zA-ZÀ-ÿ\s'-]+$/u", $prenom)) {
+        $errors[] = "Le prénom contient des caractères non autorisés.";
+    }
+
+    // Validation de l'email
+    if (empty($email)) {
+        $errors[] = "L'email est requis.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = "Le format de l'email est invalide.";
+    } else {
+        // Vérifier que l'email n'existe pas déjà
+        $controller = new EtudiantController();
+        $etudiants = $controller->getEtudiant();
+        foreach ($etudiants as $etud) {
+            if ($etud['email'] === $email) {
+                // Si on est en mode édition, vérifier que ce n'est pas le même étudiant
+                if (!$isEditMode || $etud['id_etudiant'] != $_POST['id_etudiant']) {
+                    $errors[] = "Cet email est déjà utilisé par un autre étudiant.";
+                    break;
+                }
+            }
+        }
+    }
+
+    // Validation du mot de passe
+    if (!$isEditMode) {
+        // En création, le mot de passe est obligatoire
+        if (empty($password)) {
+            $errors[] = "Le mot de passe est requis.";
+        } elseif (strlen($password) < 8) {
+            $errors[] = "Le mot de passe doit contenir au moins 8 caractères.";
+        }
+    } else {
+        // En modification, valider seulement si un nouveau mot de passe est fourni
+        if (!empty($password) && strlen($password) < 8) {
+            $errors[] = "Le mot de passe doit contenir au moins 8 caractères.";
+        }
+    }
 
     // Gestion de l'avatar
     $avatar = $isEditMode ? ($etudiant['avatar'] ?? null) : null;
