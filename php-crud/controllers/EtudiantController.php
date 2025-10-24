@@ -279,4 +279,77 @@ class EtudiantController
         $input = compact('nom', 'prenom', 'email', 'id_role', 'id_niveau');
         return ["success" => TRUE, "errors" => $errors, 'message'=> $message ?? "", "etudiant"=> $etudiant ?? null, "input" => $input] ;
     }
+
+    /**
+     * Gère la suppression d'un étudiant
+     * @param string|null $id ID de l'étudiant
+     * @param bool $confirmed true si l'utilisateur a confirmé la suppression
+     * @return array ['success' => bool, 'errors' => array, 'message' => string, 'etudiant' => array|null, 'redirect' => string|null]
+     */
+    public function handleDelete($id, $confirmed = false)
+    {
+        $errors = [];
+        $message = '';
+        $etudiant = null;
+        $redirect = null;
+
+        // Validation de l'ID
+        if (!isset($id) || empty($id)) {
+            $errors[] = "ID étudiant manquant.";
+            return [
+                'success' => false,
+                'errors' => $errors,
+                'message' => "ID étudiant manquant.",
+                'etudiant' => null,
+                'redirect' => null
+            ];
+        }
+
+        // Récupération de l'étudiant
+        $etudiant = $this->getSingleEtudiant($id);
+
+        if (!$etudiant) {
+            $errors[] = "Étudiant introuvable.";
+            return [
+                'success' => false,
+                'errors' => $errors,
+                'message' => "Étudiant introuvable.",
+                'etudiant' => null,
+                'redirect' => null
+            ];
+        }
+
+        // Si confirmation, procéder à la suppression
+        if ($confirmed) {
+            $result = $this->deleteEtudiant($id);
+
+            if ($result) {
+                return [
+                    'success' => true,
+                    'errors' => [],
+                    'message' => "Étudiant supprimé avec succès !",
+                    'etudiant' => $etudiant,
+                    'redirect' => 'index.php?action=etudiant_list&message=supprime'
+                ];
+            } else {
+                $errors[] = "Erreur lors de la suppression de l'étudiant.";
+                return [
+                    'success' => false,
+                    'errors' => $errors,
+                    'message' => "Erreur lors de la suppression de l'étudiant.",
+                    'etudiant' => $etudiant,
+                    'redirect' => null
+                ];
+            }
+        }
+
+        // Pas de confirmation, juste retourner l'étudiant pour afficher la page de confirmation
+        return [
+            'success' => false,
+            'errors' => [],
+            'message' => '',
+            'etudiant' => $etudiant,
+            'redirect' => null
+        ];
+    }
 }

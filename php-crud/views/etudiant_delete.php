@@ -8,30 +8,23 @@ $message = '';
 $etudiant = null;
 $controller = new EtudiantController();
 
-// Vérifier si l'ID est présent
-if (!isset($_GET['id']) || empty($_GET['id'])) {
-    $message = "ID étudiant manquant.";
-} else {
-    $id_etudiant = $_GET['id'];
-    $etudiant = $controller->getSingleEtudiant($id_etudiant);
+// Récupérer l'ID depuis l'URL
+$id = $_GET['id'] ?? null;
 
-    if (!$etudiant) {
-        $message = "Étudiant introuvable.";
-    }
-}
+// Vérifier si c'est une confirmation de suppression
+$confirmed = $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmer_suppression']);
 
-// Traitement de la suppression
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmer_suppression'])) {
-    $id_etudiant = $_POST['id_etudiant'];
-    $result = $controller->deleteEtudiant($id_etudiant);
+// Traiter via le controller
+$result = $controller->handleDelete($id, $confirmed);
 
-    if ($result) {
-        // Redirection vers la liste avec message de succès
-        header('Location: ../../index.php?action=etudiant_list&message=supprime');
-        exit;
-    } else {
-        $message = "Erreur lors de la suppression de l'étudiant.";
-    }
+// Récupérer les données du résultat
+$message = $result['message'];
+$etudiant = $result['etudiant'];
+
+// Si redirection nécessaire (suppression réussie)
+if (!empty($result['redirect'])) {
+    header('Location: ../../' . $result['redirect']);
+    exit;
 }
 ?>
 
