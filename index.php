@@ -49,6 +49,9 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
                             <a href="?action=matiere_list">Matières</a>
                             <a href="?action=niveau_list">Niveaux</a>
                             <a href="?action=role_list">Rôles</a>
+                            <a href="?action=agent_list">Agents</a>
+                            <a href="?action=session_list">Sessions</a>
+                            <a href="?action=message_list">Messages</a>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -121,6 +124,42 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
 
             } elseif (isset($_GET['action']) && $_GET['action'] === 'supprimer_role'){
                 include 'php-crud/views/role_delete.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'agent_list'){
+                include 'php-crud/views/agent_list.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'creer_agent'){
+                include 'php-crud/views/agent_form.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'modifier_agent'){
+                include 'php-crud/views/agent_form.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'supprimer_agent'){
+                include 'php-crud/views/agent_delete.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'session_list'){
+                include 'php-crud/views/SessionConversation_list.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'creer_session'){
+                include 'php-crud/views/SessionConversation_form.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'modifier_session'){
+                include 'php-crud/views/SessionConversation_form.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'supprimer_session'){
+                include 'php-crud/views/SessionConversation_delete.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'message_list'){
+                include 'php-crud/views/message_list.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'creer_message'){
+                include 'php-crud/views/message_form.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'modifier_message'){
+                include 'php-crud/views/message_form.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'supprimer_message'){
+                include 'php-crud/views/message_delete.php';
 
             } elseif (isset($_GET['action']) && $_GET['action'] === 'acces_refuse'){
                 include 'php-crud/views/acces_refuse.php';
