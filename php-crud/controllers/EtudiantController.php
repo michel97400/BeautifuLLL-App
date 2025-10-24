@@ -173,7 +173,7 @@ class EtudiantController
         $roleController = new RoleController();
         $niveauController = new NiveauController();
         $roles = $roleController->getRoles();
-        $niveaux = $niveauController->getNiveaus();
+        $niveaux = $niveauController->getNiveaux();
 
         $roleExists = false;
         foreach ($roles as $role) {
