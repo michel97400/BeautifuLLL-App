@@ -10,10 +10,10 @@ use Models\Message;
 class MessageController
 {
     // ... create, read, update, delete restent identiques ...
-    public function createMessage($role_message, $contenu, $date_envoi, $id_session)
+    public function createMessage($emetteur, $contenu_message, $date_heure_message, $id_session)
     {
         $Message = new Message();
-        return $Message->create($role_message, $contenu, $date_envoi, $id_session);
+        return $Message->create($emetteur, $contenu_message, $date_heure_message, $id_session);
     }
 
     public function getMessages()
@@ -43,10 +43,10 @@ class MessageController
         return $Message->readSingle($id_message);
     }
 
-    public function updateMessage($id_message, $role_message, $contenu, $date_envoi, $id_session)
+    public function updateMessage($id_message, $emetteur, $contenu_message, $date_heure_message, $id_session)
     {
         $Message = new Message();
-        return $Message->update($id_message, $role_message, $contenu, $date_envoi, $id_session);
+        return $Message->update($id_message, $emetteur, $contenu_message, $date_heure_message, $id_session);
     }
 
     public function deleteMessage($id_message)
@@ -68,39 +68,39 @@ class MessageController
         $message = '';
 
         // Récupération des données
-        $role_message = trim($post['role_message'] ?? '');
-        $contenu = trim($post['contenu'] ?? '');
-        $date_envoi = trim($post['date_envoi'] ?? '');
+        $emetteur = trim($post['emetteur'] ?? '');
+        $contenu_message = trim($post['contenu_message'] ?? '');
+        $date_heure_message = trim($post['date_heure_message'] ?? '');
         $id_session = $post['id_session'] ?? '';
 
-        // Validation du role_message
-        $roles_valides = ['user', 'assistant'];
-        if (empty($role_message)) {
-            $errors[] = "Le rôle est requis.";
-        } elseif (!in_array($role_message, $roles_valides)) {
-            $errors[] = "Le rôle sélectionné n'est pas valide. Choisissez 'user' ou 'assistant'.";
+        // Validation du emetteur
+        $roles_valides = ['user', 'agent'];
+        if (empty($emetteur)) {
+            $errors[] = "L'émetteur est requis.";
+        } elseif (!in_array($emetteur, $roles_valides)) {
+            $errors[] = "L'émetteur sélectionné n'est pas valide. Choisissez 'user' ou 'agent'.";
         }
 
         // Validation du contenu
-        if (empty($contenu)) {
+        if (empty($contenu_message)) {
             $errors[] = "Le contenu du message est requis.";
-        } elseif (strlen($contenu) < 1) {
+        } elseif (strlen($contenu_message) < 1) {
             $errors[] = "Le contenu doit contenir au moins 1 caractère.";
-        } elseif (strlen($contenu) > 5000) {
+        } elseif (strlen($contenu_message) > 5000) {
             $errors[] = "Le contenu ne doit pas dépasser 5000 caractères.";
         }
 
-        // Validation de date_envoi
-        if (empty($date_envoi)) {
+        // Validation de date_heure_message
+        if (empty($date_heure_message)) {
             $errors[] = "La date et heure d'envoi sont requises.";
         } else {
             // Valider le format DATETIME
-            $date_obj = \DateTime::createFromFormat('Y-m-d\TH:i', $date_envoi);
+            $date_obj = \DateTime::createFromFormat('Y-m-d\TH:i', $date_heure_message);
             if (!$date_obj) {
                 $errors[] = "Le format de la date et heure d'envoi est invalide.";
             } else {
                 // Convertir au format MySQL DATETIME
-                $date_envoi = $date_obj->format('Y-m-d H:i:s');
+                $date_heure_message = $date_obj->format('Y-m-d H:i:s');
             }
         }
 
@@ -120,7 +120,7 @@ class MessageController
             if ($isEditMode) {
                 // Mode modification
                 $id_message = $post['id_message'];
-                $result = $this->updateMessage($id_message, $role_message, $contenu, $date_envoi, $id_session);
+                $result = $this->updateMessage($id_message, $emetteur, $contenu_message, $date_heure_message, $id_session);
 
                 if ($result) {
                     $message = "Message modifié avec succès !";
@@ -131,7 +131,7 @@ class MessageController
                 }
             } else {
                 // Mode création
-                $result = $this->createMessage($role_message, $contenu, $date_envoi, $id_session);
+                $result = $this->createMessage($emetteur, $contenu_message, $date_heure_message, $id_session);
 
                 if ($result) {
                     $message = "Message créé avec succès !";
@@ -141,7 +141,7 @@ class MessageController
             }
         }
 
-        $input = compact('role_message', 'contenu', 'date_envoi', 'id_session');
+        $input = compact('emetteur', 'contenu_message', 'date_heure_message', 'id_session');
         return [
             'success' => empty($errors),
             'errors' => $errors,

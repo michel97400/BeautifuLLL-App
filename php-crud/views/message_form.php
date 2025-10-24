@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Récupération des listes pour les selects
 $sessionController = new SessionConversationController();
 $sessions = $sessionController->getSessionConversation();
-$roles_message = ['user', 'assistant'];
+$emetteurs_possibles = ['user', 'agent'];
 ?>
 
 <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
@@ -87,35 +87,35 @@ $roles_message = ['user', 'assistant'];
         </div>
 
         <div style="margin-bottom: 15px;">
-            <label for="role_message" style="display: block; margin-bottom: 5px; font-weight: bold;">Rôle (user/assistant) :</label>
-            <select id="role_message" name="role_message" required
+            <label for="emetteur" style="display: block; margin-bottom: 5px; font-weight: bold;">Émetteur (user/agent) :</label>
+            <select id="emetteur" name="emetteur" required
                     style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box;">
-                <option value="">Sélectionner un rôle</option>
-                <?php foreach ($roles_message as $role_item): ?>
-                    <option value="<?= htmlspecialchars($role_item) ?>"
-                            <?= ($inputData['role_message'] ?? $message_data['role_message'] ?? '') == $role_item ? 'selected' : '' ?>>
-                        <?= ucfirst(htmlspecialchars($role_item)) ?>
+                <option value="">Sélectionner un émetteur</option>
+                <?php foreach ($emetteurs_possibles as $emetteur_item): ?>
+                    <option value="<?= htmlspecialchars($emetteur_item) ?>"
+                            <?= ($inputData['emetteur'] ?? $message_data['emetteur'] ?? '') == $emetteur_item ? 'selected' : '' ?>>
+                        <?= ucfirst(htmlspecialchars($emetteur_item)) ?>
                     </option>
                 <?php endforeach; ?>
             </select>
         </div>
 
         <div style="margin-bottom: 15px;">
-            <label for="contenu" style="display: block; margin-bottom: 5px; font-weight: bold;">Contenu :</label>
-            <textarea id="contenu" name="contenu" rows="6" required
-                      style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box;"><?= htmlspecialchars($inputData['contenu'] ?? $message_data['contenu'] ?? '') ?></textarea>
+            <label for="contenu_message" style="display: block; margin-bottom: 5px; font-weight: bold;">Contenu :</label>
+            <textarea id="contenu_message" name="contenu_message" rows="6" required
+                      style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box;"><?= htmlspecialchars($inputData['contenu_message'] ?? $message_data['contenu_message'] ?? '') ?></textarea>
         </div>
 
         <div style="margin-bottom: 20px;">
-            <label for="date_envoi" style="display: block; margin-bottom: 5px; font-weight: bold;">Date et Heure d'Envoi :</label>
+            <label for="date_heure_message" style="display: block; margin-bottom: 5px; font-weight: bold;">Date et Heure d'Envoi :</label>
             <?php
             $defaultDate = date('Y-m-d\TH:i');
-            if ($isEditMode && isset($message_data['date_envoi'])) {
-                $defaultDate = date('Y-m-d\TH:i', strtotime($message_data['date_envoi']));
+            if ($isEditMode && isset($message_data['date_heure_message'])) {
+                $defaultDate = date('Y-m-d\TH:i', strtotime($message_data['date_heure_message']));
             }
             ?>
-            <input type="datetime-local" id="date_envoi" name="date_envoi"
-                   value="<?= htmlspecialchars($inputData['date_envoi'] ?? $defaultDate) ?>"
+            <input type="datetime-local" id="date_heure_message" name="date_heure_message"
+                   value="<?= htmlspecialchars($inputData['date_heure_message'] ?? $defaultDate) ?>"
                    style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box;">
         </div>
 

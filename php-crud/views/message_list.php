@@ -35,21 +35,21 @@ $messages = $messageController->getMessages();
         <tbody>
             <?php foreach ($messages as $message): ?>
                 <?php
-                // Utiliser une classe CSS pour différencier les rôles (user/assistant)
-                $rowClass = $message['role_message'] === 'user' ? 'message-user' : 'message-assistant';
+                // Utiliser une classe CSS pour différencier les rôles (user/agent)
+                $rowClass = $message['emetteur'] === 'user' ? 'message-user' : 'message-assistant';
                 ?>
                 <tr class="<?= $rowClass ?>">
                     <td><?= htmlspecialchars($message['id_message']) ?></td>
                     <td><?= htmlspecialchars($message['id_session']) ?></td>
                     <td>
-                        <?php if ($message['role_message'] === 'user'): ?>
+                        <?php if ($message['emetteur'] === 'user'): ?>
                             <span class="badge badge-primary">User</span>
                         <?php else: ?>
-                            <span class="badge badge-success">Assistant</span>
+                            <span class="badge badge-success">Agent</span>
                         <?php endif; ?>
                     </td>
-                    <td><?= nl2br(htmlspecialchars(substr($message['contenu'], 0, 100))) ?><?= strlen($message['contenu']) > 100 ? '...' : '' ?></td>
-                    <td><?= htmlspecialchars(date('Y-m-d H:i:s', strtotime($message['date_envoi']))) ?></td>
+                    <td><?= nl2br(htmlspecialchars(substr($message['contenu_message'], 0, 100))) ?><?= strlen($message['contenu_message']) > 100 ? '...' : '' ?></td>
+                    <td><?= htmlspecialchars(date('Y-m-d H:i:s', strtotime($message['date_heure_message']))) ?></td>
                     <td>
                         <a href="index.php?action=modifier_message&id=<?= htmlspecialchars($message['id_message']) ?>" class="btn btn-primary btn-sm">Modifier</a>
                         <a href="index.php?action=supprimer_message&id=<?= htmlspecialchars($message['id_message']) ?>" class="btn btn-danger btn-sm">Supprimer</a>
