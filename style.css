@@ -56,6 +56,7 @@ header nav a:hover {
     position: relative;
     display: inline-block;
     margin: 0 12px;
+    padding-bottom: 15px; /* Étend la zone de hover vers le bas */
 }
 
 .dropdown-toggle {
@@ -68,6 +69,8 @@ header nav a:hover {
     align-items: center;
     gap: 6px;
     transition: color 0.2s;
+    position: relative;
+    z-index: 1001;
 }
 
 .dropdown-toggle:hover {
@@ -88,19 +91,26 @@ header nav a:hover {
 .dropdown-content {
     display: none;
     position: absolute;
-    top: 100%;
+    top: calc(100% - 10px); /* Réduit l'espace entre le bouton et le menu */
     left: 0;
     background-color: #fff;
     min-width: 200px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     border-radius: 8px;
-    margin-top: 8px;
+    padding-top: 5px; /* Petit padding interne pour l'espace */
     z-index: 1000;
     overflow: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: none;
 }
 
 .dropdown:hover .dropdown-content {
     display: block;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
 }
 
 .dropdown-content a {
@@ -250,10 +260,10 @@ footer {
 .main-content {
     flex: 1 0 auto;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 400px;
+    flex-direction: column;
+    align-items: stretch;
     padding: 24px;
+    width: 100%;
 }
 
 /* ====== CRUD COMPONENTS (Réutilisables) ====== */

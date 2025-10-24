@@ -45,8 +45,11 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
                     <div class="dropdown">
                         <span class="dropdown-toggle">Administration</span>
                         <div class="dropdown-content">
-                            <a href="?action=etudiant_list">Liste des étudiants</a>
-                            <a href="?action=creer_etudiant">Créer un étudiant</a>
+                            <a href="?action=etudiant_list">Étudiants</a>
+                            <!-- Prêt pour extension -->
+                            <!-- <a href="?action=matiere_list">Matières</a> -->
+                            <!-- <a href="?action=role_list">Rôles</a> -->
+                            <!-- <a href="?action=niveau_list">Niveaux</a> -->
                         </div>
                     </div>
                 <?php endif; ?>
