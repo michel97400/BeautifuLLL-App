@@ -1,27 +1,50 @@
 <?php
-// Inclure les contrôleurs/modèles nécessaires et charger les listes pour les clés étrangères (Agents et Étudiants)
-// Exemple: $agents = $agentController->getAllAgents();
-// Exemple: $etudiants = $etudiantController->getAllEtudiants();
+require_once __DIR__ . '/../includes/check_admin.php';
+require_once __DIR__ . '/../controllers/SessionConversationController.php';
+require_once __DIR__ . '/../controllers/AgentController.php';
+require_once __DIR__ . '/../controllers/EtudiantController.php';
 
-$isEditMode = isset($session) && is_array($session);
-$id_session = $isEditMode ? htmlspecialchars($session['id_session']) : '';
-$date_heure_debut = $isEditMode ? date('Y-m-d\TH:i', strtotime($session['date_heure_debut'])) : date('Y-m-d\TH:i');
-$duree_session = $isEditMode ? htmlspecialchars($session['duree_session']) : ''; // Format TIME 'HH:MM:SS'
-$date_heure_fin = $isEditMode && $session['date_heure_fin'] ? date('Y-m-d\TH:i', strtotime($session['date_heure_fin'])) : '';
-$id_agents_selected = $isEditMode ? $session['id_agents'] : '';
-$id_etudiant_selected = $isEditMode ? $session['id_etudiant'] : '';
+use Controllers\SessionConversationController;
+use Controllers\AgentController;
+use Controllers\EtudiantController;
 
-$message = $message ?? '';
+// Initialisation
+$errors = [];
+$message = '';
+$inputData = [];
+$session = null;
+$isEditMode = false;
 
-// Variables mock pour l'exemple
-$agents = [
-    ['id_agents' => 1, 'nom_agent' => 'Tuteur Math'], 
-    ['id_agents' => 2, 'nom_agent' => 'Assistant Français']
-]; 
-$etudiants = [
-    ['id_etudiant' => 1, 'nom' => 'Dupont', 'prenom' => 'Jean'], 
-    ['id_etudiant' => 2, 'nom' => 'Martin', 'prenom' => 'Marie']
-]; 
+// Récupération de la session en mode édition
+if (isset($_GET['id']) && !empty($_GET['id'])) {
+    $isEditMode = true;
+    $controller = new SessionConversationController();
+    $session = $controller->getSingleSessionConversation($_GET['id']);
+
+    if (!$session) {
+        $errors[] = "Session de conversation introuvable.";
+    }
+}
+
+// Traitement du formulaire
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $controller = new SessionConversationController();
+    $result = $controller->handleSubmit($_POST, $isEditMode, $session);
+
+    $errors = $result['errors'];
+    $message = $result['message'];
+    $inputData = $result['input'];
+
+    if ($result['success'] && isset($result['session'])) {
+        $session = $result['session'];
+    }
+}
+
+// Récupération des listes pour les selects
+$agentController = new AgentController();
+$etudiantController = new EtudiantController();
+$agents = $agentController->getAgents();
+$etudiants = $etudiantController->getEtudiant();
 ?>
 
 <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
@@ -30,13 +53,26 @@ $etudiants = [
     </h2>
 
     <?php if ($message): ?>
-        <p style="color: red; text-align: center;"><?= htmlspecialchars($message) ?></p>
+        <p style="color: green; text-align: center; background-color: #d4edda; padding: 10px; border-radius: 5px;">
+            <?= htmlspecialchars($message) ?>
+        </p>
     <?php endif; ?>
 
-    <form method="POST" action="index.php?action=session_save">
-        
+    <?php if (!empty($errors)): ?>
+        <div style="color: red; text-align: center; background-color: #f8d7da; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+            <strong>Erreurs :</strong>
+            <ul style="list-style: none; padding: 0; margin: 5px 0 0 0;">
+                <?php foreach ($errors as $error): ?>
+                    <li><?= htmlspecialchars($error) ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
+
+    <form method="POST" action="">
+
         <?php if ($isEditMode): ?>
-            <input type="hidden" name="id_session" value="<?= $id_session ?>">
+            <input type="hidden" name="id_session" value="<?= htmlspecialchars($session['id_session']) ?>">
         <?php endif; ?>
 
         <div style="display: flex; gap: 20px; margin-bottom: 15px;">
@@ -46,8 +82,8 @@ $etudiants = [
                         style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box;">
                     <option value="">Sélectionner un agent</option>
                     <?php foreach ($agents as $agent): ?>
-                        <option value="<?= htmlspecialchars($agent['id_agents']) ?>" 
-                                <?= $id_agents_selected == $agent['id_agents'] ? 'selected' : '' ?>>
+                        <option value="<?= htmlspecialchars($agent['id_agents']) ?>"
+                                <?= ($inputData['id_agents'] ?? $session['id_agents'] ?? '') == $agent['id_agents'] ? 'selected' : '' ?>>
                             <?= htmlspecialchars($agent['nom_agent']) ?>
                         </option>
                     <?php endforeach; ?>
@@ -59,8 +95,8 @@ $etudiants = [
                         style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box;">
                     <option value="">Sélectionner un étudiant</option>
                     <?php foreach ($etudiants as $etudiant): ?>
-                        <option value="<?= htmlspecialchars($etudiant['id_etudiant']) ?>" 
-                                <?= $id_etudiant_selected == $etudiant['id_etudiant'] ? 'selected' : '' ?>>
+                        <option value="<?= htmlspecialchars($etudiant['id_etudiant']) ?>"
+                                <?= ($inputData['id_etudiant'] ?? $session['id_etudiant'] ?? '') == $etudiant['id_etudiant'] ? 'selected' : '' ?>>
                             <?= htmlspecialchars($etudiant['prenom']) . ' ' . htmlspecialchars($etudiant['nom']) ?>
                         </option>
                     <?php endforeach; ?>
@@ -70,28 +106,44 @@ $etudiants = [
 
         <div style="margin-bottom: 15px;">
             <label for="date_heure_debut" style="display: block; margin-bottom: 5px; font-weight: bold;">Date et Heure de Début :</label>
-            <input type="datetime-local" id="date_heure_debut" name="date_heure_debut" value="<?= $date_heure_debut ?>" required
+            <?php
+            $defaultDateDebut = date('Y-m-d\TH:i');
+            if ($isEditMode && isset($session['date_heure_debut'])) {
+                $defaultDateDebut = date('Y-m-d\TH:i', strtotime($session['date_heure_debut']));
+            }
+            ?>
+            <input type="datetime-local" id="date_heure_debut" name="date_heure_debut"
+                   value="<?= htmlspecialchars($inputData['date_heure_debut'] ?? $defaultDateDebut) ?>" required
                    style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box;">
         </div>
 
         <div style="margin-bottom: 15px;">
             <label for="date_heure_fin" style="display: block; margin-bottom: 5px; font-weight: bold;">Date et Heure de Fin (Optionnel) :</label>
-            <input type="datetime-local" id="date_heure_fin" name="date_heure_fin" value="<?= $date_heure_fin ?>"
+            <?php
+            $defaultDateFin = '';
+            if ($isEditMode && isset($session['date_heure_fin']) && $session['date_heure_fin']) {
+                $defaultDateFin = date('Y-m-d\TH:i', strtotime($session['date_heure_fin']));
+            }
+            ?>
+            <input type="datetime-local" id="date_heure_fin" name="date_heure_fin"
+                   value="<?= htmlspecialchars($inputData['date_heure_fin'] ?? $defaultDateFin) ?>"
                    style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box;">
         </div>
-        
+
         <div style="margin-bottom: 20px;">
             <label for="duree_session" style="display: block; margin-bottom: 5px; font-weight: bold;">Durée de la Session (HH:MM:SS) :</label>
-            <input type="text" id="duree_session" name="duree_session" value="<?= $duree_session ?>" placeholder="Ex: 00:30:00"
+            <input type="text" id="duree_session" name="duree_session"
+                   value="<?= htmlspecialchars($inputData['duree_session'] ?? $session['duree_session'] ?? '') ?>"
+                   placeholder="Ex: 00:30:00" required
                    style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box;">
         </div>
-        
+
         <div style="text-align: right;">
             <button type="submit"
                     style="background-color: #fd7e14; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
                 <?= $isEditMode ? 'Enregistrer les modifications' : 'Créer la Session' ?>
             </button>
-            <a href="index.php?action=session_list" 
+            <a href="index.php?action=session_list"
                style="margin-left: 10px; padding: 10px 20px; border-radius: 5px; text-decoration: none; color: #6c757d;">
                 Annuler
             </a>
