@@ -4,40 +4,26 @@ require_once __DIR__ . '/../controllers/MessageController.php';
 
 use Controllers\MessageController; // Assurez-vous que ce contrôleur existe
 
-$message = '';
-$message_data = null;
 $controller = new MessageController();
+$id = $_GET['id'] ?? null;
+$confirmed = ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmer_suppression']));
+
+// Appel de handleDelete
+$result = $controller->handleDelete($id, $confirmed);
+
+$errors = $result['errors'];
+$message = $result['message'];
+$message_data = $result['message_data'];
+
+// Gestion de la redirection si succès
+if ($result['success'] && $result['redirect']) {
+    header("Location: ../../" . $result['redirect']);
+    exit;
+}
 
 $id_column = 'id_message';
 $entity_name = 'Message';
 $list_action = 'message_list';
-
-// Vérifier si l'ID est présent
-if (!isset($_GET['id']) || empty($_GET['id'])) {
-    $message = "ID du {$entity_name} manquant.";
-} else {
-    $id_entity = $_GET['id'];
-    $message_data = $controller->getSingleMessage($id_entity); // Assurez-vous d'avoir la méthode
-
-    if (!$message_data) {
-        $message = "{$entity_name} introuvable.";
-    }
-}
-
-// Traitement de la suppression
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmer_suppression'])) {
-    $id_entity = $_POST[$id_column];
-    
-    // Un message n'a pas de dépendance, la suppression est simple
-    $result = $controller->deleteMessage($id_entity);
-
-    if ($result) {
-        header("Location: ../../index.php?action={$list_action}&message=supprime");
-        exit;
-    } else {
-        $message = "Erreur lors de la suppression du {$entity_name}.";
-    }
-}
 ?>
 
 <?php if ($message): ?>

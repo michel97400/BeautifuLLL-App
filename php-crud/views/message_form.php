@@ -1,21 +1,46 @@
 <?php
-// Inclure les contrôleurs/modèles nécessaires et charger la liste pour la clé étrangère (Sessions)
-// Exemple: $sessions = $sessionController->getAllSessions();
+require_once __DIR__ . '/../includes/check_admin.php';
+require_once __DIR__ . '/../controllers/MessageController.php';
+require_once __DIR__ . '/../controllers/SessionConversationController.php';
 
-$isEditMode = isset($message_data) && is_array($message_data); // Renommé $message_data pour éviter le conflit avec $message d'erreur
-$id_message = $isEditMode ? htmlspecialchars($message_data['id_message']) : '';
-$role = $isEditMode ? htmlspecialchars($message_data['role']) : '';
-$contenu = $isEditMode ? htmlspecialchars($message_data['contenu']) : '';
-$date_envoi = $isEditMode ? date('Y-m-d\TH:i', strtotime($message_data['date_envoi'])) : date('Y-m-d\TH:i');
-$id_session_selected = $isEditMode ? $message_data['id_session'] : '';
+use Controllers\MessageController;
+use Controllers\SessionConversationController;
 
-$message = $message ?? '';
+// Initialisation
+$errors = [];
+$message = '';
+$inputData = [];
+$message_data = null;
+$isEditMode = false;
 
-// Variables mock pour l'exemple
-$sessions = [
-    ['id_session' => 1, 'description' => 'Session 1 - Jean/Tuteur Math'], 
-    ['id_session' => 2, 'description' => 'Session 2 - Marie/Assistant Français']
-]; 
+// Récupération du message en mode édition
+if (isset($_GET['id']) && !empty($_GET['id'])) {
+    $isEditMode = true;
+    $controller = new MessageController();
+    $message_data = $controller->getSingleMessage($_GET['id']);
+
+    if (!$message_data) {
+        $errors[] = "Message introuvable.";
+    }
+}
+
+// Traitement du formulaire
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $controller = new MessageController();
+    $result = $controller->handleSubmit($_POST, $isEditMode, $message_data);
+
+    $errors = $result['errors'];
+    $message = $result['message'];
+    $inputData = $result['input'];
+
+    if ($result['success'] && isset($result['message_data'])) {
+        $message_data = $result['message_data'];
+    }
+}
+
+// Récupération des listes pour les selects
+$sessionController = new SessionConversationController();
+$sessions = $sessionController->getSessionConversation();
 $roles_message = ['user', 'assistant'];
 ?>
 
@@ -25,13 +50,26 @@ $roles_message = ['user', 'assistant'];
     </h2>
 
     <?php if ($message): ?>
-        <p style="color: red; text-align: center;"><?= htmlspecialchars($message) ?></p>
+        <p style="color: green; text-align: center; background-color: #d4edda; padding: 10px; border-radius: 5px;">
+            <?= htmlspecialchars($message) ?>
+        </p>
     <?php endif; ?>
 
-    <form method="POST" action="index.php?action=message_save">
-        
+    <?php if (!empty($errors)): ?>
+        <div style="color: red; text-align: center; background-color: #f8d7da; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+            <strong>Erreurs :</strong>
+            <ul style="list-style: none; padding: 0; margin: 5px 0 0 0;">
+                <?php foreach ($errors as $error): ?>
+                    <li><?= htmlspecialchars($error) ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
+
+    <form method="POST" action="">
+
         <?php if ($isEditMode): ?>
-            <input type="hidden" name="id_message" value="<?= $id_message ?>">
+            <input type="hidden" name="id_message" value="<?= htmlspecialchars($message_data['id_message']) ?>">
         <?php endif; ?>
 
         <div style="margin-bottom: 15px;">
@@ -40,22 +78,22 @@ $roles_message = ['user', 'assistant'];
                     style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box;">
                 <option value="">Sélectionner une session</option>
                 <?php foreach ($sessions as $session_item): ?>
-                    <option value="<?= htmlspecialchars($session_item['id_session']) ?>" 
-                            <?= $id_session_selected == $session_item['id_session'] ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($session_item['description']) ?>
+                    <option value="<?= htmlspecialchars($session_item['id_session']) ?>"
+                            <?= ($inputData['id_session'] ?? $message_data['id_session'] ?? '') == $session_item['id_session'] ? 'selected' : '' ?>>
+                        Session <?= htmlspecialchars($session_item['id_session']) ?> - <?= htmlspecialchars($session_item['date_heure_debut']) ?>
                     </option>
                 <?php endforeach; ?>
             </select>
         </div>
 
         <div style="margin-bottom: 15px;">
-            <label for="role" style="display: block; margin-bottom: 5px; font-weight: bold;">Rôle (user/assistant) :</label>
-            <select id="role" name="role" required
+            <label for="role_message" style="display: block; margin-bottom: 5px; font-weight: bold;">Rôle (user/assistant) :</label>
+            <select id="role_message" name="role_message" required
                     style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box;">
                 <option value="">Sélectionner un rôle</option>
                 <?php foreach ($roles_message as $role_item): ?>
-                    <option value="<?= htmlspecialchars($role_item) ?>" 
-                            <?= $role == $role_item ? 'selected' : '' ?>>
+                    <option value="<?= htmlspecialchars($role_item) ?>"
+                            <?= ($inputData['role_message'] ?? $message_data['role_message'] ?? '') == $role_item ? 'selected' : '' ?>>
                         <?= ucfirst(htmlspecialchars($role_item)) ?>
                     </option>
                 <?php endforeach; ?>
@@ -65,21 +103,28 @@ $roles_message = ['user', 'assistant'];
         <div style="margin-bottom: 15px;">
             <label for="contenu" style="display: block; margin-bottom: 5px; font-weight: bold;">Contenu :</label>
             <textarea id="contenu" name="contenu" rows="6" required
-                      style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box;"><?= $contenu ?></textarea>
+                      style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box;"><?= htmlspecialchars($inputData['contenu'] ?? $message_data['contenu'] ?? '') ?></textarea>
         </div>
 
         <div style="margin-bottom: 20px;">
             <label for="date_envoi" style="display: block; margin-bottom: 5px; font-weight: bold;">Date et Heure d'Envoi :</label>
-            <input type="datetime-local" id="date_envoi" name="date_envoi" value="<?= $date_envoi ?>"
+            <?php
+            $defaultDate = date('Y-m-d\TH:i');
+            if ($isEditMode && isset($message_data['date_envoi'])) {
+                $defaultDate = date('Y-m-d\TH:i', strtotime($message_data['date_envoi']));
+            }
+            ?>
+            <input type="datetime-local" id="date_envoi" name="date_envoi"
+                   value="<?= htmlspecialchars($inputData['date_envoi'] ?? $defaultDate) ?>"
                    style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box;">
         </div>
-        
+
         <div style="text-align: right;">
             <button type="submit"
                     style="background-color: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
                 <?= $isEditMode ? 'Enregistrer les modifications' : 'Créer le Message' ?>
             </button>
-            <a href="index.php?action=message_list" 
+            <a href="index.php?action=message_list"
                style="margin-left: 10px; padding: 10px 20px; border-radius: 5px; text-decoration: none; color: #6c757d;">
                 Annuler
             </a>
