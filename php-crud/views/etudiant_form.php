@@ -9,6 +9,7 @@ use Controllers\RoleController;
 use Controllers\NiveauController;
 
 $message = '';
+$errors = []; // Tableau pour stocker les erreurs de validation
 $etudiant = null;
 $isEditMode = false;
 
@@ -26,51 +27,182 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
 
 // Traitement du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nom = $_POST['nom'] ?? '';
-    $prenom = $_POST['prenom'] ?? '';
-    $email = $_POST['email'] ?? '';
+    // Récupération des données avec nettoyage
+    $nom = trim($_POST['nom'] ?? '');
+    $prenom = trim($_POST['prenom'] ?? '');
+    $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
-    // Date d'inscription : automatique en création, conservée en édition
     $date_inscription = $isEditMode ? ($etudiant['date_inscription'] ?? date('Y-m-d')) : date('Y-m-d');
     $consentement_rgpd = isset($_POST['consentement_rgpd']) ? 1 : 0;
     $id_role = $_POST['id_role'] ?? 1;
     $id_niveau = $_POST['id_niveau'] ?? 1;
 
-    // Gestion de l'avatar
-    $avatar = $isEditMode ? ($etudiant['avatar'] ?? null) : null;
-    if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
-        $avatar = basename($_FILES['avatar']['name']);
-        move_uploaded_file($_FILES['avatar']['tmp_name'], __DIR__ . '/../../uploads/' . $avatar);
+    // VALIDATION DES CHAMPS
+
+    // Validation du nom
+    if (empty($nom)) {
+        $errors[] = "Le nom est requis.";
+    } elseif (strlen($nom) > 50) {
+        $errors[] = "Le nom ne doit pas dépasser 50 caractères.";
+    } elseif (!preg_match("/^[a-zA-ZÀ-ÿ\s'-]+$/u", $nom)) {
+        $errors[] = "Le nom contient des caractères non autorisés.";
     }
 
-    $controller = new EtudiantController();
+    // Validation du prénom
+    if (empty($prenom)) {
+        $errors[] = "Le prénom est requis.";
+    } elseif (strlen($prenom) > 50) {
+        $errors[] = "Le prénom ne doit pas dépasser 50 caractères.";
+    } elseif (!preg_match("/^[a-zA-ZÀ-ÿ\s'-]+$/u", $prenom)) {
+        $errors[] = "Le prénom contient des caractères non autorisés.";
+    }
 
-    if ($isEditMode) {
-        // Mode modification
-        $id_etudiant = $_POST['id_etudiant'];
-        // Si pas de nouveau mot de passe, garder l'ancien
-        $passwordhash = !empty($password) ? password_hash($password, PASSWORD_DEFAULT) : $etudiant['passwordhash'];
+    // Validation de l'email
+    if (empty($email)) {
+        $errors[] = "L'email est requis.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = "Le format de l'email est invalide.";
+    } else {
+        // Vérifier que l'email n'existe pas déjà
+        $controller = new EtudiantController();
+        $etudiants = $controller->getEtudiant();
+        foreach ($etudiants as $etud) {
+            if ($etud['email'] === $email) {
+                // Si on est en mode édition, vérifier que ce n'est pas le même étudiant
+                if (!$isEditMode || $etud['id_etudiant'] != $_POST['id_etudiant']) {
+                    $errors[] = "Cet email est déjà utilisé par un autre étudiant.";
+                    break;
+                }
+            }
+        }
+    }
 
-        $result = $controller->updateEtudiant($id_etudiant, $nom, $prenom, $email, $avatar, $passwordhash, $date_inscription, $consentement_rgpd, $id_role, $id_niveau);
-
-        if ($result) {
-            $message = "Étudiant modifié avec succès !";
-            // Recharger les données mises à jour
-            $etudiant = $controller->getSingleEtudiant($id_etudiant);
-        } else {
-            $message = "Erreur lors de la modification de l'étudiant.";
+    // Validation du mot de passe
+    if (!$isEditMode) {
+        // En création, le mot de passe est obligatoire
+        if (empty($password)) {
+            $errors[] = "Le mot de passe est requis.";
+        } elseif (strlen($password) < 8) {
+            $errors[] = "Le mot de passe doit contenir au moins 8 caractères.";
         }
     } else {
-        // Mode création
-        $result = $controller->createEtudiant($nom, $prenom, $email, $avatar, $password, $date_inscription, $consentement_rgpd, $id_role, $id_niveau);
+        // En modification, valider seulement si un nouveau mot de passe est fourni
+        if (!empty($password) && strlen($password) < 8) {
+            $errors[] = "Le mot de passe doit contenir au moins 8 caractères.";
+        }
+    }
 
-        if ($result) {
-            $message = "Étudiant créé avec succès !";
-            // Optionnel : rediriger vers la liste
-            // header('Location: etudiant_list.php');
-            // exit;
+    // Validation du consentement RGPD
+    if ($consentement_rgpd != 1) {
+        $errors[] = "Vous devez accepter la politique de confidentialité (RGPD).";
+    }
+
+    // Validation des relations (id_role, id_niveau)
+    $roleController = new RoleController();
+    $niveauController = new NiveauController();
+    $roles = $roleController->getRoles();
+    $niveaux = $niveauController->getNiveaus();
+
+    $roleExists = false;
+    foreach ($roles as $role) {
+        if ($role['id_role'] == $id_role) {
+            $roleExists = true;
+            break;
+        }
+    }
+    if (!$roleExists) {
+        $errors[] = "Le rôle sélectionné n'existe pas.";
+    }
+
+    $niveauExists = false;
+    foreach ($niveaux as $niveau) {
+        if ($niveau['id_niveau'] == $id_niveau) {
+            $niveauExists = true;
+            break;
+        }
+    }
+    if (!$niveauExists) {
+        $errors[] = "Le niveau sélectionné n'existe pas.";
+    }
+
+    // Gestion de l'avatar avec validation
+    $avatar = $isEditMode ? ($etudiant['avatar'] ?? null) : null;
+    if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+        $fileInfo = $_FILES['avatar'];
+
+        // Validation du type MIME
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/gif'];
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $detectedMime = finfo_file($finfo, $fileInfo['tmp_name']);
+        finfo_close($finfo);
+
+        if (!in_array($detectedMime, $allowedMimes)) {
+            $errors[] = "Le format de l'image n'est pas autorisé. Formats acceptés : JPEG, PNG, GIF.";
+        }
+
+        // Validation de la taille (2MB max)
+        if ($fileInfo['size'] > 2 * 1024 * 1024) {
+            $errors[] = "L'image est trop volumineuse. Taille maximale : 2MB.";
+        }
+
+        // Si pas d'erreur, traiter l'upload
+        if (empty($errors)) {
+            // Créer un nom de fichier sécurisé et unique
+            $extension = pathinfo($fileInfo['name'], PATHINFO_EXTENSION);
+            $avatar = uniqid('avatar_', true) . '.' . $extension;
+            $uploadPath = __DIR__ . '/../../uploads/' . $avatar;
+
+            if (!move_uploaded_file($fileInfo['tmp_name'], $uploadPath)) {
+                $errors[] = "Erreur lors de l'upload de l'avatar.";
+                $avatar = $isEditMode ? ($etudiant['avatar'] ?? null) : null;
+            }
+        }
+    } elseif (isset($_FILES['avatar']) && $_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FILE) {
+        // Gestion des erreurs d'upload
+        switch ($_FILES['avatar']['error']) {
+            case UPLOAD_ERR_INI_SIZE:
+            case UPLOAD_ERR_FORM_SIZE:
+                $errors[] = "Le fichier est trop volumineux.";
+                break;
+            case UPLOAD_ERR_PARTIAL:
+                $errors[] = "Le fichier n'a été que partiellement téléchargé.";
+                break;
+            default:
+                $errors[] = "Erreur lors de l'upload du fichier.";
+        }
+    }
+
+    // Si aucune erreur, procéder à l'enregistrement
+    if (empty($errors)) {
+        $controller = new EtudiantController();
+
+        if ($isEditMode) {
+            // Mode modification
+            $id_etudiant = $_POST['id_etudiant'];
+            // Si pas de nouveau mot de passe, garder l'ancien
+            $passwordhash = !empty($password) ? password_hash($password, PASSWORD_DEFAULT) : $etudiant['passwordhash'];
+
+            $result = $controller->updateEtudiant($id_etudiant, $nom, $prenom, $email, $avatar, $passwordhash, $date_inscription, $consentement_rgpd, $id_role, $id_niveau);
+
+            if ($result) {
+                $message = "Étudiant modifié avec succès !";
+                // Recharger les données mises à jour
+                $etudiant = $controller->getSingleEtudiant($id_etudiant);
+            } else {
+                $errors[] = "Erreur lors de la modification de l'étudiant en base de données.";
+            }
         } else {
-            $message = "Erreur lors de la création de l'étudiant.";
+            // Mode création
+            $result = $controller->createEtudiant($nom, $prenom, $email, $avatar, $password, $date_inscription, $consentement_rgpd, $id_role, $id_niveau);
+
+            if ($result) {
+                $message = "Étudiant créé avec succès !";
+                // Optionnel : rediriger vers la liste
+                // header('Location: etudiant_list.php');
+                // exit;
+            } else {
+                $errors[] = "Erreur lors de la création de l'étudiant en base de données.";
+            }
         }
     }
 }
@@ -84,6 +216,17 @@ $niveaux = $niveauController->getNiveaus();
 
 <h2><?= $isEditMode ? 'Modifier' : 'Ajouter' ?> un étudiant</h2>
 
+<?php if (!empty($errors)): ?>
+    <div style="color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; text-align:left; margin-bottom:15px; padding:15px; border-radius:5px;">
+        <strong>Erreurs de validation :</strong>
+        <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+            <?php foreach ($errors as $error): ?>
+                <li><?= htmlspecialchars($error) ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
+
 <?php if ($message): ?>
     <div style="color: <?= strpos($message, 'succès') !== false ? 'green' : 'red' ?>; text-align:center; margin-bottom:10px; padding:10px; border-radius:5px; background-color: <?= strpos($message, 'succès') !== false ? '#d4edda' : '#f8d7da' ?>;">
         <?= htmlspecialchars($message) ?>
@@ -96,13 +239,13 @@ $niveaux = $niveauController->getNiveaus();
     <?php endif; ?>
 
     <label for="nom">Nom :</label>
-    <input type="text" id="nom" name="nom" value="<?= htmlspecialchars($etudiant['nom'] ?? '') ?>" required>
+    <input type="text" id="nom" name="nom" value="<?= htmlspecialchars($nom ?? $etudiant['nom'] ?? '') ?>" required>
 
     <label for="prenom">Prénom :</label>
-    <input type="text" id="prenom" name="prenom" value="<?= htmlspecialchars($etudiant['prenom'] ?? '') ?>" required>
+    <input type="text" id="prenom" name="prenom" value="<?= htmlspecialchars($prenom ?? $etudiant['prenom'] ?? '') ?>" required>
 
     <label for="email">Email :</label>
-    <input type="email" id="email" name="email" value="<?= htmlspecialchars($etudiant['email'] ?? '') ?>" required>
+    <input type="email" id="email" name="email" value="<?= htmlspecialchars($email ?? $etudiant['email'] ?? '') ?>" required>
 
     <label for="avatar">Avatar :</label>
     <?php if ($isEditMode && !empty($etudiant['avatar'])): ?>
@@ -131,7 +274,7 @@ $niveaux = $niveauController->getNiveaus();
     <select id="id_role" name="id_role" required>
         <?php foreach ($roles as $role): ?>
             <option value="<?= htmlspecialchars($role['id_role']) ?>"
-                <?= isset($etudiant['id_role']) && $etudiant['id_role'] == $role['id_role'] ? 'selected' : '' ?>>
+                <?= (isset($id_role) && $id_role == $role['id_role']) || (isset($etudiant['id_role']) && $etudiant['id_role'] == $role['id_role']) ? 'selected' : '' ?>>
                 <?= htmlspecialchars($role['nom_role']) ?>
             </option>
         <?php endforeach; ?>
@@ -141,7 +284,7 @@ $niveaux = $niveauController->getNiveaus();
     <select id="id_niveau" name="id_niveau" required>
         <?php foreach ($niveaux as $niveau): ?>
             <option value="<?= htmlspecialchars($niveau['id_niveau']) ?>"
-                <?= isset($etudiant['id_niveau']) && $etudiant['id_niveau'] == $niveau['id_niveau'] ? 'selected' : '' ?>>
+                <?= (isset($id_niveau) && $id_niveau == $niveau['id_niveau']) || (isset($etudiant['id_niveau']) && $etudiant['id_niveau'] == $niveau['id_niveau']) ? 'selected' : '' ?>>
                 <?= htmlspecialchars($niveau['libelle_niveau']) ?>
             </option>
         <?php endforeach; ?>
