@@ -4,41 +4,26 @@ require_once __DIR__ . '/../controllers/AgentController.php';
 
 use Controllers\AgentController; // Assurez-vous que ce contrôleur existe
 
-$message = '';
-$agent = null;
 $controller = new AgentController();
+$id = $_GET['id'] ?? null;
+$confirmed = ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmer_suppression']));
+
+// Appel de handleDelete
+$result = $controller->handleDelete($id, $confirmed);
+
+$errors = $result['errors'];
+$message = $result['message'];
+$agent = $result['agent'];
+
+// Gestion de la redirection si succès
+if ($result['success'] && $result['redirect']) {
+    header("Location: ../../" . $result['redirect']);
+    exit;
+}
 
 $id_column = 'id_agents';
 $entity_name = 'Agent';
 $list_action = 'agent_list';
-
-// Vérifier si l'ID est présent
-if (!isset($_GET['id']) || empty($_GET['id'])) {
-    $message = "ID de l'{$entity_name} manquant.";
-} else {
-    $id_entity = $_GET['id'];
-    $agent = $controller->getSingleAgent($id_entity); // Assurez-vous d'avoir la méthode
-
-    if (!$agent) {
-        $message = "{$entity_name} introuvable.";
-    }
-}
-
-// Traitement de la suppression
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmer_suppression'])) {
-    $id_entity = $_POST[$id_column];
-    
-    // NOTE IMPORTANTE: Le contrôleur doit gérer la suppression en cascade ou l'interdiction
-    // de suppression si l'agent est lié à des Sessions_conversation !
-    $result = $controller->deleteAgent($id_entity);
-
-    if ($result) {
-        header("Location: ../../index.php?action={$list_action}&message=supprime");
-        exit;
-    } else {
-        $message = "Erreur lors de la suppression de l'{$entity_name}. Vérifiez les dépendances (Sessions de conversation).";
-    }
-}
 ?>
 
 <?php if ($message): ?>
