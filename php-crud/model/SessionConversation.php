@@ -24,8 +24,8 @@ class session_conversation
 
     public function create($duree_session, $date_heure_fin, $id_agents, $id_etudiant)
     {
-        $sql = "INSERT INTO session_conversation (duree_session, date_heure_fin, id_agents, id_etudiant) 
-                VALUES (:duree_session, :date_heure_fin, :id_agents, :id_users)";
+        $sql = "INSERT INTO session_conversation (duree_session, date_heure_fin, id_agents, id_etudiant)
+                VALUES (:duree_session, :date_heure_fin, :id_agents, :id_etudiant)";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':duree_session', $duree_session); // Type TIME
         $stmt->bindParam(':date_heure_fin', $date_heure_fin); // Type DATETIME
