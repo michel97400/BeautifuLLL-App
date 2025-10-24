@@ -216,6 +216,17 @@ $niveaux = $niveauController->getNiveaus();
 
 <h2><?= $isEditMode ? 'Modifier' : 'Ajouter' ?> un étudiant</h2>
 
+<?php if (!empty($errors)): ?>
+    <div style="color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; text-align:left; margin-bottom:15px; padding:15px; border-radius:5px;">
+        <strong>Erreurs de validation :</strong>
+        <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+            <?php foreach ($errors as $error): ?>
+                <li><?= htmlspecialchars($error) ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
+
 <?php if ($message): ?>
     <div style="color: <?= strpos($message, 'succès') !== false ? 'green' : 'red' ?>; text-align:center; margin-bottom:10px; padding:10px; border-radius:5px; background-color: <?= strpos($message, 'succès') !== false ? '#d4edda' : '#f8d7da' ?>;">
         <?= htmlspecialchars($message) ?>
@@ -228,13 +239,13 @@ $niveaux = $niveauController->getNiveaus();
     <?php endif; ?>
 
     <label for="nom">Nom :</label>
-    <input type="text" id="nom" name="nom" value="<?= htmlspecialchars($etudiant['nom'] ?? '') ?>" required>
+    <input type="text" id="nom" name="nom" value="<?= htmlspecialchars($nom ?? $etudiant['nom'] ?? '') ?>" required>
 
     <label for="prenom">Prénom :</label>
-    <input type="text" id="prenom" name="prenom" value="<?= htmlspecialchars($etudiant['prenom'] ?? '') ?>" required>
+    <input type="text" id="prenom" name="prenom" value="<?= htmlspecialchars($prenom ?? $etudiant['prenom'] ?? '') ?>" required>
 
     <label for="email">Email :</label>
-    <input type="email" id="email" name="email" value="<?= htmlspecialchars($etudiant['email'] ?? '') ?>" required>
+    <input type="email" id="email" name="email" value="<?= htmlspecialchars($email ?? $etudiant['email'] ?? '') ?>" required>
 
     <label for="avatar">Avatar :</label>
     <?php if ($isEditMode && !empty($etudiant['avatar'])): ?>
@@ -263,7 +274,7 @@ $niveaux = $niveauController->getNiveaus();
     <select id="id_role" name="id_role" required>
         <?php foreach ($roles as $role): ?>
             <option value="<?= htmlspecialchars($role['id_role']) ?>"
-                <?= isset($etudiant['id_role']) && $etudiant['id_role'] == $role['id_role'] ? 'selected' : '' ?>>
+                <?= (isset($id_role) && $id_role == $role['id_role']) || (isset($etudiant['id_role']) && $etudiant['id_role'] == $role['id_role']) ? 'selected' : '' ?>>
                 <?= htmlspecialchars($role['nom_role']) ?>
             </option>
         <?php endforeach; ?>
@@ -273,7 +284,7 @@ $niveaux = $niveauController->getNiveaus();
     <select id="id_niveau" name="id_niveau" required>
         <?php foreach ($niveaux as $niveau): ?>
             <option value="<?= htmlspecialchars($niveau['id_niveau']) ?>"
-                <?= isset($etudiant['id_niveau']) && $etudiant['id_niveau'] == $niveau['id_niveau'] ? 'selected' : '' ?>>
+                <?= (isset($id_niveau) && $id_niveau == $niveau['id_niveau']) || (isset($etudiant['id_niveau']) && $etudiant['id_niveau'] == $niveau['id_niveau']) ? 'selected' : '' ?>>
                 <?= htmlspecialchars($niveau['libelle_niveau']) ?>
             </option>
         <?php endforeach; ?>
