@@ -125,11 +125,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "Le niveau sélectionné n'existe pas.";
     }
 
-    // Gestion de l'avatar
+    // Gestion de l'avatar avec validation
     $avatar = $isEditMode ? ($etudiant['avatar'] ?? null) : null;
     if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
-        $avatar = basename($_FILES['avatar']['name']);
-        move_uploaded_file($_FILES['avatar']['tmp_name'], __DIR__ . '/../../uploads/' . $avatar);
+        $fileInfo = $_FILES['avatar'];
+
+        // Validation du type MIME
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/gif'];
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $detectedMime = finfo_file($finfo, $fileInfo['tmp_name']);
+        finfo_close($finfo);
+
+        if (!in_array($detectedMime, $allowedMimes)) {
+            $errors[] = "Le format de l'image n'est pas autorisé. Formats acceptés : JPEG, PNG, GIF.";
+        }
+
+        // Validation de la taille (2MB max)
+        if ($fileInfo['size'] > 2 * 1024 * 1024) {
+            $errors[] = "L'image est trop volumineuse. Taille maximale : 2MB.";
+        }
+
+        // Si pas d'erreur, traiter l'upload
+        if (empty($errors)) {
+            // Créer un nom de fichier sécurisé et unique
+            $extension = pathinfo($fileInfo['name'], PATHINFO_EXTENSION);
+            $avatar = uniqid('avatar_', true) . '.' . $extension;
+            $uploadPath = __DIR__ . '/../../uploads/' . $avatar;
+
+            if (!move_uploaded_file($fileInfo['tmp_name'], $uploadPath)) {
+                $errors[] = "Erreur lors de l'upload de l'avatar.";
+                $avatar = $isEditMode ? ($etudiant['avatar'] ?? null) : null;
+            }
+        }
+    } elseif (isset($_FILES['avatar']) && $_FILES['avatar']['error'] !== UPLOAD_ERR_NO_FILE) {
+        // Gestion des erreurs d'upload
+        switch ($_FILES['avatar']['error']) {
+            case UPLOAD_ERR_INI_SIZE:
+            case UPLOAD_ERR_FORM_SIZE:
+                $errors[] = "Le fichier est trop volumineux.";
+                break;
+            case UPLOAD_ERR_PARTIAL:
+                $errors[] = "Le fichier n'a été que partiellement téléchargé.";
+                break;
+            default:
+                $errors[] = "Erreur lors de l'upload du fichier.";
+        }
     }
 
     // Si aucune erreur, procéder à l'enregistrement
