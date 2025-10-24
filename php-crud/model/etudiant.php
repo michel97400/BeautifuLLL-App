@@ -44,7 +44,8 @@ class Etudiants
 
     public function read()
     {
-        $sql = "SELECT * FROM etudiants";
+        // Utiliser le même nom de table que le reste des requêtes (consistance de casse)
+        $sql = "SELECT * FROM Etudiants";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);

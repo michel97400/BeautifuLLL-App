@@ -13,7 +13,8 @@ class EtudiantController
 {
     public function loginEtudiant($email, $password)
     {
-        $Etudiant = new \Models\Etudiants();
+        // Utiliser l'import en tête de fichier (use Models\Etudiants;)
+        $Etudiant = new Etudiants();
         $etudiant = $Etudiant->readByEmail($email);
         if ($etudiant && password_verify($password, $etudiant['passwordhash'])) {
             // Récupérer le rôle pour l'ajouter aux données de session/login
