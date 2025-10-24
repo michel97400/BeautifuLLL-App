@@ -92,6 +92,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    // Validation du consentement RGPD
+    if ($consentement_rgpd != 1) {
+        $errors[] = "Vous devez accepter la politique de confidentialité (RGPD).";
+    }
+
+    // Validation des relations (id_role, id_niveau)
+    $roleController = new RoleController();
+    $niveauController = new NiveauController();
+    $roles = $roleController->getRoles();
+    $niveaux = $niveauController->getNiveaus();
+
+    $roleExists = false;
+    foreach ($roles as $role) {
+        if ($role['id_role'] == $id_role) {
+            $roleExists = true;
+            break;
+        }
+    }
+    if (!$roleExists) {
+        $errors[] = "Le rôle sélectionné n'existe pas.";
+    }
+
+    $niveauExists = false;
+    foreach ($niveaux as $niveau) {
+        if ($niveau['id_niveau'] == $id_niveau) {
+            $niveauExists = true;
+            break;
+        }
+    }
+    if (!$niveauExists) {
+        $errors[] = "Le niveau sélectionné n'existe pas.";
+    }
+
     // Gestion de l'avatar
     $avatar = $isEditMode ? ($etudiant['avatar'] ?? null) : null;
     if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
