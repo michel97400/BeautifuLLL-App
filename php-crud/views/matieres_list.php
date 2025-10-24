@@ -1,10 +1,10 @@
 <?php
 
-require_once __DIR__ . '/../php-crud/controllers/MatieresController.php';
+require_once __DIR__ . '/../controllers/MatiereController.php';
 
 
-$matieresController = new \Controllers\MatieresController();
-$matieres = $matieresController->getMatieres(); 
+$matiereController = new \Controllers\MatiereController();
+$matieres = $matiereController->getMatieres(); 
 
 echo "<h1>Liste des Matières</h1>";
 echo "<table>";

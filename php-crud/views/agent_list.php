@@ -1,6 +1,6 @@
 <?php
 // Vue pour afficher la liste des Agents.
-require_once __DIR__ . '/../php-crud/controllers/AgentController.php';
+require_once __DIR__ . '/../controllers/AgentController.php';
 
 $agentController = new \Controllers\AgentController();
 $agents = $agentController->getAgentsWithDetails(); 

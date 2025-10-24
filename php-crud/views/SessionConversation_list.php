@@ -1,6 +1,6 @@
 <?php
-// Vue pour afficher la liste des Rôles.
-require_once __DIR__ . '/../php-crud/controllers/SessionConversationController.php';
+// Vue pour afficher la liste des Sessions de Conversation.
+require_once __DIR__ . '/../controllers/SessionConversationController.php';
 
 
 $sessionController = new \Controllers\SessionConversationController();

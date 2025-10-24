@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(cat \"C:\\wamp64\\www\\BeautifuLLL-App\\php-crud\\controllers\\UserController.php\")"
+      "Bash(cat \"C:\\wamp64\\www\\BeautifuLLL-App\\php-crud\\controllers\\UserController.php\")",
+      "Bash(cat:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

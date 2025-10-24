@@ -1,6 +1,6 @@
 <?php
-// Vue pour afficher la liste des Rôles.
-require_once __DIR__ . '/../php-crud/controllers/MessageController.php';
+// Vue pour afficher la liste des Messages.
+require_once __DIR__ . '/../controllers/MessageController.php';
 
 
 // Récupération de l'ID de session depuis l'URL
