@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         move_uploaded_file($_FILES['avatar']['tmp_name'], __DIR__ . '/../../uploads/' . $avatar);
     }
     $controller = new EtudiantController();
-    $result = $controller->createEtudiant($nom, $prenom, $email, $avatar, $password, $date_inscription, $consentement_rgpd, $id_role, $id_niveau);
+    $result = $this->createEtudiant($nom, $prenom, $email, $avatar, $password, $date_inscription, $consentement_rgpd, $id_role, $id_niveau);
     if ($result) {
         header('Location: php-crud/views/success_create.php');
         exit;

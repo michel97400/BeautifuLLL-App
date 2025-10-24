@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'] ?? '';
     $password = $_POST['password'] ?? '';
     $controller = new \Controllers\EtudiantController();
-    $user = $controller->loginEtudiant($email, $password);
+    $user = $this->loginEtudiant($email, $password);
     if ($user) {
         $_SESSION['user'] = $user;
         header('Location: php-crud/views/success_connect.php');
