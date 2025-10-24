@@ -12,7 +12,7 @@ class NiveauController
         return $Niveau->create($libellé_niveau);
     }
 
-    public function getNiveaus()
+    public function getNiveaux()
     {
         $Niveau = new Niveau();
         return $Niveau->read();
