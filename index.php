@@ -46,8 +46,8 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
                         <span class="dropdown-toggle">Administration</span>
                         <div class="dropdown-content">
                             <a href="?action=etudiant_list">Étudiants</a>
+                            <a href="?action=matiere_list">Matières</a>
                             <!-- Prêt pour extension -->
-                            <!-- <a href="?action=matiere_list">Matières</a> -->
                             <!-- <a href="?action=role_list">Rôles</a> -->
                             <!-- <a href="?action=niveau_list">Niveaux</a> -->
                         </div>
@@ -86,6 +86,18 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
 
             } elseif (isset($_GET['action']) && $_GET['action'] === 'supprimer_etudiant'){
                 include 'php-crud/views/etudiant_delete.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'matiere_list'){
+                include 'php-crud/views/matiere_list.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'creer_matiere'){
+                include 'php-crud/views/matiere_form.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'modifier_matiere'){
+                include 'php-crud/views/matiere_form.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'supprimer_matiere'){
+                include 'php-crud/views/matiere_delete.php';
 
             } elseif (isset($_GET['action']) && $_GET['action'] === 'acces_refuse'){
                 include 'php-crud/views/acces_refuse.php';

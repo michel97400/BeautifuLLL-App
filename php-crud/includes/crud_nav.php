@@ -14,14 +14,14 @@ $current_action = $_GET['action'] ?? '';
         Tableau de bord
     </a>
 
-    <a href="index.php?action=etudiant_list" class="crud-nav-item <?= $current_action === 'etudiant_list' ? 'active' : '' ?>">
+    <a href="index.php?action=etudiant_list" class="crud-nav-item <?= $current_action === 'etudiant_list' || $current_action === 'creer_etudiant' || $current_action === 'modifier_etudiant' ? 'active' : '' ?>">
         <span class="nav-icon">📋</span>
-        Liste des étudiants
+        Étudiants
     </a>
 
-    <a href="index.php?action=creer_etudiant" class="crud-nav-item <?= $current_action === 'creer_etudiant' || $current_action === 'modifier_etudiant' ? 'active' : '' ?>">
-        <span class="nav-icon">➕</span>
-        Créer un étudiant
+    <a href="index.php?action=matiere_list" class="crud-nav-item <?= $current_action === 'matiere_list' || $current_action === 'creer_matiere' || $current_action === 'modifier_matiere' ? 'active' : '' ?>">
+        <span class="nav-icon">📚</span>
+        Matières
     </a>
 
     <!-- Prêt pour extension : autres entités CRUD -->
