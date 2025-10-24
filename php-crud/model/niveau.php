@@ -2,6 +2,8 @@
 
 namespace Models;
 
+require_once __DIR__ . '/../config/Database.php';
+
 use Config\Database;
 
 class Niveau{
@@ -14,10 +16,10 @@ class Niveau{
     }
 
 
-    public function create($nom_niveau) {
-        $sql = "INSERT INTO niveau (nom_niveau) VALUES (:nom_niveau)";
+    public function create($libelle_niveau) {
+        $sql = "INSERT INTO niveau (libelle_niveau) VALUES (:libelle_niveau)";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':nom_niveau', $nom_niveau);
+        $stmt->bindParam(':libelle_niveau', $libelle_niveau);
         return $stmt->execute();
     }
 
@@ -36,10 +38,10 @@ class Niveau{
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
-    public function update($id, $nom_niveau) {
-        $sql = "UPDATE niveau SET nom_niveau = :nom_niveau WHERE id_niveau = :id";
+    public function update($id, $libelle_niveau) {
+        $sql = "UPDATE niveau SET libelle_niveau = :libelle_niveau WHERE id_niveau = :id";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':nom_niveau', $nom_niveau);
+        $stmt->bindParam(':libelle_niveau', $libelle_niveau);
         $stmt->bindParam(':id', $id);
         return $stmt->execute();
     }

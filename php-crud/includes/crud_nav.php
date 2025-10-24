@@ -24,16 +24,16 @@ $current_action = $_GET['action'] ?? '';
         Matières
     </a>
 
+    <a href="index.php?action=niveau_list" class="crud-nav-item <?= $current_action === 'niveau_list' || $current_action === 'creer_niveau' || $current_action === 'modifier_niveau' ? 'active' : '' ?>">
+        <span class="nav-icon">📊</span>
+        Niveaux
+    </a>
+
     <!-- Prêt pour extension : autres entités CRUD -->
     <!--
     <a href="index.php?action=role_list" class="crud-nav-item <?= $current_action === 'role_list' ? 'active' : '' ?>">
         <span class="nav-icon">👥</span>
         Rôles
-    </a>
-
-    <a href="index.php?action=niveau_list" class="crud-nav-item <?= $current_action === 'niveau_list' ? 'active' : '' ?>">
-        <span class="nav-icon">📊</span>
-        Niveaux
     </a>
     -->
 </nav>

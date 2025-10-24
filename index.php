@@ -47,9 +47,9 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
                         <div class="dropdown-content">
                             <a href="?action=etudiant_list">Étudiants</a>
                             <a href="?action=matiere_list">Matières</a>
+                            <a href="?action=niveau_list">Niveaux</a>
                             <!-- Prêt pour extension -->
                             <!-- <a href="?action=role_list">Rôles</a> -->
-                            <!-- <a href="?action=niveau_list">Niveaux</a> -->
                         </div>
                     </div>
                 <?php endif; ?>
@@ -98,6 +98,18 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
 
             } elseif (isset($_GET['action']) && $_GET['action'] === 'supprimer_matiere'){
                 include 'php-crud/views/matiere_delete.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'niveau_list'){
+                include 'php-crud/views/niveau_list.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'creer_niveau'){
+                include 'php-crud/views/niveau_form.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'modifier_niveau'){
+                include 'php-crud/views/niveau_form.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'supprimer_niveau'){
+                include 'php-crud/views/niveau_delete.php';
 
             } elseif (isset($_GET['action']) && $_GET['action'] === 'acces_refuse'){
                 include 'php-crud/views/acces_refuse.php';
