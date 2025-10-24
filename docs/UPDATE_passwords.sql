@@ -26,3 +26,4 @@ WHERE email = 'marie.martin@test.com';
 SELECT id_etudiant, nom, prenom, email, LEFT(passwordhash, 20) as hash_debut, id_role
 FROM Etudiants
 ORDER BY id_role;
+
