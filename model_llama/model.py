@@ -2,7 +2,7 @@ from gpt4all import GPT4All
 import os
 
 def main():
-    """Interface de chat simple et directe"""
+    """Interfaces de chats simple et directe"""
     print("🤖 LLAMA 3.2 1B INSTRUCT - CHAT DIRECT")
     print("="*50)
     
