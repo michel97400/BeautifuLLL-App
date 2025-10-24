@@ -20,6 +20,6 @@ if (ini_get("session.use_cookies")) {
 session_destroy();
 
 // Rediriger vers l'accueil avec message
-header('Location: /BeautifuLLL-App/index.php?message=deconnecte');
+header("Location: index.php?message=deconnecte");
 exit;
 ?>
