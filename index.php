@@ -40,17 +40,24 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
             </div>
             <nav>
                 <a href="index.php">Accueil</a>
+
                 <?php if ($isAdmin): ?>
-                    <a href="?action=creer_etudiant">Créer un étudiant</a>
-                    <a href="?action=etudiant_list">Liste des étudiants</a>
+                    <div class="dropdown">
+                        <span class="dropdown-toggle">Administration</span>
+                        <div class="dropdown-content">
+                            <a href="?action=etudiant_list">Liste des étudiants</a>
+                            <a href="?action=creer_etudiant">Créer un étudiant</a>
+                        </div>
+                    </div>
                 <?php endif; ?>
+
+                <a href="?action=contact">Contact</a>
+
                 <?php if ($user): ?>
                     <a href="?action=deconnexion" style="color: #dc3545;">Déconnexion</a>
                 <?php else: ?>
                     <a href="?action=connect">Connexion</a>
                 <?php endif; ?>
-                <a href="?action=contact">Contact</a>
-
             </nav>
         </header>
 

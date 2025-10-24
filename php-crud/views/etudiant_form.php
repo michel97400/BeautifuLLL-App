@@ -215,12 +215,14 @@ $roles = $roleController->getRoles();
 $niveaux = $niveauController->getNiveaux();
 ?>
 
-<h2><?= $isEditMode ? 'Modifier' : 'Ajouter' ?> un étudiant</h2>
+<?php include __DIR__ . '/../includes/crud_nav.php'; ?>
+
+<h2 class="page-title"><?= $isEditMode ? 'Modifier' : 'Ajouter' ?> un étudiant</h2>
 
 <?php if (!empty($errors)): ?>
-    <div style="color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; text-align:left; margin-bottom:15px; padding:15px; border-radius:5px;">
-        <strong>Erreurs de validation :</strong>
-        <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+    <div class="alert alert-error">
+        <strong>⚠ Erreurs de validation :</strong>
+        <ul>
             <?php foreach ($errors as $error): ?>
                 <li><?= htmlspecialchars($error) ?></li>
             <?php endforeach; ?>
@@ -229,8 +231,8 @@ $niveaux = $niveauController->getNiveaux();
 <?php endif; ?>
 
 <?php if ($message): ?>
-    <div style="color: <?= strpos($message, 'succès') !== false ? 'green' : 'red' ?>; text-align:center; margin-bottom:10px; padding:10px; border-radius:5px; background-color: <?= strpos($message, 'succès') !== false ? '#d4edda' : '#f8d7da' ?>;">
-        <?= htmlspecialchars($message) ?>
+    <div class="alert <?= strpos($message, 'succès') !== false ? 'alert-success' : 'alert-error' ?>">
+        <strong><?= strpos($message, 'succès') !== false ? '✓' : '✗' ?> <?= htmlspecialchars($message) ?></strong>
     </div>
 <?php endif; ?>
 
@@ -292,5 +294,5 @@ $niveaux = $niveauController->getNiveaux();
     </select>
 
     <button type="submit"><?= $isEditMode ? 'Modifier' : 'Créer' ?> l'étudiant</button>
-    <a href="index.php?action=etudiant_list" style="display: inline-block; margin-top: 10px; text-align: center; color: #0078d7; text-decoration: none;">Retour à la liste</a>
+    <a href="index.php?action=etudiant_list" class="btn btn-secondary">Retour à la liste</a>
 </form>
