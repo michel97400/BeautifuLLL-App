@@ -1,25 +1,25 @@
 <?php
 require_once __DIR__ . '/../includes/check_admin.php';
-require_once __DIR__ . '/../controllers/MatiereController.php';
+require_once __DIR__ . '/../controllers/AgentController.php';
 
-use Controllers\MatiereController; // Assurez-vous que ce contrôleur existe
+use Controllers\AgentController; // Assurez-vous que ce contrôleur existe
 
 $message = '';
-$matiere = null;
-$controller = new MatiereController();
+$agent = null;
+$controller = new AgentController();
 
-$id_column = 'id_matieres';
-$entity_name = 'Matière';
-$list_action = 'matiere_list';
+$id_column = 'id_agents';
+$entity_name = 'Agent';
+$list_action = 'agent_list';
 
 // Vérifier si l'ID est présent
 if (!isset($_GET['id']) || empty($_GET['id'])) {
-    $message = "ID de la {$entity_name} manquant.";
+    $message = "ID de l'{$entity_name} manquant.";
 } else {
     $id_entity = $_GET['id'];
-    $matiere = $controller->getSingleMatiere($id_entity); // Assurez-vous d'avoir la méthode
+    $agent = $controller->getSingleAgent($id_entity); // Assurez-vous d'avoir la méthode
 
-    if (!$matiere) {
+    if (!$agent) {
         $message = "{$entity_name} introuvable.";
     }
 }
@@ -28,15 +28,15 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmer_suppression'])) {
     $id_entity = $_POST[$id_column];
     
-    // NOTE IMPORTANTE: Le contrôleur doit gérer la vérification des clés étrangères !
-    // Une matière ne peut pas être supprimée si elle est utilisée par un Agent.
-    $result = $controller->deleteMatiere($id_entity);
+    // NOTE IMPORTANTE: Le contrôleur doit gérer la suppression en cascade ou l'interdiction
+    // de suppression si l'agent est lié à des Sessions_conversation !
+    $result = $controller->deleteAgent($id_entity);
 
     if ($result) {
         header("Location: ../../index.php?action={$list_action}&message=supprime");
         exit;
     } else {
-        $message = "Erreur lors de la suppression de la {$entity_name}. Vérifiez les dépendances (Agents).";
+        $message = "Erreur lors de la suppression de l'{$entity_name}. Vérifiez les dépendances (Sessions de conversation).";
     }
 }
 ?>
@@ -47,37 +47,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmer_suppression
         <br><br>
         <a href="index.php?action=<?= $list_action ?>" style="color: #0078d7; text-decoration: none;">Retour à la liste</a>
     </div>
-<?php elseif ($matiere): ?>
+<?php elseif ($agent): ?>
     <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 2px solid #dc3545; border-radius: 10px; background-color: #fff3cd;">
-        <h2 style="color: #dc3545; text-align: center;">Confirmer la suppression de la <?= $entity_name ?></h2>
+        <h2 style="color: #dc3545; text-align: center;">Confirmer la suppression de l'<?= $entity_name ?></h2>
 
         <div style="margin: 20px 0; padding: 15px; background-color: white; border-radius: 5px;">
             <p style="font-size: 16px; margin-bottom: 15px;">
-                <strong>Vous êtes sur le point de supprimer la <?= $entity_name ?> suivante :</strong>
+                <strong>Vous êtes sur le point de supprimer l'<?= $entity_name ?> suivant :</strong>
             </p>
 
             <table style="width: 100%; border-collapse: collapse;">
                 <tr>
                     <td style="padding: 8px; font-weight: bold; width: 40%;">ID :</td>
-                    <td style="padding: 8px;"><?= htmlspecialchars($matiere['id_matieres']) ?></td>
+                    <td style="padding: 8px;"><?= htmlspecialchars($agent['id_agents']) ?></td>
                 </tr>
                 <tr>
                     <td style="padding: 8px; font-weight: bold;">Nom :</td>
-                    <td style="padding: 8px;"><?= htmlspecialchars($matiere['nom_matieres']) ?></td>
+                    <td style="padding: 8px;"><?= htmlspecialchars($agent['nom_agent']) ?></td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; font-weight: bold;">Type :</td>
+                    <td style="padding: 8px;"><?= htmlspecialchars($agent['type_agent']) ?></td>
                 </tr>
             </table>
         </div>
 
         <p style="color: #856404; text-align: center; font-weight: bold; margin: 20px 0;">
-            Cette action est irréversible ! Si des agents sont liés, la suppression échouera sauf configuration spéciale de la BDD.
+            Cette action est irréversible ! Si des sessions sont liées, la suppression échouera sauf configuration spéciale de la BDD.
         </p>
 
         <form method="POST" style="text-align: center;">
-            <input type="hidden" name="<?= $id_column ?>" value="<?= htmlspecialchars($matiere[$id_column]) ?>">
+            <input type="hidden" name="<?= $id_column ?>" value="<?= htmlspecialchars($agent[$id_column]) ?>">
 
             <button type="submit" name="confirmer_suppression"
                     style="background-color: #dc3545; color: white; padding: 12px 30px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; margin-right: 10px;"
-                    onclick="return confirm('Êtes-vous vraiment sûr de vouloir supprimer cette matière ?');">
+                    onclick="return confirm('Êtes-vous vraiment sûr de vouloir supprimer cet agent ?');">
                 Confirmer la suppression
             </button>
 
