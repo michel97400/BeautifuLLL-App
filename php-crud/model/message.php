@@ -39,7 +39,12 @@ class Message
         $stmt->execute();
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
-
+    public function readBySessionId($id_session) {
+    $query = "SELECT * FROM " . $this->table_name . " WHERE id_session = ? ORDER BY date_envoi ASC";
+    $stmt = $this->conn->prepare($query);
+    $stmt->execute([$id_session]);
+    return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+}
     public function update($id, $role_message, $contenu, $date_envoi, $id_session) {
         $sql = "UPDATE Message SET role_message = :role_message, contenu = :contenu, date_envoi = :date_envoi, id_session = :id_session WHERE id_message = :id";
         $stmt = $this->conn->prepare($sql);
