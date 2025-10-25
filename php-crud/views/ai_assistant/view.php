@@ -1,3 +1,9 @@
-<?php
 
-    echo("this is ai agent chat bot page");
+
+<div class="crud-container">
+        <form action="">
+            <textarea name="input" id=""></textarea>
+        </form>
+
+
+</div>
