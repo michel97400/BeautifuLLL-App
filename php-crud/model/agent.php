@@ -16,7 +16,7 @@ class Agent
 
     public function create($nom_agent, $type_agent, $avatar_agent, $est_actif, $description, $prompt_systeme, $id_matieres, $id_etudiant)
     {
-        $sql = "INSERT INTO agent (nom_agent, type_agent, avatar_agent, est_actif, description, prompt_systeme, id_matieres, $id_etudiant) VALUES (:nom_agent, :type_agent, :avatar_agent, :est_actif, :description, :prompt_systeme, :id_matieres, $id_etudiant)";
+        $sql = "INSERT INTO agent (nom_agent, type_agent, avatar_agent, est_actif, description, prompt_systeme, id_matieres, id_etudiant) VALUES (:nom_agent, :type_agent, :avatar_agent, :est_actif, :description, :prompt_systeme, :id_matieres, :id_etudiant)";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':nom_agent', $nom_agent);
         $stmt->bindParam(':type_agent', $type_agent);
@@ -25,7 +25,7 @@ class Agent
         $stmt->bindParam(':description', $description);
         $stmt->bindParam(':prompt_systeme', $prompt_systeme);
         $stmt->bindParam(':id_matieres', $id_matieres, PDO::PARAM_INT);
-        $stmt->bindParam(':id_etudiants', $id_etudiant, PDO::PARAM_INT);
+        $stmt->bindParam(':id_etudiant', $id_etudiant, PDO::PARAM_INT);
         
         return $stmt->execute();
     }

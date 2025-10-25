@@ -33,4 +33,19 @@ $current_action = $_GET['action'] ?? '';
         <span class="nav-icon">👥</span>
         Rôles
     </a>
+
+    <a href="index.php?action=agent_list" class="crud-nav-item <?= $current_action === 'agent_list' || $current_action === 'creer_agent' || $current_action === 'modifier_agent' ? 'active' : '' ?>">
+        <span class="nav-icon">🤖</span>
+        Agents IA
+    </a>
+
+    <a href="index.php?action=session_list" class="crud-nav-item <?= $current_action === 'session_list' || $current_action === 'creer_session' || $current_action === 'modifier_session' ? 'active' : '' ?>">
+        <span class="nav-icon">💬</span>
+        Sessions
+    </a>
+
+    <a href="index.php?action=message_list" class="crud-nav-item <?= $current_action === 'message_list' || $current_action === 'creer_message' || $current_action === 'modifier_message' ? 'active' : '' ?>">
+        <span class="nav-icon">📨</span>
+        Messages
+    </a>
 </nav>

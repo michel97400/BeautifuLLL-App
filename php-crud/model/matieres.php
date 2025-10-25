@@ -1,7 +1,7 @@
 <?php
 
 namespace Models;
-require "php-crud/config/Database.php";
+require_once __DIR__ . '/../config/Database.php';
 use Config\Database;
 
 class Matiere{
