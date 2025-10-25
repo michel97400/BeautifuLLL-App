@@ -1,13 +1,13 @@
 <?php
 // Vue pour afficher la liste des Niveaux.
-require_once __DIR__ . '/../includes/check_admin.php';
-require_once __DIR__ . '/../controllers/NiveauController.php';
+require_once __DIR__ . '/../../includes/check_admin.php';
+require_once __DIR__ . '/../../controllers/NiveauController.php';
 
 $niveauController = new \Controllers\NiveauController();
 $niveaux = $niveauController->getNiveaux();
 ?>
 
-<?php include __DIR__ . '/../includes/crud_nav.php'; ?>
+<?php include __DIR__ . '/../../includes/crud_nav.php'; ?>
 
 <div class="crud-container">
     <div class="crud-header">

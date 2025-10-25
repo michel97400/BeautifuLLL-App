@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/../includes/check_admin.php';
-require_once __DIR__ . '/../controllers/MessageController.php';
-require_once __DIR__ . '/../controllers/SessionConversationController.php';
+require_once __DIR__ . '/../../includes/check_admin.php';
+require_once __DIR__ . '/../../controllers/MessageController.php';
+require_once __DIR__ . '/../../controllers/SessionConversationController.php';
 
 use Controllers\MessageController;
 use Controllers\SessionConversationController;

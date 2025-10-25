@@ -1,13 +1,13 @@
 <?php
 // Vue pour afficher la liste des Matières.
-require_once __DIR__ . '/../includes/check_admin.php';
-require_once __DIR__ . '/../controllers/MatiereController.php';
+require_once __DIR__ . '/../../includes/check_admin.php';
+require_once __DIR__ . '/../../controllers/MatiereController.php';
 
 $matiereController = new \Controllers\MatiereController();
 $matieres = $matiereController->getMatiere();
 ?>
 
-<?php include __DIR__ . '/../includes/crud_nav.php'; ?>
+<?php include __DIR__ . '/../../includes/crud_nav.php'; ?>
 
 <div class="crud-container">
     <div class="crud-header">

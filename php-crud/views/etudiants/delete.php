@@ -1,12 +1,12 @@
 <?php
-require_once __DIR__ . '/../includes/check_admin.php';
-require_once __DIR__ . '/../controllers/RoleController.php';
+require_once __DIR__ . '/../../includes/check_admin.php';
+require_once __DIR__ . '/../../controllers/EtudiantController.php';
 
-use Controllers\RoleController;
+use Controllers\EtudiantController;
 
 $message = '';
-$role = null;
-$controller = new RoleController();
+$etudiant = null;
+$controller = new EtudiantController();
 
 // Récupérer l'ID depuis l'URL
 $id = $_GET['id'] ?? null;
@@ -19,7 +19,7 @@ $result = $controller->handleDelete($id, $confirmed);
 
 // Récupérer les données du résultat
 $message = $result['message'];
-$role = $result['role'];
+$etudiant = $result['etudiant'];
 
 // Si redirection nécessaire (suppression réussie)
 if (!empty($result['redirect'])) {
@@ -28,30 +28,38 @@ if (!empty($result['redirect'])) {
 }
 ?>
 
-<?php include __DIR__ . '/../includes/crud_nav.php'; ?>
+<?php include __DIR__ . '/../../includes/crud_nav.php'; ?>
 
 <?php if ($message): ?>
     <div class="alert alert-error" style="text-align: center;">
         <strong>✗ <?= htmlspecialchars($message) ?></strong>
         <br><br>
-        <a href="index.php?action=role_list" class="btn btn-secondary">Retour à la liste</a>
+        <a href="index.php?action=etudiant_list" class="btn btn-secondary">Retour à la liste</a>
     </div>
-<?php elseif ($role): ?>
+<?php elseif ($etudiant): ?>
     <div class="crud-card">
         <h2 style="color: #dc3545; text-align: center;">⚠ Confirmer la suppression</h2>
 
         <div class="alert alert-warning">
-            <strong>Vous êtes sur le point de supprimer le rôle suivant :</strong>
+            <strong>Vous êtes sur le point de supprimer l'étudiant suivant :</strong>
         </div>
 
         <table>
             <tr>
                 <td>ID :</td>
-                <td><?= htmlspecialchars($role['id_role']) ?></td>
+                <td><?= htmlspecialchars($etudiant['id_etudiant']) ?></td>
             </tr>
             <tr>
                 <td>Nom :</td>
-                <td><?= htmlspecialchars($role['nom_role']) ?></td>
+                <td><?= htmlspecialchars($etudiant['nom']) ?></td>
+            </tr>
+            <tr>
+                <td>Prénom :</td>
+                <td><?= htmlspecialchars($etudiant['prenom']) ?></td>
+            </tr>
+            <tr>
+                <td>Email :</td>
+                <td><?= htmlspecialchars($etudiant['email']) ?></td>
             </tr>
         </table>
 
@@ -60,15 +68,15 @@ if (!empty($result['redirect'])) {
         </p>
 
         <form method="POST">
-            <input type="hidden" name="id_role" value="<?= htmlspecialchars($role['id_role']) ?>">
+            <input type="hidden" name="id_etudiant" value="<?= htmlspecialchars($etudiant['id_etudiant']) ?>">
 
             <div class="actions">
                 <button type="submit" name="confirmer_suppression" class="btn btn-danger"
-                        onclick="return confirm('Êtes-vous vraiment sûr de vouloir supprimer ce rôle ?');">
+                        onclick="return confirm('Êtes-vous vraiment sûr de vouloir supprimer cet étudiant ?');">
                     Confirmer la suppression
                 </button>
 
-                <a href="index.php?action=role_list" class="btn btn-secondary">
+                <a href="index.php?action=etudiant_list" class="btn btn-secondary">
                     Annuler
                 </a>
             </div>

@@ -1,13 +1,13 @@
 <?php
 // Vue pour afficher la liste des Messages.
-require_once __DIR__ . '/../includes/check_admin.php';
-require_once __DIR__ . '/../controllers/MessageController.php';
+require_once __DIR__ . '/../../includes/check_admin.php';
+require_once __DIR__ . '/../../controllers/MessageController.php';
 
 $messageController = new \Controllers\MessageController();
 $messages = $messageController->getMessages();
 ?>
 
-<?php include __DIR__ . '/../includes/crud_nav.php'; ?>
+<?php include __DIR__ . '/../../includes/crud_nav.php'; ?>
 
 <div class="crud-container">
     <div class="crud-header">

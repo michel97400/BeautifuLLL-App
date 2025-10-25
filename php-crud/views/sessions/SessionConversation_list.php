@@ -1,13 +1,13 @@
 <?php
 // Vue pour afficher la liste des Sessions de Conversation.
-require_once __DIR__ . '/../includes/check_admin.php';
-require_once __DIR__ . '/../controllers/SessionConversationController.php';
+require_once __DIR__ . '/../../includes/check_admin.php';
+require_once __DIR__ . '/../../controllers/SessionConversationController.php';
 
 $sessionController = new \Controllers\SessionConversationController();
 $sessions = $sessionController->getSessionsWithDetails();
 ?>
 
-<?php include __DIR__ . '/../includes/crud_nav.php'; ?>
+<?php include __DIR__ . '/../../includes/crud_nav.php'; ?>
 
 <div class="crud-container">
     <div class="crud-header">

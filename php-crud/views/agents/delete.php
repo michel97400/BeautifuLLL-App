@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../includes/check_admin.php';
-require_once __DIR__ . '/../controllers/AgentController.php';
+require_once __DIR__ . '/../../includes/check_admin.php';
+require_once __DIR__ . '/../../controllers/AgentController.php';
 
 use Controllers\AgentController; // Assurez-vous que ce contrôleur existe
 

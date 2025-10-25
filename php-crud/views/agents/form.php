@@ -1,8 +1,8 @@
 <?php
-require_once __DIR__ . '/../includes/check_admin.php';
-require_once __DIR__ . '/../controllers/AgentController.php';
-require_once __DIR__ . '/../controllers/MatiereController.php';
-require_once __DIR__ . '/../controllers/EtudiantController.php';
+require_once __DIR__ . '/../../includes/check_admin.php';
+require_once __DIR__ . '/../../controllers/AgentController.php';
+require_once __DIR__ . '/../../controllers/MatiereController.php';
+require_once __DIR__ . '/../../controllers/EtudiantController.php';
 
 use Controllers\AgentController;
 use Controllers\MatiereController;

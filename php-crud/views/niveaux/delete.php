@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../includes/check_admin.php';
-require_once __DIR__ . '/../controllers/NiveauController.php';
+require_once __DIR__ . '/../../includes/check_admin.php';
+require_once __DIR__ . '/../../controllers/NiveauController.php';
 
 use Controllers\NiveauController;
 
@@ -28,7 +28,7 @@ if (!empty($result['redirect'])) {
 }
 ?>
 
-<?php include __DIR__ . '/../includes/crud_nav.php'; ?>
+<?php include __DIR__ . '/../../includes/crud_nav.php'; ?>
 
 <?php if ($message): ?>
     <div class="alert alert-error" style="text-align: center;">

@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../includes/check_admin.php';
-require_once __DIR__ . '/../controllers/MessageController.php';
+require_once __DIR__ . '/../../includes/check_admin.php';
+require_once __DIR__ . '/../../controllers/MessageController.php';
 
 use Controllers\MessageController; // Assurez-vous que ce contrôleur existe
 
