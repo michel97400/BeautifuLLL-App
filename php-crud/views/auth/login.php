@@ -1,30 +1,41 @@
-
-
 <?php
 // Formulaire de connexion (login)
-require_once __DIR__ . '/../../controllers/EtudiantController.php';
+require_once __DIR__ . '/../../controllers/AuthController.php';
+
+use Controllers\AuthController;
 
 $message = '';
+$errors = [];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'] ?? '';
-    $password = $_POST['password'] ?? '';
+    $controller = new AuthController();
+    $result = $controller->handleLogin($_POST);
 
-    // echo($email .''. $password .'');
+    $errors = $result['errors'];
+    $message = $result['message'];
 
-    $controller = new \Controllers\EtudiantController();
-    $user = $controller->loginEtudiant($email, $password);
-    if ($user) {
-        $_SESSION['user'] = $user;
-        header('Location: php-crud/views/success_connect.php');
+    // Si succès, rediriger
+    if ($result['success'] && !empty($result['redirect'])) {
+        header('Location: ' . $result['redirect']);
         exit;
-    } else {
-        $message = "Identifiants invalides.";
     }
 }
 ?>
 <form action="" method="POST" class="etudiant-form">
     <h2>Connexion</h2>
-    <?php if ($message): ?>
+
+    <?php if (!empty($errors)): ?>
+        <div class="alert alert-error">
+            <strong>⚠ Erreurs :</strong>
+            <ul>
+                <?php foreach ($errors as $error): ?>
+                    <li><?= htmlspecialchars($error) ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($message && empty($errors)): ?>
         <div style="color: red; text-align:center; margin-bottom:10px;"> <?= htmlspecialchars($message) ?> </div>
     <?php endif; ?>
     <label for="email">Email :</label>
