@@ -41,9 +41,6 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
             </div>
             <nav>
                 <a href="index.php">Accueil</a>
-                <?php if($user): ?>
-                    <a href="?action=ai_assistant">Assistant IA</a>
-                <?php endif; ?>
                 <?php if ($isAdmin): ?>
                     <div class="dropdown">
                         <span class="dropdown-toggle">Administration</span>
@@ -128,9 +125,9 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
 
             } elseif (isset($_GET['action']) && $_GET['action'] === 'agent-ia'){
                 if (!isset($_SESSION['agent_ia_matiere'])) {
-                    include 'php-crud/views/agent_matiere_form.php';
+                    include 'php-crud/views/ai_assistant/agent_matiere_form.php';
                 } else {
-                    include 'php-crud/views/chat_card.php';
+                    include 'php-crud/views/ai_assistant/chat_card.php';
                 }
 
             } elseif (isset($_GET['action']) && $_GET['action'] === 'supprimer_role'){
@@ -171,9 +168,6 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
 
             } elseif (isset($_GET['action']) && $_GET['action'] === 'supprimer_message'){
                 include 'php-crud/views/messages/delete.php';
-
-            } elseif (isset($_GET['action']) && $_GET['action'] === 'ai_assistant'){
-                include 'php-crud/views/ai_assistant/view.php';
 
             } elseif (isset($_GET['action']) && $_GET['action'] === 'acces_refuse'){
                 include 'php-crud/views/shared/acces_refuse.php';

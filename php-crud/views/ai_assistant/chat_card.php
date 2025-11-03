@@ -4,7 +4,7 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-require_once __DIR__ . '/../model/etudiant.php';
+require_once __DIR__ . '/../../model/etudiant.php';
 use Models\Etudiants;
 
 $matiereChoisie = $_SESSION['agent_ia_matiere'] ?? null;
