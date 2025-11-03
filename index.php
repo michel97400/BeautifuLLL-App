@@ -2,6 +2,13 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Gérer la déconnexion AVANT d'envoyer le HTML
+if (isset($_GET['action']) && $_GET['action'] === 'deconnexion') {
+    include 'php-crud/views/auth/logout.php';
+    exit; // Important: arrêter l'exécution après la déconnexion
+}
+
 $user = $_SESSION['user'] ?? null;
 $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
 ?>
@@ -28,21 +35,57 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
         ?>
 
         <header>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h1>Bienvenue sur BeautifuLLL AI</h1>
-                <?php if ($user): ?>
-                    <div style="text-align: right; font-size: 14px;">
-                        <span style="color: #0078d7; font-weight: bold;">
-                            Connecté en tant que : <?= htmlspecialchars($user['prenom'] ?? $user['nom'] ?? $user['email']) ?>
-                        </span>
-                        <br>
-                        <span style="color: #666;">
-                            Rôle : <?= htmlspecialchars($user['role'] ?? 'Non défini') ?>
-                        </span>
-                    </div>
-                <?php endif; ?>
+            <div class="header-container">
+                <h1>BeautifuLLL AI</h1>
+                
+                <div class="header-right">
+                    <?php if ($user): ?>
+                        <div class="user-info-card">
+                            <div class="user-info-content">
+                                <div class="user-name">
+                                    <svg style="width: 18px; height: 18px; fill: #0078d7;" viewBox="0 0 24 24">
+                                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                    </svg>
+                                    <span><?= htmlspecialchars($user['prenom'] . " " . $user['nom']) ?></span>
+                                </div>
+                                <div class="user-role">
+                                    <span class="role-badge <?= $isAdmin ? 'role-admin' : 'role-user' ?>">
+                                        <?= htmlspecialchars($user['role'] ?? 'Non défini') ?>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <button class="burger-menu" id="burgerMenu" aria-label="Menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
             </div>
-            <nav>
+            
+            <nav class="main-nav" id="mainNav">
+                <?php if ($user): ?>
+                    <!-- Card utilisateur pour mobile (dans le menu) -->
+                    <div class="user-info-card mobile-only">
+                        <div class="user-info-content">
+                            <div class="user-name">
+                                <svg style="width: 18px; height: 18px; fill: #0078d7;" viewBox="0 0 24 24">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                </svg>
+                                <span><?= htmlspecialchars($user['prenom'] ?? $user['nom'] ?? $user['email']) ?></span>
+                            </div>
+                            <div class="user-role">
+                                <span class="role-badge <?= $isAdmin ? 'role-admin' : 'role-user' ?>">
+                                    <?= htmlspecialchars($user['role'] ?? 'Non défini') ?>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nav-divider mobile-only"></div>
+                <?php endif; ?>
+                
                 <a href="index.php">Accueil</a>
                 <?php if ($isAdmin): ?>
                     <div class="dropdown">
@@ -63,7 +106,7 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
 
                 <?php if ($user): ?>
                     <a href="index.php?action=agent-ia">Agent IA</a>
-                    <a href="?action=deconnexion" style="color: #dc3545;">Déconnexion</a>
+                    <a href="?action=deconnexion" class="logout-link">Déconnexion</a>
                 <?php else: ?>
                     <a href="?action=connect">Connexion</a>
                 <?php endif; ?>
@@ -82,9 +125,6 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
 
             } elseif (isset($_GET['action']) && $_GET['action'] === 'connect'){
                 include 'php-crud/views/auth/login.php';
-
-            } elseif (isset($_GET['action']) && $_GET['action'] === 'deconnexion'){
-                include 'php-crud/views/auth/logout.php';
 
             } elseif (isset($_GET['action']) && $_GET['action'] === 'etudiant_list'){
                 include 'php-crud/views/etudiants/list.php';
@@ -193,5 +233,6 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
             <p>&copy; 2025 BeautifuLLL AI. Tous droits réservés.</p>
         </footer>
     </main>
+    <script src="php-crud/public/menu.js"></script>
 </body>
 </html>
