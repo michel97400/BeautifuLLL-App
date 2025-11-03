@@ -9,6 +9,7 @@ require_once __DIR__ . '/../../model/niveau.php';
 use Models\Etudiants;
 use Models\Niveau;
 
+
 $matiereChoisie = $_SESSION['agent_ia_matiere'] ?? null;
 $user = $_SESSION['user'] ?? null;
 $niveauLibelle = null;
@@ -27,11 +28,11 @@ if ($user && isset($user['email'])) {
 
 if ($matiereChoisie) {
     // Affiche la card du chat IA
-    echo '<div class="chat-card-container">';
-    echo '<div class="chat-header">';
-    echo '<div class="chat-header-info">';
-    echo '<h2 class="chat-title">Agent IA - Chat</h2>';
-    echo '<div class="chat-subtitle">Matière : <strong>' . htmlspecialchars($matiereChoisie) . '</strong>';
+    echo '<div class="crud-card chat-card" style="max-width: 600px; min-height: 500px; margin: 40px auto; display: flex; flex-direction: column; box-shadow: 0 4px 16px rgba(0,0,0,0.12);">';
+    echo '<div class="chat-header" style="background: #0078d7; color: #fff; padding: 24px 32px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center;">';
+    echo '<div>';
+    echo '<h2 style="margin:0; font-size: 1.7rem; font-weight: 600; letter-spacing: 1px;">Agent IA - Chat</h2>';
+    echo '<div style="margin-top:8px; font-size:1rem; color:#e7f3ff;">Matiere : <strong>' . htmlspecialchars($matiereChoisie) . '</strong>';
     if ($niveauLibelle) echo ' | Niveau : <strong>' . htmlspecialchars($niveauLibelle) . '</strong>';
     echo '</div>';
     echo '</div>';
