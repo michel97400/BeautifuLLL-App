@@ -36,7 +36,9 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
 
         <header>
             <div class="header-container">
-                <h1>BeautifuLLL AI</h1>
+                <div class="header-left">
+                    <a href="index.php"><img src="php-crud/public/assets/logo.png" alt="BeautifuLLL AI Logo" class="header-logo"></a>
+                </div>
                 
                 <div class="header-right">
                     <?php if ($user): ?>
@@ -74,7 +76,7 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
                                 <svg style="width: 18px; height: 18px; fill: #0078d7;" viewBox="0 0 24 24">
                                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                                 </svg>
-                                <span><?= htmlspecialchars($user['prenom'] ?? $user['nom'] ?? $user['email']) ?></span>
+                                <span><?= htmlspecialchars($user['prenom'] . " " . $user['nom']) ?></span>
                             </div>
                             <div class="user-role">
                                 <span class="role-badge <?= $isAdmin ? 'role-admin' : 'role-user' ?>">
@@ -102,12 +104,13 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
                     </div>
                 <?php endif; ?>
 
-                <a href="?action=contact">Contact</a>
-
                 <?php if ($user): ?>
+                    <a href="index.php?action=dashboard">Mon profil</a>
                     <a href="index.php?action=agent-ia">Agent IA</a>
+                    <a href="?action=contact">Contact</a>
                     <a href="?action=deconnexion" class="logout-link">Déconnexion</a>
                 <?php else: ?>
+                    <a href="?action=contact">Contact</a>
                     <a href="?action=connect">Connexion</a>
                 <?php endif; ?>
             </nav>
@@ -125,6 +128,9 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
 
             } elseif (isset($_GET['action']) && $_GET['action'] === 'connect'){
                 include 'php-crud/views/auth/login.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'dashboard'){
+                include 'php-crud/views/etudiants/dashboard.php';
 
             } elseif (isset($_GET['action']) && $_GET['action'] === 'etudiant_list'){
                 include 'php-crud/views/etudiants/list.php';

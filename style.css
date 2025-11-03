@@ -19,8 +19,9 @@ main {
 header {
     background: linear-gradient(90deg,rgba(2, 0, 36, 1) 0%, rgba(9, 9, 121, 1) 35%, rgba(0, 212, 255, 1) 100%);
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    padding: 20px 24px;
+    padding: 15px 24px;
     position: relative;
+    min-height: 80px;
 }
 
 .header-container {
@@ -28,7 +29,24 @@ header {
     justify-content: space-between;
     align-items: center;
     max-width: 1400px;
-    margin: 0 auto 20px auto;
+    margin: 0 auto;
+    height: 100%;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    height: 100%;
+}
+
+.header-logo {
+    height: 80px;
+    max-height: 80px;
+    width: auto;
+    object-fit: contain;
+    border-radius: 50px;
+    border: 2px solid #fff
 }
 
 .header-right {
@@ -179,8 +197,22 @@ header h1 {
 
 /* ====== RESPONSIVE MOBILE ====== */
 @media (max-width: 768px) {
+    header {
+        min-height: 60px;
+        padding: 10px 15px;
+    }
+    
     header h1 {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
+    }
+    
+    .header-logo {
+        height: 50px;
+        max-height: 50px;
+    }
+    
+    .header-left {
+        gap: 10px;
     }
     
     .header-container {
@@ -771,9 +803,10 @@ footer {
 
 /* Container principal du chat */
 .chat-card-container {
-    max-width: 800px;
+    max-width: 1600px;
+    width: 800px;
     min-height: 600px;
-    margin: 40px auto;
+    margin: 100px auto;
     display: flex;
     flex-direction: column;
     box-shadow: 0 4px 16px rgba(0,0,0,0.12);
