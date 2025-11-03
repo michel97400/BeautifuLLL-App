@@ -51,11 +51,13 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
                             <a href="?action=role_list">Rôles</a>
                         </div>
                     </div>
+                    <a href="index.php?action=agent-ia">Agent IA</a>
                 <?php endif; ?>
 
                 <a href="?action=contact">Contact</a>
 
                 <?php if ($user): ?>
+                    <a href="index.php?action=agent-ia">Agent IA</a>
                     <a href="?action=deconnexion" style="color: #dc3545;">Déconnexion</a>
                 <?php else: ?>
                     <a href="?action=connect">Connexion</a>
@@ -65,8 +67,7 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
 
         <div class="main-content">
             <?php
-            // L'ancienne section d'affichage du message de déconnexion est supprimée ici.
-            // ... (reste du code inchangé) ...
+
 
             if (isset($_GET['action']) && $_GET['action'] === 'creer_etudiant') {
                 include 'php-crud/views/etudiant_form.php';
@@ -118,6 +119,13 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
 
             } elseif (isset($_GET['action']) && $_GET['action'] === 'modifier_role'){
                 include 'php-crud/views/role_form.php';
+
+            } elseif (isset($_GET['action']) && $_GET['action'] === 'agent-ia'){
+                if (!isset($_SESSION['agent_ia_matiere'])) {
+                    include 'php-crud/views/agent_matiere_form.php';
+                } else {
+                    include 'php-crud/views/chat_card.php';
+                }
 
             } elseif (isset($_GET['action']) && $_GET['action'] === 'supprimer_role'){
                 include 'php-crud/views/role_delete.php';

@@ -1,2 +1,0 @@
-gpt4all==2.8.2
-requests
