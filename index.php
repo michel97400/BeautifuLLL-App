@@ -54,7 +54,6 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
                             <a href="?action=message_list">Messages</a>
                         </div>
                     </div>
-                    <a href="index.php?action=agent-ia">Agent IA</a>
                 <?php endif; ?>
 
                 <a href="?action=contact">Contact</a>
