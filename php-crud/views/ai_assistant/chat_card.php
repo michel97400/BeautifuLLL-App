@@ -40,6 +40,7 @@ if ($matiereChoisie) {
     echo '<button type="submit" class="btn btn-primary" style="padding: 12px 24px; font-size: 1.1rem; border-radius: 8px;">Envoyer</button>';
     echo '</form>';
     echo '</div>';
+    echo '<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>';
     echo '<script src="php-crud/public/chat.js"></script>';
     // Traitement du POST pour reset
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_matiere'])) {
