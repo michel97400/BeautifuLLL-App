@@ -13,7 +13,7 @@ $niveau = null;
 if ($user && isset($user['email'])) {
     $etudiantModel = new Etudiants();
     $etudiant = $etudiantModel->readByEmail($user['email']);
-    $niveau = $etudiant['id_niveau'] ?? null;
+    $niveau = $etudiant['nom_matieres'] ?? null;
 }
 
 if ($matiereChoisie) {
