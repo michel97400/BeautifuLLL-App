@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS `agent` (
   PRIMARY KEY (`id_agents`),
   UNIQUE KEY `nom_agent` (`nom_agent`),
   UNIQUE KEY `unique_agent_per_matiere` (`id_matieres`)
-) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `agent`
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `etudiants` (
   UNIQUE KEY `email` (`email`),
   KEY `id_niveau` (`id_niveau`),
   KEY `id_role` (`id_role`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `etudiants`
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS `matieres` (
   `nom_matieres` varchar(50) NOT NULL,
   `description_matiere` text,
   PRIMARY KEY (`id_matieres`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `matieres`
@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS `message` (
   `id_session` int NOT NULL,
   PRIMARY KEY (`id_message`),
   KEY `id_session` (`id_session`)
-) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `message`
@@ -163,7 +163,7 @@ CREATE TABLE IF NOT EXISTS `niveau` (
   `id_niveau` int NOT NULL AUTO_INCREMENT,
   `libelle_niveau` varchar(50) NOT NULL,
   PRIMARY KEY (`id_niveau`)
-) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `niveau`
@@ -190,7 +190,7 @@ CREATE TABLE IF NOT EXISTS `role` (
   `nom_role` varchar(50) NOT NULL,
   PRIMARY KEY (`id_role`),
   UNIQUE KEY `nom_role` (`nom_role`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `role`
@@ -217,7 +217,7 @@ CREATE TABLE IF NOT EXISTS `session_conversation` (
   PRIMARY KEY (`id_session`),
   KEY `id_agents` (`id_agents`),
   KEY `id_etudiant` (`id_etudiant`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `session_conversation`
