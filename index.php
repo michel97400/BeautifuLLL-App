@@ -185,7 +185,7 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
             }
 
              else {
-                echo '<p>Bienvenue sur BeautifuLLL AI. Sélectionnez une action dans le menu.</p>';
+                include 'php-crud/views/accueil/view.php';
             }
             ?>
         </div>
