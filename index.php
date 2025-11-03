@@ -23,6 +23,9 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
 <body>
     <main>
         <?php
+
+        // var_dump($_SESSION);
+
         // Déplacé ici pour apparaître au-dessus de l'en-tête de la page
         if (isset($_GET['message']) && $_GET['message'] === 'deconnecte') {
             echo '<div style="color: green; text-align:center; margin-bottom:20px; padding:15px; border-radius:5px; background-color: #d4edda;">';
@@ -222,7 +225,7 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
             }
 
              else {
-                echo '<p>Bienvenue sur BeautifuLLL AI. Sélectionnez une action dans le menu.</p>';
+                include 'php-crud/views/accueil/view.php';
             }
             ?>
         </div>
