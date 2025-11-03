@@ -5,15 +5,24 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 require_once __DIR__ . '/../../model/etudiant.php';
+require_once __DIR__ . '/../../model/niveau.php';
 use Models\Etudiants;
+use Models\Niveau;
 
 $matiereChoisie = $_SESSION['agent_ia_matiere'] ?? null;
 $user = $_SESSION['user'] ?? null;
-$niveau = null;
+$niveauLibelle = null;
 if ($user && isset($user['email'])) {
     $etudiantModel = new Etudiants();
     $etudiant = $etudiantModel->readByEmail($user['email']);
-    $niveau = $etudiant['id_niveau'] ?? null;
+    $niveauId = $etudiant['id_niveau'] ?? null;
+    
+    // Récupérer le libellé du niveau
+    if ($niveauId) {
+        $niveauModel = new Niveau();
+        $niveauData = $niveauModel->readSingle($niveauId);
+        $niveauLibelle = $niveauData['libelle_niveau'] ?? null;
+    }
 }
 
 if ($matiereChoisie) {
@@ -23,7 +32,7 @@ if ($matiereChoisie) {
     echo '<div>';
     echo '<h2 style="margin:0; font-size: 1.7rem; font-weight: 600; letter-spacing: 1px;">Agent IA - Chat</h2>';
     echo '<div style="margin-top:8px; font-size:1rem; color:#e7f3ff;">Matière : <strong>' . htmlspecialchars($matiereChoisie) . '</strong>';
-    if ($niveau) echo ' | Niveau : <strong>' . htmlspecialchars($niveau) . '</strong>';
+    if ($niveauLibelle) echo ' | Niveau : <strong>' . htmlspecialchars($niveauLibelle) . '</strong>';
     echo '</div>';
     echo '</div>';
     echo '<form method="post" style="margin-left:auto;">';
