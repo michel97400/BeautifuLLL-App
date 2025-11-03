@@ -2,6 +2,13 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Gérer la déconnexion AVANT d'envoyer le HTML
+if (isset($_GET['action']) && $_GET['action'] === 'deconnexion') {
+    include 'php-crud/views/auth/logout.php';
+    exit; // Important: arrêter l'exécution après la déconnexion
+}
+
 $user = $_SESSION['user'] ?? null;
 $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
 ?>
@@ -36,7 +43,7 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
                                     <svg style="width: 18px; height: 18px; fill: #0078d7;" viewBox="0 0 24 24">
                                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                                     </svg>
-                                    <span><?= htmlspecialchars($user['prenom'] ?? $user['nom'] ?? $user['email']) ?></span>
+                                    <span><?= htmlspecialchars($user['prenom'] . " " . $user['nom']) ?></span>
                                 </div>
                                 <div class="user-role">
                                     <span class="role-badge <?= $isAdmin ? 'role-admin' : 'role-user' ?>">
@@ -115,9 +122,6 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
 
             } elseif (isset($_GET['action']) && $_GET['action'] === 'connect'){
                 include 'php-crud/views/auth/login.php';
-
-            } elseif (isset($_GET['action']) && $_GET['action'] === 'deconnexion'){
-                include 'php-crud/views/auth/logout.php';
 
             } elseif (isset($_GET['action']) && $_GET['action'] === 'etudiant_list'){
                 include 'php-crud/views/etudiants/list.php';
