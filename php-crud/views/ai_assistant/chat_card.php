@@ -7,13 +7,22 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/../../model/etudiant.php';
 use Models\Etudiants;
 
+require_once __DIR__ . '/../../model/niveau.php';
+use Models\Niveau;
+
 $matiereChoisie = $_SESSION['agent_ia_matiere'] ?? null;
 $user = $_SESSION['user'] ?? null;
-$niveau = null;
-if ($user && isset($user['email'])) {
+$niveauLibelle = null;
+
+if ($user && isset($user['id_etudiant'])) {
     $etudiantModel = new Etudiants();
-    $etudiant = $etudiantModel->readByEmail($user['email']);
-    $niveau = $etudiant['nom_matieres'] ?? null;
+    $etudiant = $etudiantModel->readSingle($user['id_etudiant']);
+
+    if ($etudiant && isset($etudiant['id_niveau'])) {
+        $niveauModel = new Niveau();
+        $niveau = $niveauModel->readSingle($etudiant['id_niveau']);
+        $niveauLibelle = $niveau['libelle_niveau'] ?? null;
+    }
 }
 
 if ($matiereChoisie) {
@@ -22,8 +31,8 @@ if ($matiereChoisie) {
     echo '<div class="chat-header" style="background: #0078d7; color: #fff; padding: 24px 32px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center;">';
     echo '<div>';
     echo '<h2 style="margin:0; font-size: 1.7rem; font-weight: 600; letter-spacing: 1px;">Agent IA - Chat</h2>';
-    echo '<div style="margin-top:8px; font-size:1rem; color:#e7f3ff;">Matière : <strong>' . htmlspecialchars($matiereChoisie) . '</strong>';
-    if ($niveau) echo ' | Niveau : <strong>' . htmlspecialchars($niveau) . '</strong>';
+    echo '<div style="margin-top:8px; font-size:1rem; color:#e7f3ff;">Matiere : <strong>' . htmlspecialchars($matiereChoisie) . '</strong>';
+    if ($niveauLibelle) echo ' | Niveau : <strong>' . htmlspecialchars($niveauLibelle) . '</strong>';
     echo '</div>';
     echo '</div>';
     echo '<form method="post" style="margin-left:auto;">';

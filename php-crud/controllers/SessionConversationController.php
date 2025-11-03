@@ -8,7 +8,7 @@ require_once __DIR__ . '/../model/etudiant.php';
 require_once __DIR__ . '/AgentController.php';
 require_once __DIR__ . '/EtudiantController.php';
 
-use Models\session_conversation;
+use Models\SessionConversation;
 use Models\Agent;
 use Models\Etudiants;
 
@@ -23,13 +23,13 @@ class SessionConversationController
 
     public function getSessionConversation()
     {
-        $SessionConversation = new session_conversation();
+        $SessionConversation = new SessionConversation();
         return $SessionConversation->read();
     }
     
     public function getSessionsWithDetails()
     {
-        $sessionModel = new session_conversation();
+        $sessionModel = new SessionConversation();
         $sessions = $sessionModel->read();
         $agentModel = new Agent();
         $etudiantModel = new Etudiants();
@@ -45,7 +45,7 @@ class SessionConversationController
     
     public function getSingleSessionWithDetails($id_session)
     {
-        $sessionModel = new session_conversation();
+        $sessionModel = new SessionConversation();
         $session = $sessionModel->readSingle($id_session);
 
         if ($session) {
@@ -61,19 +61,19 @@ class SessionConversationController
 
     public function getSingleSessionConversation($id_session)
     {
-        $SessionConversation = new session_conversation();
+        $SessionConversation = new SessionConversation();
         return $SessionConversation->readSingle($id_session);
     }
 
     public function updateSessionConversation($id_session, $date_heure_debut, $duree_session, $date_heure_fin, $id_agents, $id_etudiant)
     {
-        $SessionConversation = new session_conversation();
+        $SessionConversation = new SessionConversation();
         return $SessionConversation->update($id_session, $date_heure_debut, $duree_session, $date_heure_fin, $id_agents, $id_etudiant);
     }
 
     public function deleteSessionConversation($id_Session)
     {
-        $SessionConversation = new session_conversation();
+        $SessionConversation = new SessionConversation();
         return $SessionConversation->delete($id_Session);
     }
 
