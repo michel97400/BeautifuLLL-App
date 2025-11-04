@@ -9,7 +9,7 @@ require_once __DIR__ . '/../model/message.php';
 require_once __DIR__ . '/../model/Agent.php';
 
 use Config\Database;
-use Models\session_conversation;
+use Models\SessionConversation;
 use Models\Message;
 use Models\Agent;
 
@@ -114,7 +114,7 @@ class ChatController {
             }
             
             // Créer une nouvelle session
-            $sessionModel = new session_conversation();
+            $sessionModel = new SessionConversation();
             $agentModel = new Agent();
             
             // Trouver ou créer un agent pour la matière choisie

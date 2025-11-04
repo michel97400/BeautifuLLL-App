@@ -18,7 +18,6 @@ class SessionConversation
         }
     }
 
-<<<<<<< HEAD
     public function readByEtudiant($id_etudiant)
 {
     $sql = "SELECT sc.*, a.nom_agent, a.avatar_agent, 
@@ -67,11 +66,6 @@ class SessionConversation
     return false;
 }
 
-=======
-    /**
-     * Lire une session specifique
-     */
->>>>>>> main
     public function readSingle($id)
     {
         $sql = "SELECT s.*, a.nom_agent, m.nom_matieres

@@ -207,8 +207,8 @@ if ($matiereChoisie) {
                     <h2 style="margin:0; font-size: 1.7rem; font-weight: 600; letter-spacing: 1px;">Agent IA - Chat</h2>
                     <div style="margin-top:8px; font-size:1rem; color:#e7f3ff;">
                         Matière : <strong><?= htmlspecialchars($matiereChoisie) ?></strong>
-                        <?php if ($niveau): ?>
-                            | Niveau : <strong><?= htmlspecialchars($niveau) ?></strong>
+                        <?php if ($niveauLibelle): ?>
+                            | Niveau : <strong><?= htmlspecialchars($niveauLibelle) ?></strong>
                         <?php endif; ?>
                     </div>
                 </div>
