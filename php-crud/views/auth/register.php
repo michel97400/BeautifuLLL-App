@@ -1,7 +1,8 @@
 <?php
 require_once __DIR__ . '/../../controllers/EtudiantController.php';
 use Controllers\EtudiantController;
-
+$niveauController = new \Controllers\NiveauController();
+$niveaux = $niveauController->getNiveaux();
 $controller = new EtudiantController();
 $message = '';
 $errors = [];
@@ -125,15 +126,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div class="form-group">
-                <label>
-                    <input type="checkbox" name="consentement_rgpd" value="1" required>
-                    J'accepte la politique de confidentialité (RGPD) *
+                <label for="id_niveau">Votre niveau d'études *</label>
+                <select name="id_niveau" id="id_niveau" required>
+                    <option value="">-- Choisissez votre niveau --</option>
+                    <?php foreach ($niveaux as $niveau): ?>
+                        <option value="<?= $niveau['id_niveau'] ?>" 
+                            <?= (isset($_POST['id_niveau']) && $_POST['id_niveau'] == $niveau['id_niveau']) ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($niveau['libelle_niveau']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="form-group" style="display: flex; align-items: center; gap: 8px; font-size: 0.95rem;">
+                <label style="display: flex; align-items: center; cursor: pointer; margin: 0;">
+                    <input type="checkbox" name="consentement_rgpd" value="1" required style="margin: 0; width: 16px; height: 16px;">
+                    <span style="margin-left: 8px;">J'accepte la politique de confidentialité (RGPD) *</span>
                 </label>
             </div>
 
             <!-- Valeurs par défaut pour étudiant -->
             <input type="hidden" name="id_role" value="2"> <!-- Rôle "Étudiant" -->
-            <input type="hidden" name="id_niveau" value="1"> <!-- Niveau "Débutant" -->
 
             <button type="submit" class="btn-primary">S'inscrire</button>
         </form>
