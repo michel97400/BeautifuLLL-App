@@ -243,151 +243,485 @@ function sendMessage() {
 }
 
 /**
- * Télécharge une réponse en PDF
+ * Remplace les emojis et caractères spéciaux par des équivalents texte
  */
-function downloadResponseAsPDF(content, index) {
-    // Créer le contenu HTML complet avec styles inline
-    const htmlContent = `
-        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; padding: 20px; background: white; max-width: 800px;">
-            <div style="text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #0078d7;">
-                <h1 style="color: #0078d7; margin: 10px 0; font-size: 24px;">🤖 Réponse de l'Agent IA</h1>
-                <p style="color: #666; font-size: 14px; margin: 5px 0;"><em>Généré le ${new Date().toLocaleString('fr-FR')}</em></p>
-            </div>
-            <div style="margin: 20px 0; font-size: 14px;">
-                ${marked.parse(content)}
-            </div>
-            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666; text-align: center;">
-                <p style="margin: 5px 0;">Document généré par BeautifuLLL-App</p>
-            </div>
-        </div>
-    `;
+function sanitizeText(text) {
+    const replacements = {
+        '🤖': '[IA]',
+        '📚': '[LIVRE]',
+        '💡': '[IDEE]',
+        '⚠️': '[ATTENTION]',
+        '✅': '[OK]',
+        '❌': '[NON]',
+        '🔍': '[RECHERCHE]',
+        '📝': '[NOTE]',
+        '🎯': '[CIBLE]',
+        '⭐': '[ETOILE]',
+        '🌟': '[ETOILE]',
+        '💻': '[ORDINATEUR]',
+        '📊': '[GRAPHIQUE]',
+        '🔬': '[SCIENCE]',
+        '🧪': '[CHIMIE]',
+        '🧬': '[ADN]',
+        '🌊': '[EAU]',
+        '💧': '[GOUTTE]',
+        '🔥': '[FEU]',
+        '⚡': '[ECLAIR]',
+        '🌡️': '[TEMPERATURE]',
+        '📐': '[GEOMETRIE]',
+        '➡️': '->',
+        '⬅️': '<-',
+        '⬆️': '^',
+        '⬇️': 'v',
+        '✓': 'V',
+        '×': 'x',
+        '÷': '/',
+        '±': '+/-',
+        '≈': '~',
+        '≠': '!=',
+        '≤': '<=',
+        '≥': '>=',
+        '°': ' degres',
+        '€': 'EUR',
+        '£': 'GBP',
+        '¥': 'YEN',
+        '₹': 'INR',
+        // Nettoyer les caractères Unicode problématiques
+        '\u2028': ' ',
+        '\u2029': ' ',
+        '\u2013': '-',
+        '\u2014': '-',
+        '\u2018': "'",
+        '\u2019': "'",
+        '\u201C': '"',
+        '\u201D': '"',
+        '\u2026': '...',
+        '™': '(TM)',
+        '®': '(R)',
+        '©': '(C)',
+        '1️⃣': '1.',
+        '2️⃣': '2.',
+        '3️⃣': '3.',
+        '4️⃣': '4.',
+        '5️⃣': '5.',
+        '6️⃣': '6.',
+        '7️⃣': '7.',
+        '8️⃣': '8.',
+        '9️⃣': '9.',
+        '🔟': '10.'
+    };
     
-    // Créer un élément temporaire
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = htmlContent;
-    tempDiv.style.cssText = 'position: fixed; top: 0; left: 0; width: 210mm; background: white; z-index: -1; opacity: 0;';
+    let result = text;
+    for (const [emoji, replacement] of Object.entries(replacements)) {
+        result = result.replace(new RegExp(emoji, 'g'), replacement);
+    }
     
-    // Ajouter à la page
-    document.body.appendChild(tempDiv);
+    // Remplacer les autres emojis restants par un espace
+    result = result.replace(/[\u{1F300}-\u{1F9FF}]/gu, ' ');
     
-    // Appliquer les styles après insertion dans le DOM
-    setTimeout(() => {
-        const contentDiv = tempDiv.querySelector('div > div:nth-child(2)');
+    return result;
+}
+
+/**
+ * Détecte et parse un tableau markdown
+ */
+function parseMarkdownTable(lines, startIndex) {
+    const tableLines = [];
+    let i = startIndex;
+    
+    // Collecter toutes les lignes du tableau
+    while (i < lines.length && lines[i].includes('|')) {
+        tableLines.push(lines[i]);
+        i++;
+    }
+    
+    if (tableLines.length < 2) return null;
+    
+    // Parser le tableau
+    const headers = tableLines[0].split('|').map(h => h.trim()).filter(h => h);
+    const rows = [];
+    
+    for (let j = 2; j < tableLines.length; j++) {
+        const cells = tableLines[j].split('|').map(c => c.trim()).filter(c => c);
+        if (cells.length > 0) {
+            rows.push(cells);
+        }
+    }
+    
+    // Créer la structure pdfmake
+    const tableBody = [
+        headers.map(h => ({ text: sanitizeText(h), style: 'tableHeader', fillColor: '#0078d7', color: '#ffffff' }))
+    ];
+    
+    rows.forEach(row => {
+        tableBody.push(row.map(cell => ({ text: sanitizeText(cell), style: 'tableCell' })));
+    });
+    
+    return {
+        table: {
+            headerRows: 1,
+            widths: Array(headers.length).fill('*'),
+            body: tableBody
+        },
+        layout: {
+            fillColor: function (rowIndex) {
+                return (rowIndex % 2 === 0) ? '#f8f9fa' : null;
+            },
+            hLineWidth: function () { return 0.5; },
+            vLineWidth: function () { return 0.5; },
+            hLineColor: function () { return '#dddddd'; },
+            vLineColor: function () { return '#dddddd'; }
+        },
+        margin: [0, 10, 0, 10],
+        endIndex: i
+    };
+}
+
+/**
+ * Convertit le contenu markdown en structure pdfmake
+ */
+function markdownToPdfContent(markdown) {
+    const content = [];
+    
+    // NE PAS nettoyer les emojis ici, les garder pour le PDF
+    const lines = markdown.split('\n');
+    let inCodeBlock = false;
+    let codeBlockContent = [];
+    let inList = false;
+    let listItems = [];
+    let i = 0;
+    
+    while (i < lines.length) {
+        const line = lines[i];
         
-        if (contentDiv) {
-            // Styliser les titres
-            const headings = contentDiv.querySelectorAll('h1, h2, h3, h4, h5, h6');
-            headings.forEach(h => {
-                h.style.color = '#0078d7';
-                h.style.marginTop = '16px';
-                h.style.marginBottom = '8px';
-                h.style.fontWeight = '600';
-            });
-            
-            // Styliser le code
-            const codeBlocks = contentDiv.querySelectorAll('code');
-            codeBlocks.forEach(code => {
-                if (!code.parentElement || code.parentElement.tagName !== 'PRE') {
-                    code.style.backgroundColor = '#f4f4f4';
-                    code.style.padding = '2px 6px';
-                    code.style.borderRadius = '3px';
-                    code.style.fontFamily = 'Courier New, monospace';
-                    code.style.fontSize = '13px';
-                }
-            });
-            
-            // Styliser les blocs pre
-            const preBlocks = contentDiv.querySelectorAll('pre');
-            preBlocks.forEach(pre => {
-                pre.style.backgroundColor = '#f4f4f4';
-                pre.style.padding = '12px';
-                pre.style.borderRadius = '5px';
-                pre.style.margin = '10px 0';
-                pre.style.overflowX = 'auto';
-                const code = pre.querySelector('code');
-                if (code) {
-                    code.style.backgroundColor = 'transparent';
-                    code.style.padding = '0';
-                }
-            });
-            
-            // Styliser les tableaux
-            const tables = contentDiv.querySelectorAll('table');
-            tables.forEach(table => {
-                table.style.borderCollapse = 'collapse';
-                table.style.width = '100%';
-                table.style.margin = '15px 0';
-                
-                const ths = table.querySelectorAll('th');
-                ths.forEach(th => {
-                    th.style.backgroundColor = '#0078d7';
-                    th.style.color = 'white';
-                    th.style.padding = '8px';
-                    th.style.border = '1px solid #ddd';
-                    th.style.textAlign = 'left';
+        // Bloc de code
+        if (line.startsWith('```')) {
+            if (inCodeBlock) {
+                // Fin du bloc de code
+                content.push({
+                    text: codeBlockContent.join('\n'),
+                    style: 'code',
+                    margin: [10, 5, 10, 10],
+                    background: '#f4f4f4'
                 });
-                
-                const tds = table.querySelectorAll('td');
-                tds.forEach(td => {
-                    td.style.padding = '8px';
-                    td.style.border = '1px solid #ddd';
-                });
-            });
-            
-            // Styliser les citations
-            const blockquotes = contentDiv.querySelectorAll('blockquote');
-            blockquotes.forEach(bq => {
-                bq.style.borderLeft = '4px solid #0078d7';
-                bq.style.paddingLeft = '15px';
-                bq.style.color = '#666';
-                bq.style.margin = '15px 0';
-                bq.style.fontStyle = 'italic';
-            });
-            
-            // Styliser les listes
-            const lists = contentDiv.querySelectorAll('ul, ol');
-            lists.forEach(list => {
-                list.style.margin = '10px 0';
-                list.style.paddingLeft = '25px';
-            });
-            
-            const listItems = contentDiv.querySelectorAll('li');
-            listItems.forEach(li => {
-                li.style.margin = '5px 0';
-            });
+                codeBlockContent = [];
+                inCodeBlock = false;
+            } else {
+                // Début du bloc de code
+                if (inList) { content.push({ ul: listItems }); listItems = []; inList = false; }
+                inCodeBlock = true;
+            }
+            i++;
+            continue;
         }
         
-        // Options pour html2pdf
-        const opt = {
-            margin: 10,
-            filename: `Agent-IA-Reponse-${new Date().getTime()}.pdf`,
-            image: { type: 'jpeg', quality: 0.95 },
-            html2canvas: { 
-                scale: 2,
-                useCORS: true,
-                letterRendering: true,
-                logging: false
-            },
-            jsPDF: { 
-                unit: 'mm', 
-                format: 'a4', 
-                orientation: 'portrait',
-                compress: true
-            }
-        };
+        if (inCodeBlock) {
+            codeBlockContent.push(line);
+            i++;
+            continue;
+        }
         
-        // Générer et télécharger le PDF
-        html2pdf().set(opt).from(tempDiv).save().then(() => {
-            // Nettoyer l'élément temporaire
-            document.body.removeChild(tempDiv);
-        }).catch((error) => {
-            console.error('Erreur lors de la génération du PDF:', error);
-            if (document.body.contains(tempDiv)) {
-                document.body.removeChild(tempDiv);
+        // Détecter un tableau
+        if (line.includes('|') && !line.startsWith('|') && i + 1 < lines.length && lines[i + 1].includes('|')) {
+            if (inList) { content.push({ ul: listItems }); listItems = []; inList = false; }
+            
+            const tableResult = parseMarkdownTable(lines, i);
+            if (tableResult) {
+                content.push({
+                    table: tableResult.table,
+                    layout: tableResult.layout,
+                    margin: tableResult.margin
+                });
+                i = tableResult.endIndex;
+                continue;
             }
-            alert('Erreur lors de la génération du PDF. Veuillez réessayer.');
+        }
+        
+        // Séparateur horizontal
+        if (line.trim() === '---' || line.trim() === '___') {
+            if (inList) { content.push({ ul: listItems }); listItems = []; inList = false; }
+            content.push({
+                canvas: [
+                    {
+                        type: 'line',
+                        x1: 0, y1: 0,
+                        x2: 515, y2: 0,
+                        lineWidth: 1,
+                        lineColor: '#cccccc'
+                    }
+                ],
+                margin: [0, 10, 0, 10]
+            });
+            i++;
+            continue;
+        }
+        
+        // Citation (blockquote)
+        if (line.startsWith('> ')) {
+            if (inList) { content.push({ ul: listItems }); listItems = []; inList = false; }
+            const text = line.replace(/^>\s*/, '');
+            content.push({
+                text: text,
+                style: 'quote',
+                margin: [20, 3, 0, 3]
+            });
+            i++;
+            continue;
+        }
+        
+        // Titres
+        if (line.startsWith('# ')) {
+            if (inList) { content.push({ ul: listItems }); listItems = []; inList = false; }
+            content.push({ text: line.replace(/^# /, ''), style: 'header1', margin: [0, 15, 0, 5] });
+            i++;
+            continue;
+        } else if (line.startsWith('## ')) {
+            if (inList) { content.push({ ul: listItems }); listItems = []; inList = false; }
+            content.push({ text: line.replace(/^## /, ''), style: 'header2', margin: [0, 12, 0, 5] });
+            i++;
+            continue;
+        } else if (line.startsWith('### ')) {
+            if (inList) { content.push({ ul: listItems }); listItems = []; inList = false; }
+            content.push({ text: line.replace(/^### /, ''), style: 'header3', margin: [0, 10, 0, 5] });
+            i++;
+            continue;
+        } 
+        // Listes
+        else if (line.match(/^[\*\-\+]\s+/)) {
+            inList = true;
+            listItems.push(line.replace(/^[\*\-\+]\s+/, ''));
+            i++;
+            continue;
+        }
+        // Ligne vide
+        else if (line.trim() === '') {
+            if (inList) {
+                content.push({ ul: listItems, margin: [0, 5, 0, 10] });
+                listItems = [];
+                inList = false;
+            }
+            i++;
+            continue;
+        }
+        // Texte normal
+        else if (line.trim()) {
+            if (inList) { content.push({ ul: listItems }); listItems = []; inList = false; }
+            
+            // Gérer le formatage inline
+            const textParts = [];
+            let currentText = line;
+            
+            // Parser le texte avec gras/italique
+            const boldRegex = /\*\*(.+?)\*\*/g;
+            const italicRegex = /\*(.+?)\*/g;
+            const codeRegex = /`(.+?)`/g;
+            
+            // Simplification : juste garder le texte formaté
+            currentText = currentText
+                .replace(boldRegex, '$1')
+                .replace(italicRegex, '$1')
+                .replace(codeRegex, '$1');
+            
+            content.push({ text: currentText, margin: [0, 0, 0, 5] });
+        }
+        
+        i++;
+    }
+    
+    // Ajouter la dernière liste si nécessaire
+    if (inList && listItems.length > 0) {
+        content.push({ ul: listItems, margin: [0, 5, 0, 10] });
+    }
+    
+    return content;
+}
+
+/**
+ * Télécharge une réponse en PDF
+ */
+async function downloadResponseAsPDF(content, index) {
+    try {
+        // Créer un conteneur temporaire avec le contenu formaté
+        const container = document.createElement('div');
+        container.style.cssText = `
+            position: fixed;
+            left: -9999px;
+            top: 0;
+            width: 800px;
+            background: white;
+            padding: 40px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        `;
+        
+        // En-tête
+        const header = document.createElement('div');
+        header.style.cssText = `
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #0078d7;
+        `;
+        header.innerHTML = `
+            <h1 style="color: #0078d7; margin: 10px 0; font-size: 28px;">🤖 Réponse de l'Agent IA</h1>
+            <p style="color: #666; font-size: 14px; margin: 10px 0;"><em>Généré le ${new Date().toLocaleString('fr-FR')}</em></p>
+        `;
+        
+        // Contenu markdown converti en HTML
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'markdown-content';
+        contentDiv.innerHTML = marked.parse(content);
+        contentDiv.style.cssText = `
+            font-size: 14px;
+            line-height: 1.8;
+        `;
+        
+        // Appliquer les styles CSS aux éléments
+        contentDiv.querySelectorAll('h1, h2, h3, h4, h5, h6').forEach(h => {
+            h.style.color = '#0078d7';
+            h.style.marginTop = '20px';
+            h.style.marginBottom = '10px';
+            h.style.fontWeight = '600';
         });
-    }, 100); // Petit délai pour laisser le DOM se mettre à jour
+        
+        contentDiv.querySelectorAll('code').forEach(code => {
+            if (!code.parentElement || code.parentElement.tagName !== 'PRE') {
+                code.style.backgroundColor = '#f4f4f4';
+                code.style.padding = '3px 6px';
+                code.style.borderRadius = '3px';
+                code.style.fontFamily = 'Courier New, monospace';
+                code.style.fontSize = '13px';
+            }
+        });
+        
+        contentDiv.querySelectorAll('pre').forEach(pre => {
+            pre.style.backgroundColor = '#f4f4f4';
+            pre.style.padding = '15px';
+            pre.style.borderRadius = '5px';
+            pre.style.margin = '15px 0';
+            pre.style.overflowX = 'auto';
+            pre.style.whiteSpace = 'pre-wrap';
+            pre.style.wordWrap = 'break-word';
+            const code = pre.querySelector('code');
+            if (code) {
+                code.style.backgroundColor = 'transparent';
+                code.style.padding = '0';
+            }
+        });
+        
+        contentDiv.querySelectorAll('table').forEach(table => {
+            table.style.borderCollapse = 'collapse';
+            table.style.width = '100%';
+            table.style.margin = '20px 0';
+            table.style.fontSize = '13px';
+            
+            table.querySelectorAll('th').forEach(th => {
+                th.style.backgroundColor = '#0078d7';
+                th.style.color = 'white';
+                th.style.padding = '12px 10px';
+                th.style.border = '1px solid #ddd';
+                th.style.textAlign = 'left';
+                th.style.fontWeight = '600';
+            });
+            
+            table.querySelectorAll('td').forEach(td => {
+                td.style.padding = '10px';
+                td.style.border = '1px solid #ddd';
+            });
+            
+            table.querySelectorAll('tr:nth-child(even)').forEach(tr => {
+                if (!tr.querySelector('th')) {
+                    tr.style.backgroundColor = '#f8f9fa';
+                }
+            });
+        });
+        
+        contentDiv.querySelectorAll('blockquote').forEach(bq => {
+            bq.style.borderLeft = '4px solid #0078d7';
+            bq.style.paddingLeft = '15px';
+            bq.style.color = '#555';
+            bq.style.margin = '15px 0';
+            bq.style.fontStyle = 'italic';
+            bq.style.backgroundColor = '#f8f9fa';
+            bq.style.padding = '10px 15px';
+        });
+        
+        contentDiv.querySelectorAll('ul, ol').forEach(list => {
+            list.style.margin = '10px 0';
+            list.style.paddingLeft = '30px';
+        });
+        
+        contentDiv.querySelectorAll('li').forEach(li => {
+            li.style.margin = '8px 0';
+        });
+        
+        contentDiv.querySelectorAll('p').forEach(p => {
+            p.style.margin = '10px 0';
+        });
+        
+        // Pied de page
+        const footer = document.createElement('div');
+        footer.style.cssText = `
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        `;
+        footer.innerHTML = '<p>Document généré par BeautifuLLL-App</p>';
+        
+        // Assembler le contenu
+        container.appendChild(header);
+        container.appendChild(contentDiv);
+        container.appendChild(footer);
+        document.body.appendChild(container);
+        
+        // Capturer avec html2canvas
+        const canvas = await html2canvas(container, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff'
+        });
+        
+        // Créer le PDF
+        const { jsPDF } = window.jspdf;
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = 210; // A4 width in mm
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+        const pdf = new jsPDF({
+            orientation: imgHeight > 297 ? 'portrait' : 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
+        
+        let heightLeft = imgHeight;
+        let position = 0;
+        
+        // Ajouter l'image au PDF (avec gestion des pages multiples)
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= 297;
+        
+        while (heightLeft > 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= 297;
+        }
+        
+        // Télécharger
+        pdf.save(`Agent-IA-Reponse-${new Date().getTime()}.pdf`);
+        
+        // Nettoyer
+        document.body.removeChild(container);
+        
+    } catch (error) {
+        console.error('Erreur lors de la génération du PDF:', error);
+        alert('Erreur lors de la génération du PDF: ' + error.message);
+    }
 }
 
 /**
