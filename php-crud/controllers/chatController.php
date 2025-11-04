@@ -154,16 +154,8 @@ class ChatController {
 
             $id_agent = $agent['id_agents'];
 
-            // Vérifier s'il existe déjà une session active avec cet agent
-            $activeSession = $sessionModel->getActiveSession($user['id_etudiant']);
-
-            if ($activeSession && $activeSession['id_agents'] == $id_agent) {
-                // Réutiliser la session active existante avec le bon agent
-                $_SESSION['current_session_id'] = $activeSession['id_session'];
-                return $activeSession['id_session'];
-            }
-
-            // Créer une nouvelle session avec le bon agent
+            // Toujours créer une nouvelle session (ne pas réutiliser l'ancienne)
+            // Cela permet d'avoir un historique distinct pour chaque conversation
             $id_session = $sessionModel->createAndReturnId(
                 '00:00:00',
                 null,
