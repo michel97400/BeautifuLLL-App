@@ -243,6 +243,154 @@ function sendMessage() {
 }
 
 /**
+ * Télécharge une réponse en PDF
+ */
+function downloadResponseAsPDF(content, index) {
+    // Créer le contenu HTML complet avec styles inline
+    const htmlContent = `
+        <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; padding: 20px; background: white; max-width: 800px;">
+            <div style="text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #0078d7;">
+                <h1 style="color: #0078d7; margin: 10px 0; font-size: 24px;">🤖 Réponse de l'Agent IA</h1>
+                <p style="color: #666; font-size: 14px; margin: 5px 0;"><em>Généré le ${new Date().toLocaleString('fr-FR')}</em></p>
+            </div>
+            <div style="margin: 20px 0; font-size: 14px;">
+                ${marked.parse(content)}
+            </div>
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666; text-align: center;">
+                <p style="margin: 5px 0;">Document généré par BeautifuLLL-App</p>
+            </div>
+        </div>
+    `;
+    
+    // Créer un élément temporaire
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlContent;
+    tempDiv.style.cssText = 'position: fixed; top: 0; left: 0; width: 210mm; background: white; z-index: -1; opacity: 0;';
+    
+    // Ajouter à la page
+    document.body.appendChild(tempDiv);
+    
+    // Appliquer les styles après insertion dans le DOM
+    setTimeout(() => {
+        const contentDiv = tempDiv.querySelector('div > div:nth-child(2)');
+        
+        if (contentDiv) {
+            // Styliser les titres
+            const headings = contentDiv.querySelectorAll('h1, h2, h3, h4, h5, h6');
+            headings.forEach(h => {
+                h.style.color = '#0078d7';
+                h.style.marginTop = '16px';
+                h.style.marginBottom = '8px';
+                h.style.fontWeight = '600';
+            });
+            
+            // Styliser le code
+            const codeBlocks = contentDiv.querySelectorAll('code');
+            codeBlocks.forEach(code => {
+                if (!code.parentElement || code.parentElement.tagName !== 'PRE') {
+                    code.style.backgroundColor = '#f4f4f4';
+                    code.style.padding = '2px 6px';
+                    code.style.borderRadius = '3px';
+                    code.style.fontFamily = 'Courier New, monospace';
+                    code.style.fontSize = '13px';
+                }
+            });
+            
+            // Styliser les blocs pre
+            const preBlocks = contentDiv.querySelectorAll('pre');
+            preBlocks.forEach(pre => {
+                pre.style.backgroundColor = '#f4f4f4';
+                pre.style.padding = '12px';
+                pre.style.borderRadius = '5px';
+                pre.style.margin = '10px 0';
+                pre.style.overflowX = 'auto';
+                const code = pre.querySelector('code');
+                if (code) {
+                    code.style.backgroundColor = 'transparent';
+                    code.style.padding = '0';
+                }
+            });
+            
+            // Styliser les tableaux
+            const tables = contentDiv.querySelectorAll('table');
+            tables.forEach(table => {
+                table.style.borderCollapse = 'collapse';
+                table.style.width = '100%';
+                table.style.margin = '15px 0';
+                
+                const ths = table.querySelectorAll('th');
+                ths.forEach(th => {
+                    th.style.backgroundColor = '#0078d7';
+                    th.style.color = 'white';
+                    th.style.padding = '8px';
+                    th.style.border = '1px solid #ddd';
+                    th.style.textAlign = 'left';
+                });
+                
+                const tds = table.querySelectorAll('td');
+                tds.forEach(td => {
+                    td.style.padding = '8px';
+                    td.style.border = '1px solid #ddd';
+                });
+            });
+            
+            // Styliser les citations
+            const blockquotes = contentDiv.querySelectorAll('blockquote');
+            blockquotes.forEach(bq => {
+                bq.style.borderLeft = '4px solid #0078d7';
+                bq.style.paddingLeft = '15px';
+                bq.style.color = '#666';
+                bq.style.margin = '15px 0';
+                bq.style.fontStyle = 'italic';
+            });
+            
+            // Styliser les listes
+            const lists = contentDiv.querySelectorAll('ul, ol');
+            lists.forEach(list => {
+                list.style.margin = '10px 0';
+                list.style.paddingLeft = '25px';
+            });
+            
+            const listItems = contentDiv.querySelectorAll('li');
+            listItems.forEach(li => {
+                li.style.margin = '5px 0';
+            });
+        }
+        
+        // Options pour html2pdf
+        const opt = {
+            margin: 10,
+            filename: `Agent-IA-Reponse-${new Date().getTime()}.pdf`,
+            image: { type: 'jpeg', quality: 0.95 },
+            html2canvas: { 
+                scale: 2,
+                useCORS: true,
+                letterRendering: true,
+                logging: false
+            },
+            jsPDF: { 
+                unit: 'mm', 
+                format: 'a4', 
+                orientation: 'portrait',
+                compress: true
+            }
+        };
+        
+        // Générer et télécharger le PDF
+        html2pdf().set(opt).from(tempDiv).save().then(() => {
+            // Nettoyer l'élément temporaire
+            document.body.removeChild(tempDiv);
+        }).catch((error) => {
+            console.error('Erreur lors de la génération du PDF:', error);
+            if (document.body.contains(tempDiv)) {
+                document.body.removeChild(tempDiv);
+            }
+            alert('Erreur lors de la génération du PDF. Veuillez réessayer.');
+        });
+    }, 100); // Petit délai pour laisser le DOM se mettre à jour
+}
+
+/**
  * Met à jour l'affichage du chat
  */
 function updateChatDisplay() {
@@ -253,11 +401,12 @@ function updateChatDisplay() {
         return;
     }
     
-    currentHistory.forEach(msg => {
+    currentHistory.forEach((msg, index) => {
         const div = document.createElement('div');
         div.style.marginBottom = '12px';
         div.style.padding = '12px';
         div.style.borderRadius = '8px';
+        div.style.position = 'relative';
         
         // Supporter les deux formats de données
         const role = msg.role || msg.emetteur || 'user';
@@ -266,11 +415,46 @@ function updateChatDisplay() {
         div.style.backgroundColor = role === 'user' ? '#e7f3ff' : '#fff';
         div.style.border = '1px solid ' + (role === 'user' ? '#0078d7' : '#e0e0e0');
         
+        const headerDiv = document.createElement('div');
+        headerDiv.style.display = 'flex';
+        headerDiv.style.justifyContent = 'space-between';
+        headerDiv.style.alignItems = 'center';
+        headerDiv.style.marginBottom = '8px';
+        
         const userLabel = document.createElement('strong');
         userLabel.textContent = (role === 'user' ? 'Vous' : 'Agent IA') + ' : ';
         userLabel.style.color = role === 'user' ? '#0078d7' : '#333';
-        userLabel.style.display = 'block';
-        userLabel.style.marginBottom = '8px';
+        
+        headerDiv.appendChild(userLabel);
+        
+        // Ajouter le bouton de téléchargement uniquement pour les réponses de l'agent
+        if (role === 'assistant') {
+            const downloadBtn = document.createElement('button');
+            downloadBtn.innerHTML = '📥 Télécharger PDF';
+            downloadBtn.style.cssText = `
+                background: linear-gradient(135deg, #0078d7 0%, #005a9e 100%);
+                color: white;
+                border: none;
+                padding: 6px 12px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 0.85rem;
+                transition: all 0.3s;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            `;
+            downloadBtn.onmouseover = function() {
+                this.style.transform = 'translateY(-2px)';
+                this.style.boxShadow = '0 4px 8px rgba(0,0,0,0.15)';
+            };
+            downloadBtn.onmouseout = function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+            };
+            downloadBtn.onclick = function() {
+                downloadResponseAsPDF(content, index);
+            };
+            headerDiv.appendChild(downloadBtn);
+        }
         
         const contentDiv = document.createElement('div');
         contentDiv.className = 'markdown-content';
@@ -282,7 +466,7 @@ function updateChatDisplay() {
             contentDiv.textContent = content;
         }
         
-        div.appendChild(userLabel);
+        div.appendChild(headerDiv);
         div.appendChild(contentDiv);
         chatHistory.appendChild(div);
     });
