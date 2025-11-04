@@ -172,14 +172,35 @@ if ($matiereChoisie) {
             background: #fff;
             overflow: hidden;
             
-            border-radius: 12px;
+
             box-shadow: 0 4px 16px rgba(0,0,0,0.12);
         }
         
         .toggle-sidebar-btn {
-            position: absolute;
-            top: 20px;
-            right: -40px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+        
+        .toggle-sidebar-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .toggle-sidebar-btn-floating {
+            position: fixed;
+            top: 100px;
+            left: 0;
             background: #0078d7;
             color: white;
             border: none;
@@ -187,22 +208,22 @@ if ($matiereChoisie) {
             height: 40px;
             border-radius: 0 8px 8px 0;
             cursor: pointer;
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             font-size: 1.2rem;
             box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
             transition: all 0.3s ease;
-            z-index: 100;
+            z-index: 1000;
         }
         
-        .toggle-sidebar-btn:hover {
+        .toggle-sidebar-btn-floating:hover {
             background: #005a9e;
+            transform: translateX(5px);
         }
         
-        .chat-sidebar.collapsed .toggle-sidebar-btn {
-            right: -320px;
-            border-radius: 8px 8px 8px 8px;
+        .chat-sidebar.collapsed ~ * .toggle-sidebar-btn-floating {
+            display: flex;
         }
         
         .chat-header {
@@ -214,14 +235,13 @@ if ($matiereChoisie) {
             align-items: center;
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
             min-height: 60px;
-            border-radius: 12px 12px 0 0;
         }
         
         .chat-body {
             flex: 1;
             padding: 24px 20px;
             overflow-y: auto;
-            background: #979898ff;
+            background: #fbfdfdff;
         }
         
         .chat-history {
@@ -274,14 +294,19 @@ if ($matiereChoisie) {
         }
     </style>
     
+    <!-- Bouton flottant pour rouvrir la sidebar -->
+    <button class="toggle-sidebar-btn-floating" id="floatingToggle" onclick="toggleSidebar()" title="Afficher l'historique">
+        ▶
+    </button>
+    
     <div class="chat-container">
         <!-- Sidebar avec historique -->
         <div class="chat-sidebar" id="chatSidebar">
-            <button class="toggle-sidebar-btn" onclick="toggleSidebar()" title="Masquer/Afficher l'historique">
-                ◀
-            </button>
             <div class="sidebar-header">
                 <span>📜 Historique</span>
+                <button class="toggle-sidebar-btn" id="sidebarToggle" onclick="toggleSidebar()" title="Masquer l'historique">
+                    ◀
+                </button>
             </div>
             <button class="new-chat-btn" onclick="startNewChat()">
                 ✨ Nouvelle conversation
@@ -330,16 +355,16 @@ if ($matiereChoisie) {
     <script>
         function toggleSidebar() {
             const sidebar = document.getElementById('chatSidebar');
-            const toggleBtn = sidebar.querySelector('.toggle-sidebar-btn');
+            const floatingBtn = document.getElementById('floatingToggle');
             
             if (sidebar.classList.contains('collapsed')) {
+                // Ouvrir la sidebar
                 sidebar.classList.remove('collapsed');
-                toggleBtn.innerHTML = '◀';
-                toggleBtn.title = 'Masquer l\'historique';
+                floatingBtn.style.display = 'none';
             } else {
+                // Fermer la sidebar
                 sidebar.classList.add('collapsed');
-                toggleBtn.innerHTML = '▶';
-                toggleBtn.title = 'Afficher l\'historique';
+                floatingBtn.style.display = 'flex';
             }
         }
     </script>
