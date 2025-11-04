@@ -46,7 +46,7 @@ if ($matiereChoisie) {
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            border-right: 2px solid #e0e0e0;
+            border-right: 2px solid #0a0a0aff;
             position: relative;
             box-shadow: 2px 0 8px rgba(0,0,0,0.08);
             transition: margin-left 0.3s ease, width 0.3s ease;
@@ -256,6 +256,7 @@ if ($matiereChoisie) {
             background: #005a9e;
             box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
             display: flex;
+            border-radius: 10px;
             gap: 12px;
             align-items: flex-end;
         }
