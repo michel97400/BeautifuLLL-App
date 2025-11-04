@@ -24,7 +24,7 @@
                 <div class="feature-icon icon-ai">IA</div>
                 <h3 class="feature-title">Assistant IA Intelligent</h3>
                 <p class="feature-description">
-                    Beneficiez d'un assistant IA personnalise qui s'adapte a vos matieres et vous accompagne dans votre apprentissage.
+                    Beneficiez d'un assistant IA personnalisé qui s'adapte a vos matieres et vous accompagne dans votre apprentissage.
                 </p>
             </div>
 
@@ -47,33 +47,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Section Statistiques -->
-    <?php if ($user): ?>
-    <div class="stats-section">
-        <h2 class="section-title">Votre espace personnalise</h2>
-        <div class="stats-grid">
-            <div>
-                <div class="stat-value">
-                    <?= htmlspecialchars($user['prenom'] ?? 'Etudiant') ?>
-                </div>
-                <div class="stat-label">Bienvenue</div>
-            </div>
-            <div>
-                <div class="stat-value stat-success">
-                    <?= htmlspecialchars($user['role'] ?? 'Utilisateur') ?>
-                </div>
-                <div class="stat-label">Votre role</div>
-            </div>
-        </div>
-
-        <div class="stats-cta">
-            <a href="?action=agent-ia">
-                Acceder a l'Assistant IA
-            </a>
-        </div>
-    </div>
-    <?php endif; ?>
 
     <!-- Section A propos -->
     <div class="about-section">
