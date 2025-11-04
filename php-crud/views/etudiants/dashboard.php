@@ -29,15 +29,14 @@ $etudiant = $controller->getSingleEtudiantWithDetails($userId);
 $errors = [];
 $message = '';
 $editMode = false;
+$successUpdate = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action'])) {
         if ($_POST['action'] === 'update_profile') {
-            $editMode = true;
             $result = $controller->handleSubmit($_POST, $_FILES, true, $etudiant);
             
             if ($result['success'] && empty($result['errors'])) {
-                $message = $result['message'];
                 // Recharger les données de l'étudiant
                 $etudiant = $controller->getSingleEtudiantWithDetails($userId);
                 // Mettre à jour la session
@@ -47,14 +46,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'email' => $etudiant['email'],
                     'avatar' => $etudiant['avatar']
                 ]);
-                $editMode = false;
+                // Marquer le succès pour redirection JavaScript
+                $successUpdate = true;
+                $message = $result['message'];
             } else {
                 $errors = $result['errors'];
+                $editMode = true; // Rester en mode édition si erreurs
             }
         } elseif ($_POST['action'] === 'cancel_edit') {
             $editMode = false;
         }
     }
+}
+
+// Gérer le message de succès après redirection
+if (isset($_GET['success']) && $_GET['success'] == '1') {
+    $message = "Profil modifié avec succès !";
 }
 
 if (isset($_GET['edit'])) {
@@ -439,9 +446,6 @@ $roles = $roleController->getRoles();
                         <span class="profile-badge badge-role">
                             <?= htmlspecialchars($etudiant['nom_role']) ?>
                         </span>
-                        <span class="profile-badge badge-niveau">
-                            <?= htmlspecialchars($etudiant['libelle_niveau']) ?>
-                        </span>
                     </div>
                 </div>
             </div>
@@ -450,7 +454,7 @@ $roles = $roleController->getRoles();
             <div class="info-card">
                 <?php if (!$editMode): ?>
                     <!-- Mode Lecture -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap:50px;">
                         <h2 style="margin: 0;">Informations du profil</h2>
                         <a href="?action=dashboard&edit=1" class="btn btn-edit">
                             ✏️ Modifier mon profil
@@ -473,11 +477,6 @@ $roles = $roleController->getRoles();
                     </div>
 
                     <div class="info-row">
-                        <span class="info-label">Niveau :</span>
-                        <span class="info-value"><?= htmlspecialchars($etudiant['libelle_niveau']) ?></span>
-                    </div>
-
-                    <div class="info-row">
                         <span class="info-label">Date d'inscription :</span>
                         <span class="info-value">
                             <?php
@@ -496,7 +495,7 @@ $roles = $roleController->getRoles();
 
                 <?php else: ?>
                     <!-- Mode Édition -->
-                    <h2>Modifier mon profil</h2>
+                    <h2 id="edit-form">Modifier mon profil</h2>
                     
                     <form method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="action" value="update_profile">
@@ -532,25 +531,11 @@ $roles = $roleController->getRoles();
                             <small style="color: #718096;">Formats acceptés : JPEG, PNG, GIF (max 2MB)</small>
                         </div>
 
-                        <div class="form-group">
-                            <label for="id_niveau">Niveau</label>
-                            <select id="id_niveau" name="id_niveau" required>
-                                <?php foreach ($niveaux as $niveau): ?>
-                                    <option value="<?= $niveau['id_niveau'] ?>" 
-                                        <?= $niveau['id_niveau'] == $etudiant['id_niveau'] ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($niveau['libelle_niveau']) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>
-                                <input type="checkbox" name="consentement_rgpd" value="1" 
-                                    <?= $etudiant['consentement_rgpd'] ? 'checked' : '' ?>>
-                                J'accepte la politique de confidentialité (RGPD) *
-                            </label>
-                        </div>
+                        <!-- Niveau : non modifiable par l'utilisateur, conservé de l'inscription -->
+                        <input type="hidden" name="id_niveau" value="<?= $etudiant['id_niveau'] ?>">
+                        
+                        <!-- Consentement RGPD : non modifiable, conservé de l'inscription -->
+                        <input type="hidden" name="consentement_rgpd" value="<?= $etudiant['consentement_rgpd'] ?>">
 
                         <div class="form-actions">
                             <button type="submit" class="btn btn-primary">💾 Enregistrer les modifications</button>
@@ -566,5 +551,29 @@ $roles = $roleController->getRoles();
             <a href="index.php" class="btn btn-secondary">← Retour à l'accueil</a>
         </div>
     </div>
+
+    <script>
+        // Redirection après succès de la modification
+        <?php if ($successUpdate): ?>
+            window.location.href = '?action=dashboard&success=1';
+        <?php endif; ?>
+
+        // Si on est en mode édition (paramètre edit=1), défiler vers le formulaire
+        <?php if ($editMode && !$successUpdate): ?>
+            window.addEventListener('load', function() {
+                const infoCard = document.querySelector('.info-card');
+                if (infoCard) {
+                    infoCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        <?php endif; ?>
+
+        // Si message de succès via URL, défiler vers le haut pour voir le message
+        <?php if (isset($_GET['success']) && $_GET['success'] == '1'): ?>
+            window.addEventListener('load', function() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        <?php endif; ?>
+    </script>
 </body>
 </html>

@@ -174,7 +174,7 @@ input[type="range"] {
                           style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box;"><?= htmlspecialchars($inputData['prompt_systeme'] ?? $agent['prompt_systeme'] ?? '') ?></textarea>
                 <div class="char-counter" id="prompt-counter">0 / 2000 caracteres</div>
                 <small style="color: #666; display: block; margin-top: 5px;">
-                    Ce prompt definit le comportement de base de l'agent. Il sera complete automatiquement avec le niveau de l'etudiant.
+                    Ce prompt definit le comportement de base de l'agent. Il sera completé automatiquement avec le niveau de l'etudiant.
                 </small>
             </div>
         </div>
@@ -201,7 +201,7 @@ input[type="range"] {
                     <span class="slider-value" id="temp-value">0.7</span>
                 </div>
                 <small style="color: #666; display: block; margin-top: 5px;">
-                    Recommande: 0.5 pour maths/physique, 0.7 general, 0.8-1.0 pour histoire/langues
+                    Recommandé: 0.5 pour maths/physique, 0.7 general, 0.8-1.0 pour histoire/langues
                 </small>
             </div>
 
@@ -239,7 +239,7 @@ input[type="range"] {
                         </option>
                     <?php endforeach; ?>
                 </select>
-                <small style="color: #666;">Recommande: High pour maths/physique, Medium pour le reste</small>
+                <small style="color: #666;">Recommandé: High pour maths/physique, Medium pour le reste</small>
             </div>
         </div>
 

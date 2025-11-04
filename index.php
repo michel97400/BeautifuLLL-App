@@ -54,6 +54,11 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
                                     <span class="role-badge <?= $isAdmin ? 'role-admin' : 'role-user' ?>">
                                         <?= htmlspecialchars($user['role'] ?? 'Non défini') ?>
                                     </span>
+                                    <?php if ($user): ?>
+                                        <span class="status-badge status-online">
+                                            ● En ligne
+                                        </span>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -82,6 +87,11 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
                                 <span class="role-badge <?= $isAdmin ? 'role-admin' : 'role-user' ?>">
                                     <?= htmlspecialchars($user['role'] ?? 'Non défini') ?>
                                 </span>
+                                <?php if ($user): ?>
+                                    <span class="status-badge status-online">
+                                        ● En ligne
+                                    </span>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

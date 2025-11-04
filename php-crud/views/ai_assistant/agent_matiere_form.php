@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_matieres']) && $_P
         </select>
 
         <div style="background: #e3f2fd; color: #0277bd; padding: 12px; border-radius: 6px; font-size: 0.9rem;">
-            <strong>Information :</strong> Seules les matieres disposant d'un agent IA sont affichees.
+            <strong>Information :</strong> Seules les matieres disposant d'un agent IA sont affichées.
             <br>Total : <?= count($matieresAvecAgent) ?> agent(s) disponible(s).
         </div>
 

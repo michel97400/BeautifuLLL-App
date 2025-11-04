@@ -191,6 +191,34 @@ header h1 {
     box-shadow: 0 2px 8px rgba(245, 87, 108, 0.4);
 }
 
+/* Badge de statut en ligne */
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: 6px;
+}
+
+.status-online {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+    animation: pulse-online 2s ease-in-out infinite;
+}
+
+@keyframes pulse-online {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+
 .nav-divider {
     display: none;
 }
@@ -257,6 +285,14 @@ header h1 {
     .user-info-card.mobile-only .role-badge {
         font-size: 11px;
         padding: 4px 10px;
+    }
+
+    .user-info-card.mobile-only .status-badge {
+        font-size: 11px;
+        padding: 4px 10px;
+        margin-left: 4px;
+        display: inline-block;
+        margin-top: 4px;
     }
     
     .nav-divider {
