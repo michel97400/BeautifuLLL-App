@@ -120,6 +120,7 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
                     <a href="?action=contact">Contact</a>
                     <a href="?action=deconnexion" class="logout-link">Déconnexion</a>
                 <?php else: ?>
+                    <a href="?action=register">Inscription</a>
                     <a href="?action=contact">Contact</a>
                     <a href="?action=connect">Connexion</a>
                 <?php endif; ?>
@@ -135,6 +136,9 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
 
             } elseif (isset($_GET['action']) && $_GET['action'] === 'modifier_etudiant'){
                 include 'php-crud/views/etudiants/form.php';
+
+            }elseif (isset($_GET['action']) && $_GET['action'] === 'register') {
+                include 'php-crud/views/auth/register.php';
 
             } elseif (isset($_GET['action']) && $_GET['action'] === 'connect'){
                 include 'php-crud/views/auth/login.php';
