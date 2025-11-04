@@ -1,6 +1,17 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../config/Database.php';
 require_once __DIR__ . '/../model/ChatModel.php';
+require_once __DIR__ . '/../model/SessionConversation.php';
+require_once __DIR__ . '/../model/message.php';
+require_once __DIR__ . '/../model/Agent.php';
+
+use Config\Database;
+use Models\SessionConversation;
+use Models\Message;
+use Models\Agent;
 
 class ChatController {
     
@@ -8,7 +19,137 @@ class ChatController {
      * Affiche la vue du chat
      */
     public static function index() {
-    require_once __DIR__ . '/../views/chat_card.php';
+        require_once __DIR__ . '/../views/chat_card.php';
+    }
+    
+    /**
+     * Récupère l'historique des sessions de l'utilisateur
+     */
+    public static function getHistory() {
+        header('Content-Type: application/json');
+        
+        try {
+            $user = $_SESSION['user'] ?? null;
+            if (!$user || !isset($user['id_etudiant'])) {
+                echo json_encode(['success' => false, 'error' => 'Utilisateur non connecté']);
+                exit;
+            }
+            
+            $sessionModel = new SessionConversation();
+            $sessions = $sessionModel->readByEtudiant($user['id_etudiant']);
+            
+            echo json_encode(['success' => true, 'sessions' => $sessions]);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'error' => 'Erreur: ' . $e->getMessage()]);
+        }
+        exit;
+    }
+    
+    /**
+     * Charge une session existante
+     */
+    public static function loadSession() {
+        header('Content-Type: application/json');
+        
+        try {
+            $id_session = $_POST['id_session'] ?? null;
+            
+            if (!$id_session) {
+                echo json_encode(['success' => false, 'error' => 'ID session manquant']);
+                exit;
+            }
+            
+            $sessionModel = new SessionConversation();
+            $messageModel = new Message();
+            
+            $session = $sessionModel->readSingle($id_session);
+            if (!$session) {
+                echo json_encode(['success' => false, 'error' => 'Session introuvable']);
+                exit;
+            }
+            
+            // Récupérer les messages
+            $messages = $messageModel->readBySessionId($id_session);
+            
+            // Stocker la session active
+            $_SESSION['current_session_id'] = $id_session;
+            $_SESSION['chat_messages'] = [];
+            
+            // Convertir les messages DB en format chat
+            // Utiliser 'emetteur' ou 'role' selon votre DB
+            foreach ($messages as $msg) {
+                $role = $msg['role'] ?? $msg['emetteur'] ?? 'user';
+                $content = $msg['contenu'] ?? $msg['contenu_message'] ?? '';
+                
+                $_SESSION['chat_messages'][] = [
+                    'role' => $role,
+                    'content' => $content
+                ];
+            }
+            
+            echo json_encode([
+                'success' => true,
+                'session' => $session,
+                'messages' => $messages
+            ]);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'error' => 'Erreur: ' . $e->getMessage()]);
+        }
+        exit;
+    }
+    
+    /**
+     * Crée ou récupère la session active
+     */
+    private static function getOrCreateSession() {
+        try {
+            $user = $_SESSION['user'] ?? null;
+            if (!$user || !isset($user['id_etudiant'])) {
+                return null;
+            }
+            
+            // Si une session existe déjà
+            if (isset($_SESSION['current_session_id'])) {
+                return $_SESSION['current_session_id'];
+            }
+            
+            // Créer une nouvelle session
+            $sessionModel = new SessionConversation();
+            $agentModel = new Agent();
+            
+            // Trouver ou créer un agent pour la matière choisie
+            $agents = $agentModel->read();
+            $id_agent = null;
+            
+            foreach ($agents as $agent) {
+                if ($agent['est_actif']) {
+                    $id_agent = $agent['id_agents'];
+                    break;
+                }
+            }
+            
+            if (!$id_agent) {
+                // Si aucun agent actif, prendre le premier
+                if (count($agents) > 0) {
+                    $id_agent = $agents[0]['id_agents'];
+                } else {
+                    return null;
+                }
+            }
+            
+            $id_session = $sessionModel->createAndReturnId(
+                '00:00:00',
+                null,
+                $id_agent,
+                $user['id_etudiant']
+            );
+            
+            $_SESSION['current_session_id'] = $id_session;
+            return $id_session;
+        } catch (Exception $e) {
+            error_log("Erreur création session: " . $e->getMessage());
+            return null;
+        }
     }
     
     /**
@@ -17,40 +158,71 @@ class ChatController {
     public static function sendMessage() {
         header('Content-Type: application/json');
         
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            echo json_encode(['success' => false, 'error' => 'Méthode non autorisée']);
-            exit;
-        }
-        
-        $userMessage = $_POST['message'] ?? '';
-        
-        if (empty(trim($userMessage))) {
-            echo json_encode(['success' => false, 'error' => 'Message vide']);
-            exit;
-        }
-        
-        // Ajouter le message utilisateur à l'historique
-        ChatModel::addMessage('user', $userMessage);
-        
-        // Limiter l'historique pour ne pas dépasser le contexte
-        ChatModel::limitHistory(20);
-        
-        // Récupérer l'historique complet
-        $history = ChatModel::getConversationHistory();
-        
-        // Envoyer à Groq
-        $result = ChatModel::sendToGroq($history);
-        
-        if ($result['success']) {
-            // Ajouter la réponse à l'historique
-            ChatModel::addMessage('assistant', $result['response']);
+        try {
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                echo json_encode(['success' => false, 'error' => 'Méthode non autorisée']);
+                exit;
+            }
             
-            echo json_encode([
-                'success' => true,
-                'response' => $result['response']
-            ]);
-        } else {
-            echo json_encode($result);
+            $userMessage = $_POST['message'] ?? '';
+            
+            if (empty(trim($userMessage))) {
+                echo json_encode(['success' => false, 'error' => 'Message vide']);
+                exit;
+            }
+            
+            // Obtenir ou créer la session
+            $id_session = self::getOrCreateSession();
+            if (!$id_session) {
+                echo json_encode(['success' => false, 'error' => 'Impossible de créer une session. Vérifiez qu\'il existe au moins un agent.']);
+                exit;
+            }
+            
+            // Ajouter le message utilisateur à l'historique
+            ChatModel::addMessage('user', $userMessage);
+            
+            // Sauvegarder le message dans la DB
+            $messageModel = new Message();
+            
+            // Utiliser la méthode create avec les bons paramètres
+            $messageModel->create(
+                'user',
+                $userMessage,
+                date('Y-m-d H:i:s'),
+                $id_session
+            );
+            
+            // Limiter l'historique
+            ChatModel::limitHistory(20);
+            
+            // Récupérer l'historique complet
+            $history = ChatModel::getConversationHistory();
+            
+            // Envoyer à Groq
+            $result = ChatModel::sendToGroq($history);
+            
+            if ($result['success']) {
+                // Ajouter la réponse à l'historique
+                ChatModel::addMessage('assistant', $result['response']);
+                
+                // Sauvegarder la réponse dans la DB
+                $messageModel->create(
+                    'assistant',
+                    $result['response'],
+                    date('Y-m-d H:i:s'),
+                    $id_session
+                );
+                
+                echo json_encode([
+                    'success' => true,
+                    'response' => $result['response'],
+                    'session_id' => $id_session
+                ]);
+            } else {
+                echo json_encode($result);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'error' => 'Erreur serveur: ' . $e->getMessage()]);
         }
         
         exit;
@@ -62,9 +234,49 @@ class ChatController {
     public static function reset() {
         header('Content-Type: application/json');
         
-        ChatModel::resetHistory();
+        try {
+            ChatModel::resetHistory();
+            unset($_SESSION['current_session_id']);
+            
+            echo json_encode(['success' => true, 'message' => 'Conversation réinitialisée']);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'error' => 'Erreur: ' . $e->getMessage()]);
+        }
+        exit;
+    }
+    
+    /**
+     * Supprime une session
+     */
+    public static function deleteSession() {
+        header('Content-Type: application/json');
         
-        echo json_encode(['success' => true, 'message' => 'Conversation réinitialisée']);
+        try {
+            $id_session = $_POST['id_session'] ?? null;
+            
+            if (!$id_session) {
+                echo json_encode(['success' => false, 'error' => 'ID session manquant']);
+                exit;
+            }
+            
+            $sessionModel = new SessionConversation();
+            $result = $sessionModel->delete($id_session);
+            
+            if ($result) {
+                // Si c'est la session active, la réinitialiser
+                if (isset($_SESSION['current_session_id']) && $_SESSION['current_session_id'] == $id_session) {
+                    unset($_SESSION['current_session_id']);
+                    ChatModel::resetHistory();
+                }
+                
+                echo json_encode(['success' => true, 'message' => 'Session supprimée']);
+            } else {
+                echo json_encode(['success' => false, 'error' => 'Erreur lors de la suppression']);
+            }
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'error' => 'Erreur: ' . $e->getMessage()]);
+        }
+        
         exit;
     }
     
@@ -80,6 +292,15 @@ class ChatController {
                 break;
             case 'reset':
                 self::reset();
+                break;
+            case 'history':
+                self::getHistory();
+                break;
+            case 'load':
+                self::loadSession();
+                break;
+            case 'delete':
+                self::deleteSession();
                 break;
             default:
                 self::index();

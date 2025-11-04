@@ -188,5 +188,4 @@ class Message
         return $stmt->execute();
     }
 }
-
 ?>
