@@ -210,6 +210,7 @@ DROP TABLE IF EXISTS `session_conversation`;
 CREATE TABLE IF NOT EXISTS `session_conversation` (
   `id_session` int NOT NULL AUTO_INCREMENT,
   `date_heure_debut` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `title`VARCHAR(20),
   `duree_session` time DEFAULT NULL,
   `date_heure_fin` datetime DEFAULT NULL,
   `id_agents` int NOT NULL,

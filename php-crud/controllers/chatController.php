@@ -210,20 +210,28 @@ class ChatController {
             if ($result['success']) {
                 // Ajouter la réponse à l'historique
                 ChatModel::addMessage('assistant', $result['response']);
-                
+                $assistantMessage = $result['response'];
                 // Sauvegarder la réponse dans la DB
                 $messageModel->create(
                     'assistant',
-                    $result['response'],
+                    $assistantMessage,
                     date('Y-m-d H:i:s'),
                     $id_session
                 );
                 
+                $sessionModel = new SessionConversation();
+                if(count($messageModel->getMessagesBySession($id_session)) == 2){
+                    $intelligentTitle = ChatModel::createIntelligentTitle($userMessage,$assistantMessage);
+                    $$sessionModel->updateTitleById($id_session,$intelligentTitle);
+                }
                 echo json_encode([
                     'success' => true,
                     'response' => $result['response'],
                     'session_id' => $id_session
                 ]);
+
+
+
             } else {
                 echo json_encode($result);
             }
@@ -285,6 +293,8 @@ class ChatController {
         
         exit;
     }
+
+
     
     /**
      * Route les requêtes selon l'action

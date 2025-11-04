@@ -162,6 +162,8 @@ class Message
         return $stmt->execute();
     }
 
+    
+
     /**
      * Supprimer un message
      * @param int $id_message

@@ -73,6 +73,7 @@ function displaySessionList(sessions) {
             <div class="session-info">
                 <span>${session.nom_agent || 'Agent IA'}</span>
                 <span class="session-messages">${session.nb_messages || 0} msgs</span>
+                ${session.title ? `<span>${session.title}</span>` : ''}
             </div>
             <button class="session-delete" onclick="deleteSession(${session.id_session}, event)">Supprimer</button>
         `;
