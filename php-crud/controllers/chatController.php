@@ -107,43 +107,49 @@ class ChatController {
             if (!$user || !isset($user['id_etudiant'])) {
                 return null;
             }
-            
+
             // Si une session existe déjà
             if (isset($_SESSION['current_session_id'])) {
                 return $_SESSION['current_session_id'];
             }
-            
+
+            // Récupérer la matière choisie par l'utilisateur
+            $id_matieres = $_SESSION['agent_ia_id_matieres'] ?? null;
+            if (!$id_matieres) {
+                error_log("chatController: id_matieres manquant dans la session");
+                return null;
+            }
+
             // Créer une nouvelle session
             $sessionModel = new SessionConversation();
             $agentModel = new Agent();
-            
-            // Trouver ou créer un agent pour la matière choisie
-            $agents = $agentModel->read();
-            $id_agent = null;
-            
-            foreach ($agents as $agent) {
-                if ($agent['est_actif']) {
-                    $id_agent = $agent['id_agents'];
-                    break;
-                }
+
+            // Trouver l'agent correspondant à la matière choisie
+            $agent = $agentModel->getAgentByMatiere($id_matieres);
+            if (!$agent) {
+                error_log("chatController: Aucun agent trouvé pour id_matieres=$id_matieres");
+                return null;
             }
-            
-            if (!$id_agent) {
-                // Si aucun agent actif, prendre le premier
-                if (count($agents) > 0) {
-                    $id_agent = $agents[0]['id_agents'];
-                } else {
-                    return null;
-                }
+
+            $id_agent = $agent['id_agents'];
+
+            // Vérifier s'il existe déjà une session active avec cet agent
+            $activeSession = $sessionModel->getActiveSession($user['id_etudiant']);
+
+            if ($activeSession && $activeSession['id_agents'] == $id_agent) {
+                // Réutiliser la session active existante avec le bon agent
+                $_SESSION['current_session_id'] = $activeSession['id_session'];
+                return $activeSession['id_session'];
             }
-            
+
+            // Créer une nouvelle session avec le bon agent
             $id_session = $sessionModel->createAndReturnId(
                 '00:00:00',
                 null,
                 $id_agent,
                 $user['id_etudiant']
             );
-            
+
             $_SESSION['current_session_id'] = $id_session;
             return $id_session;
         } catch (Exception $e) {

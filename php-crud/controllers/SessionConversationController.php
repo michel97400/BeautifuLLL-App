@@ -17,7 +17,7 @@ class SessionConversationController
     // ... create, update, delete restent identiques ...
     public function createSessionConversation($duree_session, $date_heure_fin, $id_agents, $id_etudiant)
     {
-        $SessionConversation = new session_conversation();
+        $SessionConversation = new SessionConversation();
         return $SessionConversation->create($duree_session, $date_heure_fin, $id_agents, $id_etudiant);
     }
 
