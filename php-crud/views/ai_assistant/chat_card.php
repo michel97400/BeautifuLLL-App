@@ -29,37 +29,67 @@ if ($matiereChoisie) {
     <style>
         .chat-container {
             display: flex;
-            gap: 20px;
-            max-width: 1400px;
-            margin: 40px auto;
-            height: calc(100vh - 200px);
-        }
-        
-        .chat-sidebar {
-            width: 320px;
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-            display: flex;
-            flex-direction: column;
+            flex-direction: row;
+            gap: 0;
+            margin: 0;
+            padding: 0;
+            height: calc(100vh - 160px);
+            min-height: 500px;
+            background: transparent;
             overflow: hidden;
         }
         
+        .chat-sidebar {
+            flex: 0 0 280px;
+            width: 280px;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-right: 2px solid #e0e0e0;
+            position: relative;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.08);
+            transition: margin-left 0.3s ease, width 0.3s ease;
+        }
+        
+        .chat-sidebar.collapsed {
+            margin-left: -280px;
+            width: 0;
+        }
+        
+        .chat-sidebar::after {
+            content: '';
+            position: absolute;
+            right: -1px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: linear-gradient(to bottom, 
+                transparent 0%, 
+                rgba(0, 120, 215, 0.3) 20%, 
+                rgba(0, 120, 215, 0.5) 50%, 
+                rgba(0, 120, 215, 0.3) 80%, 
+                transparent 100%);
+        }
+        
         .sidebar-header {
-            background: #0078d7;
-            color: #fff;
-            padding: 20px;
-            font-size: 1.2rem;
+            background: linear-gradient(135deg, #0078d7 0%, #005a9e 100%);
+            color: #ffffff;
+            padding: 20px 16px;
+            font-size: 1.1rem;
             font-weight: 600;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 10;
+            min-height: 60px;
         }
         
         .session-list {
             flex: 1;
             overflow-y: auto;
-            padding: 10px;
+            padding: 12px;
         }
         
         .session-item {
@@ -116,19 +146,23 @@ if ($matiereChoisie) {
         }
         
         .new-chat-btn {
-            margin: 10px;
+            margin: 12px;
             padding: 12px;
-            background: #28a745;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
         }
         
         .new-chat-btn:hover {
-            background: #218838;
+            background: linear-gradient(135deg, #218838 0%, #1ba87d 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
         }
         
         .chat-main {
@@ -136,25 +170,58 @@ if ($matiereChoisie) {
             display: flex;
             flex-direction: column;
             background: #fff;
+            overflow: hidden;
+            
             border-radius: 12px;
             box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-            overflow: hidden;
+        }
+        
+        .toggle-sidebar-btn {
+            position: absolute;
+            top: 20px;
+            right: -40px;
+            background: #0078d7;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .toggle-sidebar-btn:hover {
+            background: #005a9e;
+        }
+        
+        .chat-sidebar.collapsed .toggle-sidebar-btn {
+            right: -320px;
+            border-radius: 8px 8px 8px 8px;
         }
         
         .chat-header {
-            background: #0078d7;
-            color: #fff;
-            padding: 24px 32px;
+            background: linear-gradient(135deg, #0078d7 0%, #005a9e 100%);
+            color: #ffffff;
+            padding: 20px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            min-height: 60px;
+            border-radius: 12px 12px 0 0;
         }
         
         .chat-body {
             flex: 1;
-            padding: 24px 32px;
+            padding: 24px 20px;
             overflow-y: auto;
-            background: #f8f9fa;
+            background: #979898ff;
         }
         
         .chat-history {
@@ -164,7 +231,7 @@ if ($matiereChoisie) {
         }
         
         .chat-footer {
-            padding: 20px 32px 24px 32px;
+            padding: 20px 20px 24px 20px;
             background: #fff;
             box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
             display: flex;
@@ -174,7 +241,7 @@ if ($matiereChoisie) {
         
         .empty-state {
             text-align: center;
-            padding: 40px;
+            padding: 40px 20px;
             color: #666;
         }
         
@@ -182,17 +249,43 @@ if ($matiereChoisie) {
             margin-bottom: 10px;
             color: #333;
         }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .chat-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .chat-sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 2px solid #e0e0e0;
+                max-height: 300px;
+            }
+            
+            .chat-sidebar::after {
+                display: none;
+            }
+            
+            .chat-main {
+                min-height: 500px;
+            }
+        }
     </style>
     
     <div class="chat-container">
         <!-- Sidebar avec historique -->
-        <div class="chat-sidebar">
+        <div class="chat-sidebar" id="chatSidebar">
+            <button class="toggle-sidebar-btn" onclick="toggleSidebar()" title="Masquer/Afficher l'historique">
+                ◀
+            </button>
             <div class="sidebar-header">
-                <span>Historique</span>
-                <button class="new-chat-btn" onclick="startNewChat()" style="margin: 0; padding: 6px 12px; font-size: 0.9rem;">
-                    + Nouveau
-                </button>
+                <span>📜 Historique</span>
             </div>
+            <button class="new-chat-btn" onclick="startNewChat()">
+                ✨ Nouvelle conversation
+            </button>
             <div class="session-list" id="session-list">
                 <div class="empty-state">
                     <p>Chargement...</p>
@@ -204,8 +297,8 @@ if ($matiereChoisie) {
         <div class="chat-main">
             <div class="chat-header">
                 <div>
-                    <h2 style="margin:0; font-size: 1.7rem; font-weight: 600; letter-spacing: 1px;">Agent IA - Chat</h2>
-                    <div style="margin-top:8px; font-size:1rem; color:#e7f3ff;">
+                    <div style="margin:0; font-size: 1.1rem; font-weight: 600; color: #ffffff;">🤖 Prof IA - <?= htmlspecialchars($matiereChoisie) ?></div>
+                    <div style="margin-top:6px; font-size:0.9rem; color: #e7f3ff;">
                         Matière : <strong><?= htmlspecialchars($matiereChoisie) ?></strong>
                         <?php if ($niveauLibelle): ?>
                             | Niveau : <strong><?= htmlspecialchars($niveauLibelle) ?></strong>
@@ -214,7 +307,7 @@ if ($matiereChoisie) {
                 </div>
                 <form method="post" style="margin-left:auto;">
                     <input type="hidden" name="reset_matiere" value="1">
-                    <button type="submit" class="btn btn-secondary" style="margin-left:12px;">Changer de matière</button>
+                    <button type="submit" class="btn btn-secondary" style="margin-left:12px; padding:8px 16px; font-size:0.9rem; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: #ffffff; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">Changer de matière</button>
                 </form>
             </div>
             
@@ -234,6 +327,22 @@ if ($matiereChoisie) {
     
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="php-crud/public/chat.js"></script>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('chatSidebar');
+            const toggleBtn = sidebar.querySelector('.toggle-sidebar-btn');
+            
+            if (sidebar.classList.contains('collapsed')) {
+                sidebar.classList.remove('collapsed');
+                toggleBtn.innerHTML = '◀';
+                toggleBtn.title = 'Masquer l\'historique';
+            } else {
+                sidebar.classList.add('collapsed');
+                toggleBtn.innerHTML = '▶';
+                toggleBtn.title = 'Afficher l\'historique';
+            }
+        }
+    </script>
     
     <?php
     // Traitement du POST pour reset
