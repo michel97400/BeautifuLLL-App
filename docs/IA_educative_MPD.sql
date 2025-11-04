@@ -119,7 +119,7 @@ INSERT INTO `matieres` (`id_matieres`, `nom_matieres`, `description_matiere`) VA
 (3, 'Mathématique', NULL),
 (4, 'Histoire-géo', NULL),
 (5, 'Biologie', NULL),
-(6, 'Phisique', NULL),
+(6, 'Physique', NULL),
 (7, 'Chimie', NULL);
 
 -- --------------------------------------------------------
