@@ -35,7 +35,7 @@ class ChatController {
                 exit;
             }
             
-            $sessionModel = new session_conversation();
+            $sessionModel = new SessionConversation();
             $sessions = $sessionModel->readByEtudiant($user['id_etudiant']);
             
             echo json_encode(['success' => true, 'sessions' => $sessions]);
@@ -59,7 +59,7 @@ class ChatController {
                 exit;
             }
             
-            $sessionModel = new session_conversation();
+            $sessionModel = new SessionConversation();
             $messageModel = new Message();
             
             $session = $sessionModel->readSingle($id_session);
@@ -259,7 +259,7 @@ class ChatController {
                 exit;
             }
             
-            $sessionModel = new session_conversation();
+            $sessionModel = new SessionConversation();
             $result = $sessionModel->delete($id_session);
             
             if ($result) {
