@@ -72,11 +72,6 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
                             </div>
                         </a>
                     <?php endif; ?>
-
-    <button class="burger-menu" id="burgerMenu" aria-label="Menu">
-        <span></span><span></span><span></span>
-    </button>
-</div>
                     
                     <button class="burger-menu" id="burgerMenu" aria-label="Menu">
                         <span></span>
@@ -136,6 +131,7 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
                 <?php else: ?>
                     <a href="?action=register">Inscription</a>
                     <a href="?action=contact">Contact</a>
+                    
                     
                 <?php endif; ?>
             </nav>
