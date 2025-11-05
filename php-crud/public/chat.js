@@ -70,9 +70,11 @@ function displaySessionList(sessions) {
         
         div.innerHTML = `
             <div class="session-date">${dateStr}</div>
+            <div>${session.titre ? `<span>${session.titre}</span>` : ''}</div>
             <div class="session-info">
                 <span>${session.nom_agent || 'Agent IA'}</span>
                 <span class="session-messages">${session.nb_messages || 0} msgs</span>
+                
             </div>
             <button class="session-delete" onclick="deleteSession(${session.id_session}, event)">Supprimer</button>
         `;

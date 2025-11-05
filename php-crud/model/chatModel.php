@@ -187,10 +187,115 @@ class ChatModel {
         return $basePrompt;
     }
     
+    public static function createIntelligentTitle($messageUtilisateur, $messageAssistant){
+
+        $apiKey = $_ENV['GROQ_API_KEY'] ?? getenv('GROQ_API_KEY');
+        $apiUrl = $_ENV['GROQ_API_URL'] ?? getenv('GROQ_API_URL');
+        $model = 'openai/gpt-oss-20b';
+        $temperature = 0.7;
+        $max_tokens = 8192;
+        $top_p = 1.0;
+        $reasoning_effort = 'medium';
+        
+        $messages = [];
+
+
+        $systemPrompt =     " Tu es un spécialiste en création de titre personnalisé en fonction des messages de l'utilisateur
+                              et la réponse d'un agent ia
+                              Tu vas résumer leur messages pour créer un titre pertinent à la conversation basé sur les 2 messages fournies
+                              Le titre ne dois pas dépasser 30 charactères
+                              Le titre doit être en Français
+
+                              Ta réponse sera UNIQUEMENT, et j'insiste là dessus, UNIQUEMENT le titre intelligent. 
+                            " ;
+        $system_message = [
+            "role" => "system",
+            "content" => $systemPrompt
+        ];
+
+        $prompt = "user : " . $messageUtilisateur . "\n" . "assistant : " . $messageAssistant;
+
+        $message = [ 
+            "role" => "user",
+            "content" => $prompt
+        ];
+
+        $messages[] = $system_message;
+        $messages[] = $message;
+        
+        $data = [
+            'messages' => $messages,
+            'model' => 'openai/gpt-oss-20b',
+            'temperature' => 1,
+            'max_completion_tokens' => 8192,
+            'top_p' => 1,
+            'reasoning_effort' => 'medium',
+            'stream' => false,  
+            'stop' => null
+        ];
+
+        $ch = curl_init($apiUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $apiKey
+        ]);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        // SSL options for Windows/WAMP environments
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($curlError) {
+            return [
+                'success' => false,
+                'error' => 'Erreur de connexion: ' . $curlError
+            ];
+        }
+
+        if ($httpCode !== 200) {
+            $apiError = 'Erreur API (HTTP ' . $httpCode . ')';
+            $details = $response;
+            // Essayer d'extraire le message d'erreur JSON
+            $jsonDetails = json_decode($response, true);
+            if (is_array($jsonDetails) && isset($jsonDetails['error']['message'])) {
+                $apiError .= ': ' . $jsonDetails['error']['message'];
+            }
+            return [
+                'success' => false,
+                'error' => $apiError,
+                'details' => $details
+            ];
+        }
+
+        $result = json_decode($response, true);
+
+        if (isset($result['choices'][0]['message']['content'])) {
+            return [
+                'success' => true,
+                'response' => $result['choices'][0]['message']['content']
+            ];
+        }
+
+        return [
+            'success' => false,
+            'error' => 'Réponse invalide de l\'API'
+        ];
+
+    }
+
     /**
      * MODIFIE: Envoie une requete a l'API Groq avec parametres de l'agent
      */
     public static function sendToGroq($messages) {
+        // var_dump($messages);
+        // exit();
         // Initialiser la session et charger l'agent
         self::initializeSession();
 
