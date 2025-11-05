@@ -42,26 +42,35 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
                 
                 <div class="header-right">
                     <?php if ($user): ?>
+                        <!-- === CONNECTÉ === -->
                         <div class="user-info-card">
                             <div class="user-info-content">
                                 <div class="user-name">
-                                    <svg style="width: 18px; height: 18px; fill: #0078d7;" viewBox="0 0 24 24">
+                                    <svg style="width:18px;height:18px;fill:#0078d7;" viewBox="0 0 24 24">
                                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                                     </svg>
                                     <span><?= htmlspecialchars($user['prenom'] . " " . $user['nom']) ?></span>
                                 </div>
                                 <div class="user-role">
                                     <span class="role-badge <?= $isAdmin ? 'role-admin' : 'role-user' ?>">
-                                        <?= htmlspecialchars($user['role'] ?? 'Non défini') ?>
+                                        <?= htmlspecialchars($user['role'] ?? 'Étudiant') ?>
                                     </span>
-                                    <?php if ($user): ?>
-                                        <span class="status-badge status-online">
-                                            ● En ligne
-                                        </span>
-                                    <?php endif; ?>
+                                    <span class="status-badge status-online">En ligne</span>
                                 </div>
                             </div>
                         </div>
+                    <?php else: ?>
+                        <!-- === NON CONNECTÉ === -->
+                        <a href="?action=connect" class="user-info-card login-card">
+                            <div class="user-info-content">
+                                <div class="user-name">
+                                    <svg style="width:18px;height:18px;fill:#0078d7;" viewBox="0 0 24 24">
+                                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                    </svg>
+                                    <span>Connexion</span>
+                                </div>
+                            </div>
+                        </a>
                     <?php endif; ?>
                     
                     <button class="burger-menu" id="burgerMenu" aria-label="Menu">
@@ -122,7 +131,8 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
                 <?php else: ?>
                     <a href="?action=register">Inscription</a>
                     <a href="?action=contact">Contact</a>
-                    <a href="?action=connect">Connexion</a>
+                    
+                    
                 <?php endif; ?>
             </nav>
         </header>
