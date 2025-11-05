@@ -8,18 +8,14 @@ $controller = new MessageController();
 $id = $_GET['id'] ?? null;
 $confirmed = ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmer_suppression']));
 
-// Appel de handleDelete
+// Appel de handleDelete (la redirection est gérée dans index.php)
 $result = $controller->handleDelete($id, $confirmed);
 
 $errors = $result['errors'];
 $message = $result['message'];
 $message_data = $result['message_data'];
 
-// Gestion de la redirection si succès
-if ($result['success'] && $result['redirect']) {
-    header("Location: ../../" . $result['redirect']);
-    exit;
-}
+// Note: La redirection est maintenant gérée dans index.php AVANT le rendu HTML
 
 $id_column = 'id_message';
 $entity_name = 'Message';
