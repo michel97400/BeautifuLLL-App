@@ -187,242 +187,141 @@ class ChatModel {
         return $basePrompt;
     }
     
-    public static function createIntelligentTitle($messageUtilisateur, $messageAssistant){
+    
 
-        $apiKey = $_ENV['GROQ_API_KEY'] ?? getenv('GROQ_API_KEY');
-        $apiUrl = $_ENV['GROQ_API_URL'] ?? getenv('GROQ_API_URL');
-        $model = 'openai/gpt-oss-20b';
-        $temperature = 0.7;
-        $max_tokens = 8192;
-        $top_p = 1.0;
-        $reasoning_effort = 'medium';
-        
-        $messages = [];
+    // /**
+    //  * MODIFIE: Envoie une requete a l'API Groq avec parametres de l'agent
+    //  */
+    // public static function sendToGroq($messages) {
+    //     // var_dump($messages);
+    //     // exit();
+    //     // Initialiser la session et charger l'agent
+    //     self::initializeSession();
 
+    //     // Parametres LLM par defaut (si pas d'agent charge)
+    //     $model = 'openai/gpt-oss-20b';
+    //     $temperature = 0.7;
+    //     $max_tokens = 8192;
+    //     $top_p = 1.0;
+    //     $reasoning_effort = 'medium';
 
-        $systemPrompt =     " Tu es un spécialiste en création de titre personnalisé en fonction des messages de l'utilisateur
-                              et la réponse d'un agent ia
-                              Tu vas résumer leur messages pour créer un titre pertinent à la conversation basé sur les 2 messages fournies
-                              Le titre ne dois pas dépasser 30 charactères
-                              Le titre doit être en Français
+    //     // Utiliser les parametres de l'agent si disponible
+    //     if (self::$currentAgent !== null) {
+    //         $model = self::$currentAgent['model'] ?? $model;
+    //         $temperature = floatval(self::$currentAgent['temperature'] ?? $temperature);
+    //         $max_tokens = intval(self::$currentAgent['max_tokens'] ?? $max_tokens);
+    //         $top_p = floatval(self::$currentAgent['top_p'] ?? $top_p);
+    //         $reasoning_effort = self::$currentAgent['reasoning_effort'] ?? $reasoning_effort;
+    //     }
 
-                              Ta réponse sera UNIQUEMENT, et j'insiste là dessus, UNIQUEMENT le titre intelligent. 
-                            " ;
-        $system_message = [
-            "role" => "system",
-            "content" => $systemPrompt
-        ];
+    //     // Charger les variables d'environnement
+    //     $envPath = __DIR__ . '/../../.env';
+    //     if (file_exists($envPath)) {
+    //         $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    //         foreach ($lines as $line) {
+    //             if (strpos(trim($line), '=') !== false) {
+    //                 list($key, $value) = explode('=', trim($line), 2);
+    //                 $_ENV[$key] = $value;
+    //             }
+    //         }
+    //     }
+    //     $apiKey = $_ENV['GROQ_API_KEY'] ?? getenv('GROQ_API_KEY');
+    //     $apiUrl = $_ENV['GROQ_API_URL'] ?? getenv('GROQ_API_URL');
 
-        $prompt = "user : " . $messageUtilisateur . "\n" . "assistant : " . $messageAssistant;
+    //     // Ajouter le prompt systeme au debut si pas deja present
+    //     $systemPrompt = trim(self::getSystemPrompt() ?? '');
+    //     $hasSystemPrompt = false;
+    //     foreach ($messages as $msg) {
+    //         if ($msg['role'] === 'system') {
+    //             $hasSystemPrompt = true;
+    //             break;
+    //         }
+    //     }
+    //     if (!$hasSystemPrompt && $systemPrompt !== '') {
+    //         array_unshift($messages, [
+    //             'role' => 'system',
+    //             'content' => $systemPrompt
+    //         ]);
+    //     }
 
-        $message = [ 
-            "role" => "user",
-            "content" => $prompt
-        ];
+    //     // Adapter le format des messages pour l'API Groq
+    //     $groqMessages = [];
+    //     foreach ($messages as $msg) {
+    //         // Adapter 'role' et 'content' pour Groq
+    //         $role = $msg['role'];
+    //         if ($role === 'user' || $role === 'assistant' || $role === 'system') {
+    //             $groqMessages[] = [
+    //                 'role' => $role,
+    //                 'content' => $msg['content']
+    //             ];
+    //         }
+    //     }
 
-        $messages[] = $system_message;
-        $messages[] = $message;
-        
-        $data = [
-            'messages' => $messages,
-            'model' => 'openai/gpt-oss-20b',
-            'temperature' => 1,
-            'max_completion_tokens' => 8192,
-            'top_p' => 1,
-            'reasoning_effort' => 'medium',
-            'stream' => false,  
-            'stop' => null
-        ];
+    //     $data = [
+    //         'messages' => $groqMessages,
+    //         'model' => 'openai/gpt-oss-20b',
+    //         'temperature' => 1,
+    //         'max_completion_tokens' => 8192,
+    //         'top_p' => 1,
+    //         'reasoning_effort' => 'medium',
+    //         'stream' => false,  
+    //         'stop' => null
+    //     ];
 
-        $ch = curl_init($apiUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . $apiKey
-        ]);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        // SSL options for Windows/WAMP environments
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    //     $ch = curl_init($apiUrl);
+    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    //     curl_setopt($ch, CURLOPT_POST, true);
+    //     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    //     curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    //         'Content-Type: application/json',
+    //         'Authorization: Bearer ' . $apiKey
+    //     ]);
+    //     curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    //     // SSL options for Windows/WAMP environments
+    //     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    //     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlError = curl_error($ch);
-        curl_close($ch);
+    //     $response = curl_exec($ch);
+    //     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    //     $curlError = curl_error($ch);
+    //     curl_close($ch);
 
-        if ($curlError) {
-            return [
-                'success' => false,
-                'error' => 'Erreur de connexion: ' . $curlError
-            ];
-        }
+    //     if ($curlError) {
+    //         return [
+    //             'success' => false,
+    //             'error' => 'Erreur de connexion: ' . $curlError
+    //         ];
+    //     }
 
-        if ($httpCode !== 200) {
-            $apiError = 'Erreur API (HTTP ' . $httpCode . ')';
-            $details = $response;
-            // Essayer d'extraire le message d'erreur JSON
-            $jsonDetails = json_decode($response, true);
-            if (is_array($jsonDetails) && isset($jsonDetails['error']['message'])) {
-                $apiError .= ': ' . $jsonDetails['error']['message'];
-            }
-            return [
-                'success' => false,
-                'error' => $apiError,
-                'details' => $details
-            ];
-        }
+    //     if ($httpCode !== 200) {
+    //         $apiError = 'Erreur API (HTTP ' . $httpCode . ')';
+    //         $details = $response;
+    //         // Essayer d'extraire le message d'erreur JSON
+    //         $jsonDetails = json_decode($response, true);
+    //         if (is_array($jsonDetails) && isset($jsonDetails['error']['message'])) {
+    //             $apiError .= ': ' . $jsonDetails['error']['message'];
+    //         }
+    //         return [
+    //             'success' => false,
+    //             'error' => $apiError,
+    //             'details' => $details
+    //         ];
+    //     }
 
-        $result = json_decode($response, true);
+    //     $result = json_decode($response, true);
 
-        if (isset($result['choices'][0]['message']['content'])) {
-            return [
-                'success' => true,
-                'response' => $result['choices'][0]['message']['content']
-            ];
-        }
+    //     if (isset($result['choices'][0]['message']['content'])) {
+    //         return [
+    //             'success' => true,
+    //             'response' => $result['choices'][0]['message']['content']
+    //         ];
+    //     }
 
-        return [
-            'success' => false,
-            'error' => 'Réponse invalide de l\'API'
-        ];
-
-    }
-
-    /**
-     * MODIFIE: Envoie une requete a l'API Groq avec parametres de l'agent
-     */
-    public static function sendToGroq($messages) {
-        // var_dump($messages);
-        // exit();
-        // Initialiser la session et charger l'agent
-        self::initializeSession();
-
-        // Parametres LLM par defaut (si pas d'agent charge)
-        $model = 'openai/gpt-oss-20b';
-        $temperature = 0.7;
-        $max_tokens = 8192;
-        $top_p = 1.0;
-        $reasoning_effort = 'medium';
-
-        // Utiliser les parametres de l'agent si disponible
-        if (self::$currentAgent !== null) {
-            $model = self::$currentAgent['model'] ?? $model;
-            $temperature = floatval(self::$currentAgent['temperature'] ?? $temperature);
-            $max_tokens = intval(self::$currentAgent['max_tokens'] ?? $max_tokens);
-            $top_p = floatval(self::$currentAgent['top_p'] ?? $top_p);
-            $reasoning_effort = self::$currentAgent['reasoning_effort'] ?? $reasoning_effort;
-        }
-
-        // Charger les variables d'environnement
-        $envPath = __DIR__ . '/../../.env';
-        if (file_exists($envPath)) {
-            $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-            foreach ($lines as $line) {
-                if (strpos(trim($line), '=') !== false) {
-                    list($key, $value) = explode('=', trim($line), 2);
-                    $_ENV[$key] = $value;
-                }
-            }
-        }
-        $apiKey = $_ENV['GROQ_API_KEY'] ?? getenv('GROQ_API_KEY');
-        $apiUrl = $_ENV['GROQ_API_URL'] ?? getenv('GROQ_API_URL');
-
-        // Ajouter le prompt systeme au debut si pas deja present
-        $systemPrompt = trim(self::getSystemPrompt() ?? '');
-        $hasSystemPrompt = false;
-        foreach ($messages as $msg) {
-            if ($msg['role'] === 'system') {
-                $hasSystemPrompt = true;
-                break;
-            }
-        }
-        if (!$hasSystemPrompt && $systemPrompt !== '') {
-            array_unshift($messages, [
-                'role' => 'system',
-                'content' => $systemPrompt
-            ]);
-        }
-
-        // Adapter le format des messages pour l'API Groq
-        $groqMessages = [];
-        foreach ($messages as $msg) {
-            // Adapter 'role' et 'content' pour Groq
-            $role = $msg['role'];
-            if ($role === 'user' || $role === 'assistant' || $role === 'system') {
-                $groqMessages[] = [
-                    'role' => $role,
-                    'content' => $msg['content']
-                ];
-            }
-        }
-
-        $data = [
-            'messages' => $groqMessages,
-            'model' => 'openai/gpt-oss-20b',
-            'temperature' => 1,
-            'max_completion_tokens' => 8192,
-            'top_p' => 1,
-            'reasoning_effort' => 'medium',
-            'stream' => false,  
-            'stop' => null
-        ];
-
-        $ch = curl_init($apiUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . $apiKey
-        ]);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        // SSL options for Windows/WAMP environments
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlError = curl_error($ch);
-        curl_close($ch);
-
-        if ($curlError) {
-            return [
-                'success' => false,
-                'error' => 'Erreur de connexion: ' . $curlError
-            ];
-        }
-
-        if ($httpCode !== 200) {
-            $apiError = 'Erreur API (HTTP ' . $httpCode . ')';
-            $details = $response;
-            // Essayer d'extraire le message d'erreur JSON
-            $jsonDetails = json_decode($response, true);
-            if (is_array($jsonDetails) && isset($jsonDetails['error']['message'])) {
-                $apiError .= ': ' . $jsonDetails['error']['message'];
-            }
-            return [
-                'success' => false,
-                'error' => $apiError,
-                'details' => $details
-            ];
-        }
-
-        $result = json_decode($response, true);
-
-        if (isset($result['choices'][0]['message']['content'])) {
-            return [
-                'success' => true,
-                'response' => $result['choices'][0]['message']['content']
-            ];
-        }
-
-        return [
-            'success' => false,
-            'error' => 'Réponse invalide de l\'API'
-        ];
-    }
+    //     return [
+    //         'success' => false,
+    //         'error' => 'Réponse invalide de l\'API'
+    //     ];
+    // }
     
     /**
      * DEPRECATED: Limite l'historique aux N derniers messages
