@@ -9,6 +9,89 @@ if (isset($_GET['action']) && $_GET['action'] === 'deconnexion') {
     exit; // Important: arrêter l'exécution après la déconnexion
 }
 
+// Gérer les suppressions AVANT d'envoyer le HTML (pour permettre les redirections)
+if (isset($_GET['action']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = $_GET['action'];
+
+    // Suppression d'étudiant
+    if ($action === 'supprimer_etudiant' && isset($_POST['confirmer_suppression'])) {
+        require_once __DIR__ . '/php-crud/controllers/EtudiantController.php';
+        $controller = new Controllers\EtudiantController();
+        $id = $_GET['id'] ?? null;
+        $result = $controller->handleDelete($id, true);
+
+        if (!empty($result['redirect'])) {
+            header('Location: ' . $result['redirect']);
+            exit;
+        }
+    }
+
+    // Suppression de matière
+    if ($action === 'supprimer_matiere' && isset($_POST['confirmer_suppression'])) {
+        require_once __DIR__ . '/php-crud/controllers/MatiereController.php';
+        $controller = new Controllers\MatiereController();
+        $id = $_GET['id'] ?? null;
+        $result = $controller->handleDelete($id, true);
+
+        if (!empty($result['redirect'])) {
+            header('Location: ' . $result['redirect']);
+            exit;
+        }
+    }
+
+    // Suppression de niveau
+    if ($action === 'supprimer_niveau' && isset($_POST['confirmer_suppression'])) {
+        require_once __DIR__ . '/php-crud/controllers/NiveauController.php';
+        $controller = new Controllers\NiveauController();
+        $id = $_GET['id'] ?? null;
+        $result = $controller->handleDelete($id, true);
+
+        if (!empty($result['redirect'])) {
+            header('Location: ' . $result['redirect']);
+            exit;
+        }
+    }
+
+    // Suppression de rôle
+    if ($action === 'supprimer_role' && isset($_POST['confirmer_suppression'])) {
+        require_once __DIR__ . '/php-crud/controllers/RoleController.php';
+        $controller = new Controllers\RoleController();
+        $id = $_GET['id'] ?? null;
+        $result = $controller->handleDelete($id, true);
+
+        if (!empty($result['redirect'])) {
+            header('Location: ' . $result['redirect']);
+            exit;
+        }
+    }
+
+    // Suppression d'agent
+    if ($action === 'supprimer_agent' && isset($_POST['confirmer_suppression'])) {
+        require_once __DIR__ . '/php-crud/controllers/AgentController.php';
+        $controller = new Controllers\AgentController();
+        $id = $_GET['id'] ?? null;
+        $result = $controller->handleDelete($id, true);
+
+        if (!empty($result['redirect'])) {
+            header('Location: ' . $result['redirect']);
+            exit;
+        }
+    }
+
+    // Suppression de message
+    if ($action === 'supprimer_message' && isset($_POST['confirmer_suppression'])) {
+        require_once __DIR__ . '/php-crud/controllers/MessageController.php';
+        $controller = new Controllers\MessageController();
+        $id = $_GET['id'] ?? null;
+        $result = $controller->handleDelete($id, true);
+
+        if (!empty($result['redirect'])) {
+            header('Location: ' . $result['redirect']);
+            exit;
+        }
+    }
+}
+
 $user = $_SESSION['user'] ?? null;
 $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
 ?>
