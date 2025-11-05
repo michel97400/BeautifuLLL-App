@@ -21,7 +21,7 @@ header {
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     padding: 15px;
     position: relative;
-    min-height: 80px;
+
 }
 
 .header-container {
@@ -41,7 +41,7 @@ header {
 }
 
 .header-logo {
-    height: 80px;
+    height: 50px;
     max-height: 80px;
     width: auto;
     object-fit: contain;
@@ -55,13 +55,7 @@ header {
     gap: 20px;
 }
 
-header h1 {
-    margin: 0;
-    font-size: 2.2rem;
-    font-weight: 600;
-    letter-spacing: 1px;
-    color: #fff;
-}
+
 
 .main-nav {
     position: relative;
