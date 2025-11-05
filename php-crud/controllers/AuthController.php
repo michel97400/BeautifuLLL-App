@@ -55,7 +55,7 @@ class AuthController
                 'success' => true,
                 'errors' => [],
                 'message' => 'Connexion réussie !',
-                'redirect' => '../../index.php?action=dashboard'
+                'redirect' => 'loading_profile.php'
             ];
         } else {
             return [

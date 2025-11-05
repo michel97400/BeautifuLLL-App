@@ -33,8 +33,8 @@ if ($matiereChoisie) {
             gap: 0;
             margin: 0;
             padding: 0;
-            height: calc(100vh - 160px);
-            min-height: 500px;
+            height: calc(100vh - 120px);
+            min-height: 700px;
             background: transparent;
             overflow: hidden;
         }
@@ -239,9 +239,10 @@ if ($matiereChoisie) {
         
         .chat-body {
             flex: 1;
-            padding: 24px 20px;
+            padding: 20px;
             overflow-y: auto;
             background: #fbfdfdff;
+            min-height: 400px;
         }
         
         .chat-history {
@@ -251,7 +252,7 @@ if ($matiereChoisie) {
         }
         
         .chat-footer {
-            padding: 20px 20px 24px 20px;
+            padding: 16px 20px;
             border:2px solid #0f0f0fff;
             background: #005a9e;
             box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
@@ -259,6 +260,7 @@ if ($matiereChoisie) {
             border-radius: 10px;
             gap: 12px;
             align-items: flex-end;
+            flex-shrink: 0;
         }
         
         .empty-state {

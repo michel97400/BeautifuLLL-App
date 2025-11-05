@@ -3,15 +3,20 @@
 
     <!-- Section Hero -->
     <div class="hero-section">
-        <h1 class="hero-title">Bienvenue sur BeautifuLLL AI</h1>
-        <p class="hero-subtitle">
-            Votre plateforme intelligente d'apprentissage propulsee par l'intelligence artificielle
-        </p>
-        <?php if (!$user): ?>
-            <a href="?action=connect" class="hero-cta">
-                Commencer maintenant
-            </a>
-        <?php endif; ?>
+        <div class="hero-content">
+            <h1 class="hero-title">Bienvenue sur BeautifuLLL AI</h1>
+            <p class="hero-subtitle">
+                Votre plateforme intelligente d'apprentissage propulsee par l'intelligence artificielle
+            </p>
+            <?php if (!$user): ?>
+                <a href="?action=connect" class="hero-cta">
+                    Commencer maintenant
+                </a>
+            <?php endif; ?>
+        </div>
+        <div class="hero-image">
+            <img src="php-crud/public/assets/logo.png" alt="BeautifuLLL AI Logo" class="logo-image">
+        </div>
     </div>
 
     <!-- Section Fonctionnalites -->

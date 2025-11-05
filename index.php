@@ -37,7 +37,7 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
         <header>
             <div class="header-container">
                 <div class="header-left">
-                    <a href="index.php"><img src="php-crud/public/assets/logo.png" alt="BeautifuLLL AI Logo" class="header-logo"></a>
+                    <a href="index.php" class="header-title"><span class="fixed-star">⭐</span> BeautifuLLL AI</a>
                 </div>
                 
                 <div class="header-right">
@@ -67,7 +67,7 @@ $isAdmin = $user && isset($user['role']) && $user['role'] === 'Administrateur';
                                     <svg style="width:18px;height:18px;fill:#0078d7;" viewBox="0 0 24 24">
                                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                                     </svg>
-                                    <span>Connexion</span>
+                                    <span style="">Connexion</span>
                                 </div>
                             </div>
                         </a>

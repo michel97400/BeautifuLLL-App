@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_matieres']) && $_P
 ?>
 
 <form method="post" class="crud-card" style="max-width: 500px; margin: 40px auto 24px auto; padding: 32px; display: flex; flex-direction: column; gap: 18px; background: #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.10); border-radius: 12px;">
-    <h2 style="margin-bottom: 18px; font-size: 1.3rem; color: #0078d7;">Choisissez une matiere pour discuter avec l'Agent IA</h2>
+    <h2 style="margin-bottom: 18px; font-size: 1.3rem; color: #0078d7;">Dans quels matiéres avez-vous besoin d'aide ?</h2>
 
     <?php if ($errorMessage): ?>
         <div style="background: #ffebee; color: #c62828; padding: 12px; border-radius: 6px; border-left: 4px solid #c62828;">

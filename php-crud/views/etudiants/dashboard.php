@@ -118,6 +118,7 @@ $roles = $roleController->getRoles();
             border-radius: 12px;
             padding: 30px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 2px solid #cc1010ff;
         }
 
         .profile-avatar {
@@ -151,6 +152,8 @@ $roles = $roleController->getRoles();
 
         .profile-info {
             text-align: center;
+            border: 2px solid #330fabff;
+            border-radius: 50px;
         }
 
         .profile-name {
@@ -189,6 +192,7 @@ $roles = $roleController->getRoles();
             border-radius: 12px;
             padding: 30px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 2px solid #12ce76ff;
         }
 
         .info-card h2 {
@@ -329,8 +333,9 @@ $roles = $roleController->getRoles();
             background: white;
             border-radius: 12px;
             padding: 25px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 2px 2px 8px 2px  rgba(42, 7, 157, 0.1);
             text-align: center;
+            border: 2px solid #101010ff;
         }
 
         .stat-value {
