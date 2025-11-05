@@ -7,11 +7,13 @@ require_once __DIR__ . '/../model/ChatModel.php';
 require_once __DIR__ . '/../model/SessionConversation.php';
 require_once __DIR__ . '/../model/message.php';
 require_once __DIR__ . '/../model/Agent.php';
+require_once __DIR__ . '/../services/GroqApiService.php';
 
 use Config\Database;
 use Models\SessionConversation;
 use Models\Message;
 use Models\Agent;
+use Services\GroqApiService;
 
 class ChatController {
     
@@ -170,6 +172,48 @@ class ChatController {
             return null;
         }
     }
+
+
+    public static function createIntelligentTitle($messageUtilisateur, $messageAssistant){
+
+        // $apiKey = $_ENV['GROQ_API_KEY'] ?? getenv('GROQ_API_KEY');
+        // $apiUrl = $_ENV['GROQ_API_URL'] ?? getenv('GROQ_API_URL');
+        $model = 'openai/gpt-oss-20b';
+        $temperature = 0.7;
+        
+        $groqService = new GroqApiService();
+        $messages = [];
+
+
+        $systemPrompt =     " Tu es un spécialiste en création de titre personnalisé en fonction des messages de l'utilisateur
+                              et la réponse d'un agent ia
+                              Tu vas résumer leur messages pour créer un titre pertinent à la conversation basé sur les 2 messages fournies
+                              Le titre ne dois pas dépasser 30 charactères
+                              Le titre doit être en Français
+
+                              Ta réponse sera UNIQUEMENT, et j'insiste là dessus, UNIQUEMENT le titre intelligent. 
+                            " ;
+        $system_message = [
+            "role" => "system",
+            "content" => $systemPrompt
+        ];
+
+        $prompt = "user : " . $messageUtilisateur . "\n" . "assistant : " . $messageAssistant;
+
+        $message = [ 
+            "role" => "user",
+            "content" => $prompt
+        ];
+
+        $messages[] = $system_message;
+        $messages[] = $message;
+        
+        return  $groqService->sendChatRequest($messages, $model, $temperature);
+        
+
+        
+
+    }
     
     /**
      * Gère l'envoi d'un message
@@ -234,9 +278,9 @@ class ChatController {
                 
                 $sessionModel = new SessionConversation();
                 if(count($messageModel->getMessagesBySession($id_session)) == 2){
-                    $intelligentTitle = ChatModel::createIntelligentTitle($userMessage,$assistantMessage);
-                    if ($intelligentTitle['success'] && isset($intelligentTitle['response'])) {
-                        $sessionModel->updateTitleById($id_session, $intelligentTitle['response']);
+                    $intelligentTitle = self::createIntelligentTitle($userMessage, $assistantMessage);
+                    if (isset($intelligentTitle['success']) && $intelligentTitle['success'] && isset($intelligentTitle['message'])) {
+                        $sessionModel->updateTitleById($id_session, $intelligentTitle['message']);
                     }
                 }
                 echo json_encode([

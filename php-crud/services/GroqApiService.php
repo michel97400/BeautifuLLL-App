@@ -1,6 +1,8 @@
 <?php
 namespace Services;
 
+
+
 class GroqApiService {
     private $apiKey;
     private $apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
@@ -30,20 +32,20 @@ class GroqApiService {
      * @param string $model - Modèle à utiliser (défaut: llama3-8b-8192)
      * @return array - Réponse de l'API avec ['success', 'message', 'error']
      */
-    public function sendChatRequest($messages, $model = 'llama3-8b-8192') {
+    public function sendChatRequest($messages, $model = 'llama3-8b-8192',$temperature) {
         if (empty($this->apiKey)) {
             return [
                 'success' => false,
                 'message' => '',
-                'error' => 'Clé API Groq non configurée'
+                'error' => 'Clé API Groq non configurée',
             ];
         }
 
         $data = [
             'model' => $model,
             'messages' => $messages,
-            'temperature' => 0.7,
-            'max_tokens' => 1024
+            'temperature' => $temperature,
+            'max_tokens' => 8192
         ];
 
         $ch = curl_init($this->apiUrl);
