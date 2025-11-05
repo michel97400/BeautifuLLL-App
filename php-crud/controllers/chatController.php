@@ -222,7 +222,9 @@ class ChatController {
                 $sessionModel = new SessionConversation();
                 if(count($messageModel->getMessagesBySession($id_session)) == 2){
                     $intelligentTitle = ChatModel::createIntelligentTitle($userMessage,$assistantMessage);
-                    $$sessionModel->updateTitleById($id_session,$intelligentTitle);
+                    if ($intelligentTitle['success'] && isset($intelligentTitle['response'])) {
+                        $sessionModel->updateTitleById($id_session, $intelligentTitle['response']);
+                    }
                 }
                 echo json_encode([
                     'success' => true,
