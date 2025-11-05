@@ -136,7 +136,7 @@ class ChatController {
                 
                 // Si toujours pas d'ID matière, on ne peut pas continuer
                 if (!$id_matieres) {
-                    error_log("chatController: id_matieres manquant et aucune session précédente");
+                    error_log("chatController: Matieres manquant et aucune session précédente");
                     return null;
                 }
             }

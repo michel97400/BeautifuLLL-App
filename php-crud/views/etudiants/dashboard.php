@@ -485,6 +485,10 @@ $roles = $roleController->getRoles();
                             ?>
                         </span>
                     </div>
+                    <div class="info-row">
+                        <span class="info-label">Niveau :</span>
+                        <span class="info-value"><?= htmlspecialchars($etudiant['libelle_niveau']) ?></span>
+                    </div>
 
                     <div class="info-row">
                         <span class="info-label">Consentement RGPD :</span>
@@ -526,13 +530,23 @@ $roles = $roleController->getRoles();
                         </div>
 
                         <div class="form-group">
+                            <label for="id_niveau">Niveau *</label>
+                            <select id="id_niveau" name="id_niveau" required>
+                                <option value="">Sélectionner un niveau</option>
+                                <?php foreach ($niveaux as $niveau): ?>
+                                    <option value="<?= $niveau['id_niveau'] ?>" 
+                                            <?= $niveau['id_niveau'] == $etudiant['id_niveau'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($niveau['libelle_niveau']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
                             <label for="avatar">Photo de profil</label>
                             <input type="file" id="avatar" name="avatar" accept="image/*">
                             <small style="color: #718096;">Formats acceptés : JPEG, PNG, GIF (max 2MB)</small>
                         </div>
-
-                        <!-- Niveau : non modifiable par l'utilisateur, conservé de l'inscription -->
-                        <input type="hidden" name="id_niveau" value="<?= $etudiant['id_niveau'] ?>">
                         
                         <!-- Consentement RGPD : non modifiable, conservé de l'inscription -->
                         <input type="hidden" name="consentement_rgpd" value="<?= $etudiant['consentement_rgpd'] ?>">
