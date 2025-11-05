@@ -99,6 +99,18 @@ class SessionConversation
         return false;
     }
 
+    public function updateTitleById($id_session,$title){
+        $sql = "UPDATE session_conversation SET
+                    titre = :title
+                WHERE id_session = :id_session";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id_session',  $id_session, PDO::PARAM_INT);
+        $stmt->bindParam(':title',  $title, PDO::PARAM_STR);
+        return $stmt->execute();
+    }
+
+    
     /**
      * Lire toutes les sessions
      */

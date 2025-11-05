@@ -7,11 +7,13 @@ require_once __DIR__ . '/../model/ChatModel.php';
 require_once __DIR__ . '/../model/SessionConversation.php';
 require_once __DIR__ . '/../model/message.php';
 require_once __DIR__ . '/../model/Agent.php';
+require_once __DIR__ . '/../services/GroqApiService.php';
 
 use Config\Database;
 use Models\SessionConversation;
 use Models\Message;
 use Models\Agent;
+use Services\GroqApiService;
 
 class ChatController {
     
@@ -170,6 +172,48 @@ class ChatController {
             return null;
         }
     }
+
+
+    public static function createIntelligentTitle($messageUtilisateur, $messageAssistant){
+
+        // $apiKey = $_ENV['GROQ_API_KEY'] ?? getenv('GROQ_API_KEY');
+        // $apiUrl = $_ENV['GROQ_API_URL'] ?? getenv('GROQ_API_URL');
+        $model = 'openai/gpt-oss-20b';
+        $temperature = 0.7;
+        
+        $groqService = new GroqApiService();
+        $messages = [];
+
+
+        $systemPrompt =     " Tu es un spécialiste en création de titre personnalisé en fonction des messages de l'utilisateur
+                              et la réponse d'un agent ia
+                              Tu vas résumer leur messages pour créer un titre pertinent à la conversation basé sur les 2 messages fournies
+                              Le titre ne dois pas dépasser 30 charactères
+                              Le titre doit être en Français
+
+                              Ta réponse sera UNIQUEMENT, et j'insiste là dessus, UNIQUEMENT le titre intelligent. 
+                            " ;
+        $system_message = [
+            "role" => "system",
+            "content" => $systemPrompt
+        ];
+
+        $prompt = "user : " . $messageUtilisateur . "\n" . "assistant : " . $messageAssistant;
+
+        $message = [ 
+            "role" => "user",
+            "content" => $prompt
+        ];
+
+        $messages[] = $system_message;
+        $messages[] = $message;
+        
+        return  $groqService->sendChatRequest($messages, $model, $temperature);
+        
+
+        
+
+    }
     
     /**
      * Gère l'envoi d'un message
@@ -217,26 +261,92 @@ class ChatController {
             // Récupérer l'historique complet
             $history = ChatModel::getConversationHistory();
             
-            // Envoyer à Groq
-            $result = ChatModel::sendToGroq($history);
+            // Préparer les messages pour l'API Groq
+            $groqService = new GroqApiService();
+
+            // Récupérer le prompt système de l'agent
+            $agent = ChatModel::getCurrentAgent();
+            $systemPrompt = '';
+
+            if ($agent && isset($agent['prompt_systeme'])) {
+                // Construire le prompt système enrichi avec les infos de l'étudiant
+                $systemPrompt = $agent['prompt_systeme'];
+                
+                // Ajouter le contexte de l'étudiant si disponible
+                $user = $_SESSION['user'] ?? null;
+                if ($user && isset($user['id_etudiant'])) {
+                    require_once __DIR__ . '/../model/etudiant.php';
+                    require_once __DIR__ . '/../model/niveau.php';
+                    
+                    $etudiantModel = new \Models\Etudiants();
+                    $etudiant = $etudiantModel->readSingle($user['id_etudiant']);
+                    
+                    if ($etudiant && isset($etudiant['id_niveau'])) {
+                        $niveauModel = new \Models\Niveau();
+                        $niveau = $niveauModel->readSingle($etudiant['id_niveau']);
+                        
+                        if ($niveau && isset($niveau['libelle_niveau'])) {
+                            $niveauLibelle = $niveau['libelle_niveau'];
+                            $prenom = $etudiant['prenom'] ?? 'l\'étudiant';
+                            
+                            $systemPrompt .= "\n\n";
+                            $systemPrompt .= "CONTEXTE ETUDIANT:\n";
+                            $systemPrompt .= "- Nom: $prenom\n";
+                            $systemPrompt .= "- Niveau scolaire: $niveauLibelle\n";
+                            $systemPrompt .= "- Matière: " . ($agent['nom_matieres'] ?? 'Non spécifiée') . "\n\n";
+                            $systemPrompt .= "Adapte tes réponses au niveau $niveauLibelle. ";
+                            $systemPrompt .= "Sois pédagogique et encourage l'apprentissage.";
+                        }
+                    }
+                }
+            }
+
+            // Préparer les messages avec le prompt système
+            $messages = [];
+            if (!empty($systemPrompt)) {
+                $messages[] = [
+                    'role' => 'system',
+                    'content' => $systemPrompt
+                ];
+            }
+
+            // Ajouter l'historique de conversation
+            $messages = array_merge($messages, $history);
+
+            // Récupérer les paramètres du modèle depuis l'agent
+            $model = $agent['model'] ?? 'openai/gpt-oss-20b';
+            $temperature = isset($agent['temperature']) ? floatval($agent['temperature']) : 0.7;
+
+            // Envoyer à Groq via le service
+            $result = $groqService->sendChatRequest($messages, $model, $temperature);
             
             if ($result['success']) {
                 // Ajouter la réponse à l'historique
-                ChatModel::addMessage('assistant', $result['response']);
-                
+                ChatModel::addMessage('assistant', $result['message']);
+                $assistantMessage = $result['message'];
                 // Sauvegarder la réponse dans la DB
                 $messageModel->create(
                     'assistant',
-                    $result['response'],
+                    $assistantMessage,
                     date('Y-m-d H:i:s'),
                     $id_session
                 );
                 
+                $sessionModel = new SessionConversation();
+                if(count($messageModel->getMessagesBySession($id_session)) == 2){
+                    $intelligentTitle = self::createIntelligentTitle($userMessage, $assistantMessage);
+                    if (isset($intelligentTitle['success']) && $intelligentTitle['success'] && isset($intelligentTitle['message'])) {
+                        $sessionModel->updateTitleById($id_session, $intelligentTitle['message']);
+                    }
+                }
                 echo json_encode([
                     'success' => true,
-                    'response' => $result['response'],
+                    'response' => $result['message'],
                     'session_id' => $id_session
                 ]);
+
+
+
             } else {
                 echo json_encode($result);
             }
@@ -300,6 +410,8 @@ class ChatController {
         
         exit;
     }
+
+
     
     /**
      * Route les requêtes selon l'action
