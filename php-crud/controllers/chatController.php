@@ -115,9 +115,30 @@ class ChatController {
 
             // Récupérer la matière choisie par l'utilisateur
             $id_matieres = $_SESSION['agent_ia_id_matieres'] ?? null;
+            
+            // Si pas d'ID matière en session, essayer de récupérer depuis la dernière session
             if (!$id_matieres) {
-                error_log("chatController: id_matieres manquant dans la session");
-                return null;
+                $sessionModel = new SessionConversation();
+                $lastSession = $sessionModel->getActiveSession($user['id_etudiant']);
+                
+                if ($lastSession && isset($lastSession['id_agents'])) {
+                    // Récupérer l'agent de la dernière session
+                    $agentModel = new Agent();
+                    $agent = $agentModel->readSingle($lastSession['id_agents']);
+                    
+                    if ($agent && isset($agent['id_matieres'])) {
+                        $id_matieres = $agent['id_matieres'];
+                        // Mettre à jour la session avec cette info
+                        $_SESSION['agent_ia_id_matieres'] = $id_matieres;
+                        $_SESSION['agent_ia_matiere'] = $agent['nom_matieres'] ?? '';
+                    }
+                }
+                
+                // Si toujours pas d'ID matière, on ne peut pas continuer
+                if (!$id_matieres) {
+                    error_log("chatController: id_matieres manquant et aucune session précédente");
+                    return null;
+                }
             }
 
             // Créer une nouvelle session
@@ -133,16 +154,8 @@ class ChatController {
 
             $id_agent = $agent['id_agents'];
 
-            // Vérifier s'il existe déjà une session active avec cet agent
-            $activeSession = $sessionModel->getActiveSession($user['id_etudiant']);
-
-            if ($activeSession && $activeSession['id_agents'] == $id_agent) {
-                // Réutiliser la session active existante avec le bon agent
-                $_SESSION['current_session_id'] = $activeSession['id_session'];
-                return $activeSession['id_session'];
-            }
-
-            // Créer une nouvelle session avec le bon agent
+            // Toujours créer une nouvelle session (ne pas réutiliser l'ancienne)
+            // Cela permet d'avoir un historique distinct pour chaque conversation
             $id_session = $sessionModel->createAndReturnId(
                 '00:00:00',
                 null,
@@ -253,6 +266,8 @@ class ChatController {
         try {
             ChatModel::resetHistory();
             unset($_SESSION['current_session_id']);
+            // Ne pas supprimer agent_ia_id_matieres et agent_ia_matiere
+            // pour permettre la création d'une nouvelle session avec le même agent
             
             echo json_encode(['success' => true, 'message' => 'Conversation réinitialisée']);
         } catch (Exception $e) {

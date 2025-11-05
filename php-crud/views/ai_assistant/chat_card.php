@@ -46,7 +46,7 @@ if ($matiereChoisie) {
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            border-right: 2px solid #e0e0e0;
+            border-right: 2px solid #0a0a0aff;
             position: relative;
             box-shadow: 2px 0 8px rgba(0,0,0,0.08);
             transition: margin-left 0.3s ease, width 0.3s ease;
@@ -252,9 +252,11 @@ if ($matiereChoisie) {
         
         .chat-footer {
             padding: 20px 20px 24px 20px;
-            background: #fff;
+            border:2px solid #0f0f0fff;
+            background: #005a9e;
             box-shadow: 0 -2px 8px rgba(0,0,0,0.04);
             display: flex;
+            border-radius: 10px;
             gap: 12px;
             align-items: flex-end;
         }
@@ -268,6 +270,102 @@ if ($matiereChoisie) {
         .empty-state h3 {
             margin-bottom: 10px;
             color: #333;
+        }
+        
+        /* Styles pour le contenu markdown */
+        .markdown-content {
+            line-height: 1.6;
+        }
+        
+        .markdown-content h1,
+        .markdown-content h2,
+        .markdown-content h3,
+        .markdown-content h4,
+        .markdown-content h5,
+        .markdown-content h6 {
+            color: #0078d7;
+            margin-top: 16px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .markdown-content h1 { font-size: 1.8em; }
+        .markdown-content h2 { font-size: 1.5em; }
+        .markdown-content h3 { font-size: 1.3em; }
+        
+        .markdown-content p {
+            margin: 10px 0;
+        }
+        
+        .markdown-content code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        .markdown-content pre {
+            background-color: #f4f4f4;
+            padding: 12px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+        
+        .markdown-content pre code {
+            background: none;
+            padding: 0;
+        }
+        
+        .markdown-content ul,
+        .markdown-content ol {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+        
+        .markdown-content li {
+            margin: 5px 0;
+        }
+        
+        .markdown-content blockquote {
+            border-left: 4px solid #0078d7;
+            padding-left: 15px;
+            margin: 15px 0;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .markdown-content table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 15px 0;
+        }
+        
+        .markdown-content table th,
+        .markdown-content table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .markdown-content table th {
+            background-color: #0078d7;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .markdown-content table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .markdown-content a {
+            color: #0078d7;
+            text-decoration: none;
+        }
+        
+        .markdown-content a:hover {
+            text-decoration: underline;
         }
         
         /* Responsive */
@@ -351,6 +449,8 @@ if ($matiereChoisie) {
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="php-crud/public/chat.js"></script>
     <script>
         function toggleSidebar() {
