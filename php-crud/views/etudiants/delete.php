@@ -14,18 +14,14 @@ $id = $_GET['id'] ?? null;
 // Vérifier si c'est une confirmation de suppression
 $confirmed = $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmer_suppression']);
 
-// Traiter via le controller
+// Traiter via le controller (la redirection est gérée dans index.php)
 $result = $controller->handleDelete($id, $confirmed);
 
 // Récupérer les données du résultat
 $message = $result['message'];
 $etudiant = $result['etudiant'];
 
-// Si redirection nécessaire (suppression réussie)
-if (!empty($result['redirect'])) {
-    header('Location: ../../' . $result['redirect']);
-    exit;
-}
+// Note: La redirection est maintenant gérée dans index.php AVANT le rendu HTML
 ?>
 
 <?php include __DIR__ . '/../../includes/crud_nav.php'; ?>
