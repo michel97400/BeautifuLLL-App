@@ -32,7 +32,7 @@ class GroqApiService {
      * @param string $model - Modèle à utiliser (défaut: llama3-8b-8192)
      * @return array - Réponse de l'API avec ['success', 'message', 'error']
      */
-    public function sendChatRequest($messages, $model = 'llama3-8b-8192',$temperature) {
+    public function sendChatRequest($messages, $model = 'llama3-8b-8192',$temperature=0.7) {
         if (empty($this->apiKey)) {
             return [
                 'success' => false,
@@ -45,7 +45,9 @@ class GroqApiService {
             'model' => $model,
             'messages' => $messages,
             'temperature' => $temperature,
-            'max_tokens' => 8192
+            'max_tokens' => 8192,
+            'top_p' => 1,
+            'stream' => false,
         ];
 
         $ch = curl_init($this->apiUrl);

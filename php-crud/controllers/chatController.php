@@ -261,13 +261,69 @@ class ChatController {
             // Récupérer l'historique complet
             $history = ChatModel::getConversationHistory();
             
-            // Envoyer à Groq
-            $result = ChatModel::sendToGroq($history);
+            // Préparer les messages pour l'API Groq
+            $groqService = new GroqApiService();
+
+            // Récupérer le prompt système de l'agent
+            $agent = ChatModel::getCurrentAgent();
+            $systemPrompt = '';
+
+            if ($agent && isset($agent['prompt_systeme'])) {
+                // Construire le prompt système enrichi avec les infos de l'étudiant
+                $systemPrompt = $agent['prompt_systeme'];
+                
+                // Ajouter le contexte de l'étudiant si disponible
+                $user = $_SESSION['user'] ?? null;
+                if ($user && isset($user['id_etudiant'])) {
+                    require_once __DIR__ . '/../model/etudiant.php';
+                    require_once __DIR__ . '/../model/niveau.php';
+                    
+                    $etudiantModel = new \Models\Etudiants();
+                    $etudiant = $etudiantModel->readSingle($user['id_etudiant']);
+                    
+                    if ($etudiant && isset($etudiant['id_niveau'])) {
+                        $niveauModel = new \Models\Niveau();
+                        $niveau = $niveauModel->readSingle($etudiant['id_niveau']);
+                        
+                        if ($niveau && isset($niveau['libelle_niveau'])) {
+                            $niveauLibelle = $niveau['libelle_niveau'];
+                            $prenom = $etudiant['prenom'] ?? 'l\'étudiant';
+                            
+                            $systemPrompt .= "\n\n";
+                            $systemPrompt .= "CONTEXTE ETUDIANT:\n";
+                            $systemPrompt .= "- Nom: $prenom\n";
+                            $systemPrompt .= "- Niveau scolaire: $niveauLibelle\n";
+                            $systemPrompt .= "- Matière: " . ($agent['nom_matieres'] ?? 'Non spécifiée') . "\n\n";
+                            $systemPrompt .= "Adapte tes réponses au niveau $niveauLibelle. ";
+                            $systemPrompt .= "Sois pédagogique et encourage l'apprentissage.";
+                        }
+                    }
+                }
+            }
+
+            // Préparer les messages avec le prompt système
+            $messages = [];
+            if (!empty($systemPrompt)) {
+                $messages[] = [
+                    'role' => 'system',
+                    'content' => $systemPrompt
+                ];
+            }
+
+            // Ajouter l'historique de conversation
+            $messages = array_merge($messages, $history);
+
+            // Récupérer les paramètres du modèle depuis l'agent
+            $model = $agent['model'] ?? 'openai/gpt-oss-20b';
+            $temperature = isset($agent['temperature']) ? floatval($agent['temperature']) : 0.7;
+
+            // Envoyer à Groq via le service
+            $result = $groqService->sendChatRequest($messages, $model, $temperature);
             
             if ($result['success']) {
                 // Ajouter la réponse à l'historique
-                ChatModel::addMessage('assistant', $result['response']);
-                $assistantMessage = $result['response'];
+                ChatModel::addMessage('assistant', $result['message']);
+                $assistantMessage = $result['message'];
                 // Sauvegarder la réponse dans la DB
                 $messageModel->create(
                     'assistant',
@@ -285,7 +341,7 @@ class ChatController {
                 }
                 echo json_encode([
                     'success' => true,
-                    'response' => $result['response'],
+                    'response' => $result['message'],
                     'session_id' => $id_session
                 ]);
 
